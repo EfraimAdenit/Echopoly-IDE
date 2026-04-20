@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Dashboard | EchoPoly IDE</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1a1f35 100%);
+      color: #f1f5f9;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    .bg-gradient {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(-45deg, #1e3c72, #2a5298, #0f172a, #1e293b);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+      z-index: 0;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .glow-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.15;
+      z-index: 0;
+    }
+
+    .glow-blob-1 {
+      width: 300px;
+      height: 300px;
+      background: #7c3aed;
+      top: -100px;
+      right: -50px;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .glow-blob-2 {
+      width: 200px;
+      height: 200px;
+      background: #3b82f6;
+      bottom: -50px;
+      left: -50px;
+      animation: float 15s ease-in-out infinite reverse;
+    }
+
+    .glow-blob-3 {
+      width: 250px;
+      height: 250px;
+      background: #ffffff;
+      top: 50%;
+      left: 10%;
+      animation: float 25s ease-in-out infinite;
+      opacity: 0.05;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(30px); }
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      padding: 1rem 2rem;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: white;
+    }
+
+    .logout-btn {
+      padding: 6px 12px;
+      background: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    /* Main Content */
+    .main-content {
+      padding: 100px 20px 40px;
+      position: relative;
+      z-index: 10;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .welcome-section {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .welcome-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 8px;
+    }
+
+    .welcome-subtitle {
+      font-size: 16px;
+      color: #94a3b8;
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .dashboard-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(124, 58, 237, 0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 8px;
+    }
+
+    .card-description {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+
+    .actions-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .action-btn {
+      padding: 16px 20px;
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+    }
+
+    .action-btn.secondary {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    }
+
+    .action-btn.secondary:hover {
+      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Active Sessions */
+    .sessions-section {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+
+    .sessions-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 20px;
+    }
+
+    .sessions-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .session-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .session-item:last-child {
+      border-bottom: none;
+    }
+
+    .session-info {
+      flex: 1;
+    }
+
+    .session-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 4px;
+    }
+
+    .session-details {
+      font-size: 14px;
+      color: #94a3b8;
+    }
+
+    .session-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .session-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .session-btn.primary {
+      background: #10b981;
+      color: white;
+    }
+
+    .session-btn.primary:hover {
+      background: #059669;
+    }
+
+    .session-btn.secondary {
+      background: rgba(148, 163, 184, 0.1);
+      color: #94a3b8;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .session-btn.secondary:hover {
+      background: rgba(148, 163, 184, 0.15);
+    }
+
+    /* Stats Section */
+    .stats-section {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .stats-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 20px;
+      background: rgba(30, 41, 59, 0.3);
+      border-radius: 12px;
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      color: #7c3aed;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: #94a3b8;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .actions-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .welcome-title {
+        font-size: 24px;
+      }
+
+      header {
+        padding: 1rem;
+      }
+
+      .main-content {
+        padding: 80px 16px 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+  <div class="glow-blob glow-blob-1"></div>
+  <div class="glow-blob glow-blob-2"></div>
+  <div class="glow-blob glow-blob-3"></div>
+
+  <header>
+    <div class="logo">👨‍🏫 EchoPoly</div>
+    <div class="user-info">
+      <div class="user-avatar" id="user-avatar">T</div>
+      <span id="user-name">Teacher</span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <div class="welcome-section">
+      <h1 class="welcome-title">Welcome to Your Teacher Dashboard</h1>
+      <p class="welcome-subtitle">Create engaging learning experiences and monitor student progress</p>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="dashboard-card" onclick="createQuiz()">
+        <div class="card-icon">📝</div>
+        <h3 class="card-title">Create Quiz</h3>
+        <p class="card-description">Design interactive quizzes with multiple choice, coding challenges, and instant feedback.</p>
+      </div>
+
+      <div class="dashboard-card" onclick="createExam()">
+        <div class="card-icon">📋</div>
+        <h3 class="card-title">Create Exam</h3>
+        <p class="card-description">Set up supervised examinations with time limits, question randomization, and proctoring.</p>
+      </div>
+
+      <div class="dashboard-card" onclick="createCodingRoom()">
+        <div class="card-icon">👥</div>
+        <h3 class="card-title">Coding Room</h3>
+        <p class="card-description">Create collaborative coding environments for pair programming and group projects.</p>
+      </div>
+
+      <div class="dashboard-card" onclick="manageStudents()">
+        <div class="card-icon">👨‍🎓</div>
+        <h3 class="card-title">Student Management</h3>
+        <p class="card-description">Monitor student progress, view submissions, and provide personalized feedback.</p>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <h2 class="actions-title">Quick Actions</h2>
+      <div class="actions-grid">
+        <button class="action-btn" onclick="generateShareCode()">
+          <span>🔗</span>
+          Generate Share Code
+        </button>
+        <button class="action-btn secondary" onclick="viewAnalytics()">
+          <span>📊</span>
+          View Analytics
+        </button>
+        <button class="action-btn" onclick="createFlashcards()">
+          <span>🃏</span>
+          Create Flashcards
+        </button>
+        <button class="action-btn secondary" onclick="scheduleSession()">
+          <span>📅</span>
+          Schedule Session
+        </button>
+      </div>
+    </div>
+
+    <div class="sessions-section">
+      <h2 class="sessions-title">Active Sessions</h2>
+      <ul class="sessions-list">
+        <li class="session-item">
+          <div class="session-info">
+            <div class="session-name">JavaScript Fundamentals Quiz</div>
+            <div class="session-details">12 students • Started 2 hours ago • Code: JS101</div>
+          </div>
+          <div class="session-actions">
+            <button class="session-btn primary" onclick="monitorSession('JS101')">Monitor</button>
+            <button class="session-btn secondary" onclick="endSession('JS101')">End</button>
+          </div>
+        </li>
+        <li class="session-item">
+          <div class="session-info">
+            <div class="session-name">React Components Workshop</div>
+            <div class="session-details">8 students • Started 1 hour ago • Code: RCT202</div>
+          </div>
+          <div class="session-actions">
+            <button class="session-btn primary" onclick="monitorSession('RCT202')">Monitor</button>
+            <button class="session-btn secondary" onclick="endSession('RCT202')">End</button>
+          </div>
+        </li>
+        <li class="session-item">
+          <div class="session-info">
+            <div class="session-name">Data Structures Exam</div>
+            <div class="session-details">15 students • Started 30 min ago • Code: DS301</div>
+          </div>
+          <div class="session-actions">
+            <button class="session-btn primary" onclick="monitorSession('DS301')">Monitor</button>
+            <button class="session-btn secondary" onclick="endSession('DS301')">End</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="stats-section">
+      <h2 class="stats-title">Classroom Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">47</div>
+          <div class="stat-label">Active Students</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">12</div>
+          <div class="stat-label">Active Sessions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">89%</div>
+          <div class="stat-label">Avg. Completion</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">156</div>
+          <div class="stat-label">Quizzes Created</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Load user information
+    document.addEventListener('DOMContentLoaded', function() {
+      const userData = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      if (userData.displayName) {
+        document.getElementById('user-name').textContent = userData.displayName;
+        document.getElementById('user-avatar').textContent = userData.displayName.charAt(0).toUpperCase();
+      } else if (userData.email) {
+        const name = userData.email.split('@')[0];
+        document.getElementById('user-name').textContent = name;
+        document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem('currentUser');
+      window.location.href = 'index.html';
+    }
+
+    function createQuiz() {
+      alert('Quiz creation tool will be available soon! You can create interactive quizzes with coding challenges.');
+    }
+
+    function createExam() {
+      alert('Exam creation tool will be available soon! Set up supervised examinations with proctoring features.');
+    }
+
+    function createCodingRoom() {
+      alert('Coding room creation will be available soon! Generate share codes for collaborative coding sessions.');
+    }
+
+    function manageStudents() {
+      alert('Student management dashboard will be available soon! Monitor progress and provide feedback.');
+    }
+
+    function generateShareCode() {
+      const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+      alert(`Generated share code: ${code}\n\nStudents can use this code to join your sessions.`);
+    }
+
+    function viewAnalytics() {
+      alert('Analytics dashboard will be available soon! View detailed reports on student performance.');
+    }
+
+    function createFlashcards() {
+      alert('Flashcard creation tool will be available soon! Create interactive study materials for your students.');
+    }
+
+    function scheduleSession() {
+      alert('Session scheduling will be available soon! Plan and organize your classroom activities.');
+    }
+
+    function monitorSession(code) {
+      alert(`Monitoring session ${code}...\n\nReal-time monitoring features will be available soon!`);
+    }
+
+    function endSession(code) {
+      if (confirm(`Are you sure you want to end session ${code}?`)) {
+        alert(`Session ${code} has been ended.`);
+        // In a real implementation, this would update the session status
+      }
+    }
+  </script>
+</body>
+</html>

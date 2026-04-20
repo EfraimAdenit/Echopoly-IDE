@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monaco Editor Debug Test</title>
+  <link rel="stylesheet" href="css/editor.css">
+  <style>
+    .debug-panel {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.95);
+      color: #00ff00;
+      padding: 15px;
+      border: 2px solid #00ff00;
+      font-family: monospace;
+      font-size: 11px;
+      max-width: 400px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 9999;
+      line-height: 1.4;
+    }
+
+    .debug-panel h3 {
+      color: #00ff00;
+      margin: 0 0 10px 0;
+      font-size: 13px;
+    }
+
+    .debug-line {
+      margin: 3px 0;
+      padding: 2px 0;
+      border-bottom: 1px solid #003300;
+    }
+
+    .error { color: #ff0000; }
+    .success { color: #00ff00; }
+    .warning { color: #ffff00; }
+    .info { color: #00aaff; }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .sidebar-panel {
+      display: none;
+    }
+
+    .sidebar-panel.active {
+      display: block;
+    }
+
+    .activity-icon.active {
+      background: #3e3e42;
+      border-left: 2px solid #4ec9b0;
+    }
+
+    .modal-content {
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <!-- Top Header Bar -->
+    <header id="app-header">
+      <div id="header-left">
+        <h1>EchoPoly IDE - Debug Test</h1>
+        <span id="project-title">Test Mode</span>
+      </div>
+      <div id="header-actions">
+        <button id="save-btn" style="padding: 8px 12px; margin-right: 8px;">💾 Save</button>
+        <button id="share-btn" style="padding: 8px 12px; margin-right: 8px;">🔗 Share</button>
+        <button id="settings-btn" style="padding: 8px 12px; margin-right: 10px;">⚙️ Settings</button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+      <!-- Activity Bar -->
+      <div id="activity-bar">
+        <button id="explorer-btn" title="Projects" class="activity-icon active">📁</button>
+        <button id="users-btn" title="Users" class="activity-icon">👥</button>
+        <button id="settings-btn-sidebar" title="Settings" class="activity-icon">⚙️</button>
+        <button id="dashboard-btn" title="Dashboard" class="activity-icon">📊</button>
+      </div>
+
+      <!-- Sidebar -->
+      <aside id="sidebar">
+        <!-- Explorer Panel -->
+        <div id="explorer-panel" class="sidebar-panel active">
+          <div class="sidebar-header">Files</div>
+          <button id="new-file-btn" style="width: 100%; padding: 8px 12px; margin: 8px 0; background: #3e3e42; color: #cccccc; border: 1px solid #555; border-radius: 4px; cursor: pointer;">➕ New File</button>
+          <div id="file-list" class="sidebar-content" style="padding: 8px; max-height: calc(100vh - 220px); overflow-y: auto;"></div>
+        </div>
+
+        <!-- Users Panel -->
+        <div id="users-panel" class="sidebar-panel hidden">
+          <div class="sidebar-header">Active Users</div>
+          <div id="active-users" class="sidebar-content" style="padding: 8px;"></div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="sidebar-panel hidden">
+          <div class="sidebar-header">Language</div>
+          <div class="sidebar-content" style="padding: 8px;">
+            <label style="display: block; color: #cccccc;">
+              <select id="language-select" style="width: 100%; padding: 6px; background: #3e3e42; color: #cccccc; border: 1px solid #555;">
+                <option value="javascript">JavaScript</option>
+                <option value="html">HTML</option>
+                <option value="css">CSS</option>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="cpp">C++</option>
+                <option value="typescript">TypeScript</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <!-- Dashboard Panel -->
+        <div id="dashboard-panel" class="sidebar-panel hidden">
+          <div class="sidebar-header">Project Stats</div>
+          <div class="sidebar-content">
+            <div style="padding: 8px; color: #cccccc; font-size: 12px;">
+              <div style="margin: 8px 0;">Language: <span id="lang-display" style="color: #4ec9b0;">JavaScript</span></div>
+              <div style="margin: 8px 0;">Status: <span id="status-display" style="color: #4ec9b0;">Saved</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Editor Area -->
+      <div id="editor-area">
+        <div id="tab-bar" style="display: flex; gap: 0; border-bottom: 1px solid #3e3e42; background: #252526; overflow-x: auto;"></div>
+        <div id="editor">
+          <div id="monaco-editor"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:2000;">
+    <div class="modal-content" style="width:480px;background:#2d2d30;border:1px solid #3e3e42;padding:20px;border-radius:6px;">
+      <h3 style="color:#cccccc;margin-top:0;">Settings</h3>
+      
+      <label style="display:block;margin:15px 0;color:#cccccc;">
+        <input type="checkbox" id="dark-mode-toggle" checked style="margin-right:8px;"> Dark Mode
+      </label>
+      
+      <label style="display:block;margin:15px 0;color:#cccccc;">
+        <input type="checkbox" id="autosave-toggle" checked style="margin-right:8px;"> Autosave
+      </label>
+      
+      <label style="display:block;margin:15px 0;color:#cccccc;">
+        Font Size:
+        <select id="font-size-select" style="margin-left:8px;padding:6px;background:#3e3e42;color:#cccccc;border:1px solid #555;">
+          <option value="12">12px</option>
+          <option value="14">14px</option>
+          <option value="16" selected>16px</option>
+          <option value="18">18px</option>
+          <option value="20">20px</option>
+        </select>
+      </label>
+      
+      <div style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end;">
+        <button id="close-settings" style="padding:8px 16px;background:#3e3e42;color:#cccccc;border:1px solid #555;border-radius:4px;cursor:pointer;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New File Modal -->
+  <div id="new-file-modal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:2000;">
+    <div class="modal-content" style="width:400px;">
+      <h3 style="margin-top:0;color:#ffffff;font-size:18px;">Create New File</h3>
+      
+      <div style="margin-bottom:16px;">
+        <label style="display:block;color:#cccccc;font-size:13px;margin-bottom:6px;">Filename:</label>
+        <input type="text" id="new-file-name" placeholder="Enter filename (e.g., script.js)" style="width:100%;padding:8px;background:#1e1e1e;color:#ffffff;border:1px solid #3e3e42;border-radius:4px;box-sizing:border-box;font-size:13px;">
+      </div>
+      
+      <div style="margin-bottom:16px;">
+        <label style="display:block;color:#cccccc;font-size:13px;margin-bottom:6px;">Language:</label>
+        <select id="new-file-language" style="width:100%;padding:8px;background:#1e1e1e;color:#ffffff;border:1px solid #3e3e42;border-radius:4px;font-size:13px;">
+          <option value="javascript">JavaScript (.js)</option>
+          <option value="python">Python (.py)</option>
+          <option value="html">HTML (.html)</option>
+          <option value="css">CSS (.css)</option>
+          <option value="java">Java (.java)</option>
+          <option value="cpp">C++ (.cpp)</option>
+          <option value="typescript">TypeScript (.ts)</option>
+          <option value="json">JSON (.json)</option>
+          <option value="markdown">Markdown (.md)</option>
+          <option value="sql">SQL (.sql)</option>
+          <option value="shell">Shell (.sh)</option>
+        </select>
+      </div>
+      
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button id="cancel-new-file" style="padding:8px 16px;background:#3e3e42;color:#cccccc;border:1px solid #555;border-radius:4px;cursor:pointer;">Cancel</button>
+        <button id="create-new-file" style="padding:8px 16px;background:#0e639c;color:#ffffff;border:1px solid #0e639c;border-radius:4px;cursor:pointer;">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="hidden" style="position:fixed;bottom:20px;left:20px;background:#1e1e1e;color:#4ec9b0;padding:12px 16px;border:1px solid #4ec9b0;border-radius:4px;z-index:3000;font-size:14px;"></div>
+
+  <!-- Debug Console -->
+  <div class="debug-panel" id="debug-panel">
+    <h3>Debug Console</h3>
+    <div id="debug-output"></div>
+  </div>
+
+  <!-- Monaco Loader -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
+
+  <script>
+    console.log('Test.html loaded - initializing');
+
+    // Global variables
+    let editorInstance = null;
+    let currentLanguage = 'javascript';
+    let isSaved = true;
+    let autoSaveEnabled = true;
+    let fontSize = 16;
+    let autoSaveTimeout = null;
+    const logs = [];
+
+    // Starter code
+    const starterCode = {
+      javascript: 'console.log("Hello, World!");',
+      html: '<!DOCTYPE html>\n<html>\n<body>\n  <h1>Hello World</h1>\n</body>\n</html>',
+      css: 'body { font-family: Arial; }',
+      python: 'print("Hello, World!")',
+      java: 'public class Main { }',
+      cpp: '#include <iostream>',
+      typescript: 'console.log("Hello");'
+    };
+
+    const languageMap = {
+      javascript: 'javascript',
+      html: 'html',
+      css: 'css',
+      python: 'python',
+      java: 'java',
+      cpp: 'cpp',
+      typescript: 'typescript'
+    };
+
+    // Logging function
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const logEntry = `[${timestamp}] ${message}`;
+      logs.push({ message: logEntry, type });
+      console.log(logEntry);
+      
+      const debugOutput = document.getElementById('debug-output');
+      if (debugOutput) {
+        const line = document.createElement('div');
+        line.className = `debug-line ${type}`;
+        line.textContent = logEntry;
+        debugOutput.appendChild(line);
+        debugOutput.parentElement.scrollTop = debugOutput.parentElement.scrollHeight;
+      }
+      
+      if (logs.length > 50) logs.shift();
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      toast.classList.remove('hidden');
+      log('Toast: ' + message, 'info');
+      setTimeout(() => {
+        toast.style.display = 'none';
+        toast.classList.add('hidden');
+      }, 3000);
+    }
+
+    function scheduleSave() {
+      if (!autoSaveEnabled) return;
+      if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+      autoSaveTimeout = setTimeout(() => {
+        log('Autosave triggered', 'info');
+        isSaved = true;
+        showToast('Autosaved!');
+      }, 1000);
+    }
+
+    // Wait for DOM
+    function initialize() {
+      log('=== Initialization started ===', 'info');
+      
+      // Render tabs first
+      renderTabs();
+      updateSidebarFiles();
+
+      const monacoContainer = document.getElementById('monaco-editor');
+      if (!monacoContainer) {
+        log('ERROR: Monaco container not found!', 'error');
+        return;
+      }
+
+      log('Container found: ' + monacoContainer.offsetWidth + 'x' + monacoContainer.offsetHeight, 'info');
+
+      // Load Monaco
+      require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' }});
+      require(['vs/editor/editor.main'], function() {
+        log('✓ Monaco library loaded', 'success');
+        
+        try {
+          log('Creating editor instance...', 'info');
+          
+          editorInstance = monaco.editor.create(monacoContainer, {
+            value: starterCode['javascript'],
+            language: 'javascript',
+            theme: 'vs-dark',
+            automaticLayout: true,
+            fontSize: 16,
+            minimap: { enabled: false }
+          });
+
+          window.editor = editorInstance;
+          log('✓ Editor instance created', 'success');
+          
+          // Change listener
+          editorInstance.onDidChangeModelContent(() => {
+            isSaved = false;
+            log('Code changed', 'info');
+            scheduleSave();
+          });
+
+          log('✓✓✓ MONACO IS WORKING! ✓✓✓', 'success');
+        } catch(err) {
+          log('ERROR creating editor: ' + err.message, 'error');
+          console.error(err);
+        }
+      });
+    }
+
+    // Trigger initialization
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initialize);
+    } else {
+      initialize();
+    }
+
+    // Event listeners - Language select
+    document.getElementById('language-select').addEventListener('change', (e) => {
+      const lang = e.target.value;
+      currentLanguage = lang;
+      log('Language changed to: ' + lang, 'info');
+      
+      if (!editorInstance) {
+        log('Editor not ready yet', 'warning');
+        return;
+      }
+
+      try {
+        const monacoLang = languageMap[lang] || 'plaintext';
+        monaco.editor.setModelLanguage(editorInstance.getModel(), monacoLang);
+        editorInstance.setValue(starterCode[lang] || '');
+        log('✓ Language and code updated', 'success');
+      } catch(err) {
+        log('ERROR: ' + err.message, 'error');
+      }
+    });
+
+    // Activity bar panel switching
+    const panels = {
+      explorer: document.getElementById('explorer-panel'),
+      users: document.getElementById('users-panel'),
+      dashboard: document.getElementById('dashboard-panel'),
+      settings: document.getElementById('settings-panel')
+    };
+
+    function switchPanel(panelName) {
+      Object.values(panels).forEach(p => {
+        if (p) p.classList.remove('active');
+      });
+      if (panels[panelName]) {
+        panels[panelName].classList.add('active');
+      }
+      log('Switched to ' + panelName + ' panel', 'info');
+    }
+
+    document.getElementById('explorer-btn').addEventListener('click', () => switchPanel('explorer'));
+    document.getElementById('users-btn').addEventListener('click', () => switchPanel('users'));
+    document.getElementById('dashboard-btn').addEventListener('click', () => switchPanel('dashboard'));
+    document.getElementById('settings-btn-sidebar').addEventListener('click', () => switchPanel('settings'));
+
+    // Tab management
+    let openTabs = [
+      { id: 'test.js', name: 'test.js', language: 'javascript', content: 'console.log("Hello, World!");', isOpen: true }
+    ];
+    let currentTabId = 'test.js';
+
+    function createTabElement(tab) {
+      const tabDiv = document.createElement('div');
+      tabDiv.id = 'tab-' + tab.id;
+      tabDiv.style.display = 'flex';
+      tabDiv.style.alignItems = 'center';
+      tabDiv.style.gap = '8px';
+      tabDiv.style.padding = '6px 12px 3px';
+      tabDiv.style.borderRight = '1px solid #3e3e42';
+      tabDiv.style.borderBottom = currentTabId === tab.id ? '3px solid #0e639c' : '3px solid transparent';
+      tabDiv.style.cursor = 'pointer';
+      tabDiv.style.userSelect = 'none';
+      tabDiv.style.whiteSpace = 'nowrap';
+      
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = tab.name;
+      nameSpan.style.fontSize = '13px';
+      nameSpan.style.color = currentTabId === tab.id ? '#ffffff' : '#cccccc';
+      
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = '✕';
+      closeBtn.style.background = 'none';
+      closeBtn.style.border = 'none';
+      closeBtn.style.color = '#858585';
+      closeBtn.style.cursor = 'pointer';
+      closeBtn.style.fontSize = '14px';
+      closeBtn.style.padding = '0 4px';
+      
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeTab(tab.id);
+      });
+      
+      tabDiv.appendChild(nameSpan);
+      tabDiv.appendChild(closeBtn);
+      
+      tabDiv.addEventListener('click', () => switchTab(tab.id));
+      tabDiv.addEventListener('mouseenter', () => {
+        if (currentTabId !== tab.id) {
+          tabDiv.style.background = 'rgba(255,255,255,0.02)';
+        }
+      });
+      tabDiv.addEventListener('mouseleave', () => {
+        if (currentTabId !== tab.id) {
+          tabDiv.style.background = 'transparent';
+        }
+      });
+      
+      return tabDiv;
+    }
+
+    function renderTabs() {
+      const tabBar = document.getElementById('tab-bar');
+      if (!tabBar) {
+        log('ERROR: tab-bar element not found!', 'error');
+        return;
+      }
+      // Clear all tabs and rebuild
+      tabBar.innerHTML = '';
+      
+      // Add all OPEN tabs dynamically (only tabs where isOpen === true)
+      const openTabsList = openTabs.filter(tab => tab.isOpen !== false);
+      openTabsList.forEach((tab, idx) => {
+        const tabEl = createTabElement(tab);
+        tabBar.appendChild(tabEl);
+      });
+      log('Rendered ' + openTabsList.length + ' open tabs', 'info');
+      // Ensure sidebar reflects current open files
+      updateSidebarFiles();
+      updateSidebarSelection();
+    }
+
+    function switchTab(tabId) {
+      const tab = openTabs.find(t => t.id === tabId);
+      if (!tab || !editorInstance) return;
+      
+      // If tab was closed, open it again
+      if (tab.isOpen === false) {
+        tab.isOpen = true;
+        renderTabs();
+      }
+      
+      log('Switched to tab: ' + tab.name, 'info');
+      currentTabId = tabId;
+      
+      // Update editor content
+      const monacoLang = languageMap[tab.language] || 'plaintext';
+      monaco.editor.setModelLanguage(editorInstance.getModel(), monacoLang);
+      editorInstance.setValue(tab.content);
+      
+      // Update tab styling
+      renderTabs();
+      updateSidebarSelection();
+      document.getElementById('tab-name').textContent = tab.name;
+      document.getElementById('project-title').textContent = tab.name;
+      // Scroll the active tab into view
+      try {
+        const tabEl = document.getElementById('tab-' + tab.id) || document.getElementById('current-tab');
+        if (tabEl && tabEl.scrollIntoView) tabEl.scrollIntoView({behavior: 'smooth', inline: 'center', block: 'nearest'});
+      } catch(e) {}
+    }
+
+    function closeTab(tabId) {
+      const tab = openTabs.find(t => t.id === tabId);
+      if (!tab) return;
+      
+      // Mark tab as closed instead of deleting it
+      tab.isOpen = false;
+      log('Closed tab: ' + tabId, 'info');
+      
+      // Switch to another open tab if closing the current one
+      if (currentTabId === tabId) {
+        const openTabsList = openTabs.filter(t => t.isOpen !== false && t.id !== tabId);
+        if (openTabsList.length > 0) {
+          currentTabId = openTabsList[0].id;
+          switchTab(currentTabId);
+        } else {
+          renderTabs();
+        }
+      } else {
+        renderTabs();
+      }
+      
+      showToast('Closed: ' + tabId);
+    }
+
+    // Language to file extension mapping
+    const extensionMap = {
+      'javascript': 'js',
+      'python': 'py',
+      'html': 'html',
+      'css': 'css',
+      'java': 'java',
+      'cpp': 'cpp',
+      'typescript': 'ts',
+      'json': 'json',
+      'markdown': 'md',
+      'sql': 'sql',
+      'shell': 'sh'
+    };
+
+    // Starter code for different languages
+    const starterCodeMap = {
+      'javascript': '// JavaScript code\nconsole.log("Hello, World!");',
+      'python': '# Python code\nprint("Hello, World!")',
+      'html': '<!DOCTYPE html>\n<html>\n<head>\n  <title>Page</title>\n</head>\n<body>\n  <h1>Hello</h1>\n</body>\n</html>',
+      'css': '/* CSS code */\nbody {\n  margin: 0;\n  padding: 0;\n}',
+      'java': 'public class Main {\n  public static void main(String[] args) {\n    System.out.println("Hello, World!");\n  }\n}',
+      'cpp': '#include <iostream>\nusing namespace std;\nint main() {\n  cout << "Hello, World!" << endl;\n  return 0;\n}',
+      'typescript': '// TypeScript code\nconst message: string = "Hello, World!";\nconsole.log(message);',
+      'json': '{\n  "key": "value"\n}',
+      'markdown': '# Title\n\nYour markdown content here',
+      'sql': '-- SQL code\nSELECT * FROM table_name;',
+      'shell': '#!/bin/bash\necho "Hello, World!"'
+    };
+
+    function createNewFile(filename, language) {
+      const extension = extensionMap[language] || 'txt';
+      const finalName = filename.endsWith('.' + extension) ? filename : filename + '.' + extension;
+      const timestamp = Date.now();
+      const tabId = finalName + '-' + timestamp;
+      
+      const newTab = {
+        id: tabId,
+        name: finalName,
+        language: language,
+        content: starterCodeMap[language] || '// New file',
+        isOpen: true
+      };
+
+      openTabs.push(newTab);
+      log('Created new file: ' + finalName, 'success');
+      renderTabs();
+      updateSidebarFiles();
+      switchTab(newTab.id);
+      showToast('Created: ' + finalName);
+    }
+
+    function deleteFile(tabId) {
+      const tab = openTabs.find(t => t.id === tabId);
+      if (!tab) return;
+      
+      const fileName = tab.name;
+      
+      // Remove from openTabs completely
+      openTabs = openTabs.filter(t => t.id !== tabId);
+      log('Deleted file: ' + fileName, 'info');
+      
+      // If the deleted tab was active, switch to another one
+      if (currentTabId === tabId) {
+        const openTabsList = openTabs.filter(t => t.isOpen !== false);
+        if (openTabsList.length > 0) {
+          currentTabId = openTabsList[0].id;
+          switchTab(currentTabId);
+        } else if (openTabs.length > 0) {
+          currentTabId = openTabs[0].id;
+          switchTab(currentTabId);
+        }
+      }
+      
+      renderTabs();
+      updateSidebarFiles();
+      showToast('Deleted: ' + fileName);
+    }
+
+    function showNewFileModal() {
+      document.getElementById('new-file-modal').classList.remove('hidden');
+      document.getElementById('new-file-name').focus();
+      // Set default filename
+      const timestamp = Date.now();
+      document.getElementById('new-file-name').value = 'untitled-' + timestamp;
+    }
+
+    function hideNewFileModal() {
+      document.getElementById('new-file-modal').classList.add('hidden');
+    }
+
+    // Sidebar file tree helpers
+    function renameFile(tabId, newName) {
+      const tab = openTabs.find(t => t.id === tabId);
+      if (!tab) return;
+      
+      // Find tab element and update it
+      const oldName = tab.name;
+      tab.name = newName;
+      
+      // Update the tab in the tab bar
+      const tabEl = document.getElementById('tab-' + tabId);
+      if (tabEl) {
+        tabEl.id = 'tab-' + newName;
+        const nameSpan = tabEl.querySelector('span');
+        if (nameSpan) nameSpan.textContent = newName;
+      }
+      
+      // Update sidebar
+      updateSidebarFiles();
+      log('Renamed file: ' + oldName + ' → ' + newName, 'info');
+      showToast('Renamed to: ' + newName);
+    }
+
+    function updateSidebarFiles() {
+      const fileList = document.getElementById('file-list');
+      if (!fileList) return;
+      fileList.innerHTML = '';
+
+      // Group files by extension
+      const groups = {};
+      openTabs.forEach(tab => {
+        const ext = (tab.name.split('.').pop() || 'other').toLowerCase();
+        if (!groups[ext]) groups[ext] = [];
+        groups[ext].push(tab);
+      });
+
+      // Render groups sorted (js, html, css, ts, others)
+      const preferred = ['js','javascript','html','css','ts','typescript','py','python','java','cpp','other'];
+      const keys = Object.keys(groups).sort((a,b) => {
+        const ai = preferred.indexOf(a) === -1 ? preferred.length : preferred.indexOf(a);
+        const bi = preferred.indexOf(b) === -1 ? preferred.length : preferred.indexOf(b);
+        return ai - bi || a.localeCompare(b);
+      });
+
+      keys.forEach(k => {
+        const groupName = k.toUpperCase();
+        const folder = document.createElement('div');
+        folder.style.marginBottom = '8px';
+
+        const header = document.createElement('div');
+        header.textContent = groupName;
+        header.style.fontSize = '12px';
+        header.style.color = '#9aa0c7';
+        header.style.margin = '6px 0';
+        folder.appendChild(header);
+
+        const ul = document.createElement('div');
+        ul.style.display = 'flex';
+        ul.style.flexDirection = 'column';
+        ul.style.gap = '4px';
+
+        groups[k].forEach(tab => {
+          const row = document.createElement('div');
+          row.style.display = 'flex';
+          row.style.alignItems = 'center';
+          row.style.justifyContent = 'space-between';
+          row.style.padding = '6px 8px';
+          row.style.borderRadius = '4px';
+          row.style.cursor = 'pointer';
+          row.style.color = currentTabId === tab.id ? '#ffffff' : '#cccccc';
+          row.style.background = currentTabId === tab.id ? '#0e639c' : 'transparent';
+          row.style.fontSize = '13px';
+          
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = tab.name;
+          nameSpan.style.flex = '1';
+          row.appendChild(nameSpan);
+          
+          // 3 dots menu
+          const menuBtn = document.createElement('button');
+          menuBtn.textContent = '⋯';
+          menuBtn.style.background = 'none';
+          menuBtn.style.border = 'none';
+          menuBtn.style.color = currentTabId === tab.id ? '#ffffff' : '#cccccc';
+          menuBtn.style.cursor = 'pointer';
+          menuBtn.style.fontSize = '16px';
+          menuBtn.style.padding = '0 4px';
+          menuBtn.style.opacity = '0.6';
+          menuBtn.style.transition = 'opacity 0.2s';
+          
+          menuBtn.addEventListener('mouseenter', () => menuBtn.style.opacity = '1');
+          menuBtn.addEventListener('mouseleave', () => menuBtn.style.opacity = '0.6');
+          
+          // Dropdown menu
+          const dropdown = document.createElement('div');
+          dropdown.style.position = 'absolute';
+          dropdown.style.background = '#3e3e42';
+          dropdown.style.border = '1px solid #555';
+          dropdown.style.borderRadius = '4px';
+          dropdown.style.minWidth = '120px';
+          dropdown.style.display = 'none';
+          dropdown.style.zIndex = '1000';
+          dropdown.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+          
+          const renameBtn = document.createElement('div');
+          renameBtn.textContent = '✏️ Rename';
+          renameBtn.style.padding = '8px 12px';
+          renameBtn.style.cursor = 'pointer';
+          renameBtn.style.color = '#cccccc';
+          renameBtn.style.fontSize = '12px';
+          renameBtn.style.userSelect = 'none';
+          renameBtn.addEventListener('mouseenter', () => renameBtn.style.background = '#555');
+          renameBtn.addEventListener('mouseleave', () => renameBtn.style.background = 'transparent');
+          renameBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const newName = prompt('Enter new filename:', tab.name);
+            if (newName && newName.trim()) {
+              renameFile(tab.id, newName.trim());
+            }
+            dropdown.style.display = 'none';
+          });
+          dropdown.appendChild(renameBtn);
+          
+          // Add separator
+          const separator = document.createElement('div');
+          separator.style.height = '1px';
+          separator.style.background = '#555';
+          separator.style.margin = '4px 0';
+          dropdown.appendChild(separator);
+          
+          // Delete button
+          const deleteBtn = document.createElement('div');
+          deleteBtn.textContent = '🗑️ Delete';
+          deleteBtn.style.padding = '8px 12px';
+          deleteBtn.style.cursor = 'pointer';
+          deleteBtn.style.color = '#ff6b6b';
+          deleteBtn.style.fontSize = '12px';
+          deleteBtn.style.userSelect = 'none';
+          deleteBtn.addEventListener('mouseenter', () => deleteBtn.style.background = '#555');
+          deleteBtn.addEventListener('mouseleave', () => deleteBtn.style.background = 'transparent');
+          deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm('Are you sure you want to delete ' + tab.name + '? This cannot be undone.')) {
+              deleteFile(tab.id);
+            }
+            dropdown.style.display = 'none';
+          });
+          dropdown.appendChild(deleteBtn);
+          
+          menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            // Position dropdown near the button
+            const rect = menuBtn.getBoundingClientRect();
+            dropdown.style.top = (rect.bottom + 5) + 'px';
+            dropdown.style.left = (rect.left - 100) + 'px';
+          });
+          
+          row.appendChild(menuBtn);
+          row.appendChild(dropdown);
+          
+          row.addEventListener('click', () => {
+            switchTab(tab.id);
+          });
+          
+          ul.appendChild(row);
+        });
+
+        folder.appendChild(ul);
+        fileList.appendChild(folder);
+      });
+    }
+
+    function updateSidebarSelection() {
+      const fileList = document.getElementById('file-list');
+      if (!fileList) return;
+      // iterate rows and set active styles
+      fileList.querySelectorAll('div').forEach(node => {
+        if (!node.textContent) return;
+        const name = node.textContent.trim();
+        const tab = openTabs.find(t => t.name === name);
+        if (tab) {
+          if (tab.id === currentTabId) {
+            node.style.background = '#0e639c';
+            node.style.color = '#ffffff';
+          } else {
+            node.style.background = 'transparent';
+            node.style.color = '#cccccc';
+          }
+        }
+      });
+    }
+
+    // New file button
+    document.getElementById('new-file-btn').addEventListener('click', () => {
+      showNewFileModal();
+    });
+
+    // New file modal event listeners
+    document.getElementById('create-new-file').addEventListener('click', () => {
+      const filename = document.getElementById('new-file-name').value.trim();
+      const language = document.getElementById('new-file-language').value;
+      
+      if (!filename) {
+        log('Please enter a filename', 'warning');
+        showToast('Please enter a filename');
+        return;
+      }
+      
+      createNewFile(filename, language);
+      hideNewFileModal();
+    });
+
+    document.getElementById('cancel-new-file').addEventListener('click', () => {
+      hideNewFileModal();
+    });
+
+    // Allow Enter key to create file
+    document.getElementById('new-file-name').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('create-new-file').click();
+      }
+    });
+
+    // Tab close button for test.js
+    document.getElementById('tab-close-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (openTabs.length > 1) {
+        closeTab('test.js');
+      } else {
+        log('Cannot close the last tab', 'warning');
+        showToast('Cannot close the last tab');
+      }
+    });
+
+    // Populate active users
+    function populateActiveUsers() {
+      const activeUsers = document.getElementById('active-users');
+      activeUsers.innerHTML = '';
+      
+      const mockUsers = [
+        { name: 'You', status: 'active' },
+        { name: 'John Doe', status: 'active' },
+        { name: 'Jane Smith', status: 'active' },
+        { name: 'Bob Wilson', status: 'inactive' }
+      ];
+
+      mockUsers.forEach(user => {
+        const item = document.createElement('div');
+        item.style.display = 'flex';
+        item.style.alignItems = 'center';
+        item.style.padding = '8px';
+        item.style.marginBottom = '4px';
+        item.style.borderRadius = '4px';
+        item.style.color = '#cccccc';
+        item.style.fontSize = '12px';
+        item.style.border = '1px solid #3e3e42';
+        
+        const dot = document.createElement('span');
+        dot.style.width = '8px';
+        dot.style.height = '8px';
+        dot.style.borderRadius = '50%';
+        dot.style.backgroundColor = user.status === 'active' ? '#4ec9b0' : '#7f8083';
+        dot.style.marginRight = '8px';
+        dot.style.display = 'inline-block';
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = user.name;
+        
+        item.appendChild(dot);
+        item.appendChild(nameSpan);
+        activeUsers.appendChild(item);
+      });
+      
+      log('Active users populated', 'success');
+    }
+
+    // Initialize panels on page load
+    setTimeout(() => {
+      populateActiveUsers();
+      log('All panels initialized', 'success');
+      log('💡 Click "New File" button to add tabs to the editor', 'info');
+    }, 500);
+
+    // Buttons
+    document.getElementById('save-btn').addEventListener('click', () => {
+      log('Save clicked', 'info');
+      if (editorInstance) {
+        isSaved = true;
+        log('Project saved', 'success');
+        showToast('Saved!');
+      }
+    });
+
+    document.getElementById('share-btn').addEventListener('click', () => {
+      log('Share clicked', 'info');
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        log('Link copied', 'success');
+        showToast('Share link copied!');
+      });
+    });
+
+    document.getElementById('settings-btn').addEventListener('click', () => {
+      log('Settings clicked', 'info');
+      document.getElementById('settings-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('close-settings').addEventListener('click', () => {
+      document.getElementById('settings-modal').classList.add('hidden');
+    });
+
+    // Settings: Autosave toggle
+    document.getElementById('autosave-toggle').addEventListener('change', (e) => {
+      autoSaveEnabled = e.target.checked;
+      log('Autosave ' + (autoSaveEnabled ? 'enabled' : 'disabled'), 'info');
+      showToast('Autosave ' + (autoSaveEnabled ? 'enabled' : 'disabled'));
+    });
+
+    // Settings: Font size
+    document.getElementById('font-size-select').addEventListener('change', (e) => {
+      fontSize = parseInt(e.target.value);
+      if (editorInstance) {
+        editorInstance.updateOptions({ fontSize: fontSize });
+        log('Font size changed to ' + fontSize + 'px', 'info');
+        showToast('Font size: ' + fontSize + 'px');
+      }
+    });
+
+    log('✓ All event listeners registered', 'success');
+  </script>
+</body>
+</html>

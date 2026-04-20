@@ -1,0 +1,3393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EchoPoly IDE – Editor</title>
+  <link rel="stylesheet" href="css/editor.css">
+  <style>
+    .hidden {
+      display: none !important;
+    }
+
+    .sidebar-panel {
+      display: none;
+    }
+
+    .sidebar-panel.active {
+      display: block;
+    }
+
+    .chat-floating-button {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #0e639c;
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.25);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      z-index: 4000;
+    }
+
+    .chat-window {
+      position: fixed;
+      bottom: 92px;
+      right: 24px;
+      width: 420px;
+      max-width: calc(100vw - 48px);
+      min-width: 380px;
+      max-height: 520px;
+      min-height: 420px;
+      border-radius: 18px;
+      background: rgba(28, 29, 40, 0.98);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+      display: flex;
+      flex-direction: column;
+      overflow: visible;
+      z-index: 4000;
+      backdrop-filter: blur(10px);
+    }
+
+    .profile-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.08);
+      color: #ffffff;
+      font-size: 12px;
+    }
+
+    .profile-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      background: #0e639c;
+      color: #ffffff;
+    }
+
+    #user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      color: #d1d5db;
+    }
+
+    #user-profile .profile-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: white;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    #user-profile .profile-name {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      color: #f1f5f9;
+      font-size: 13px;
+    }
+
+    #user-profile .profile-name .name {
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    #user-profile .logout-btn {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      background: rgba(239, 68, 68, 0.12);
+      color: #fca5a5;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s ease;
+    }
+
+    #user-profile .logout-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    .chat-header {
+      position: relative;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      background: rgba(24, 25, 34, 0.96);
+    }
+
+    .chat-header span {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .chat-header button {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      color: #ffffff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: background 0.2s ease;
+    }
+
+    .chat-header button:hover {
+      background: rgba(255,255,255,0.14);
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .chat-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background: rgba(18,18,20,0.95);
+    }
+
+    .chat-input-tools {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .chat-tool-button {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-window.light .chat-input-row {
+      background: #f4f4f6;
+      border-top-color: rgba(0,0,0,0.08);
+    }
+
+    .emoji-picker {
+      position: absolute;
+      bottom: 68px;
+      right: 16px;
+      width: 260px;
+      max-height: 240px;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+      background: rgba(28,29,40,0.98);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      box-shadow: 0 16px 32px rgba(0,0,0,0.25);
+      z-index: 4100;
+      overflow-y: auto;
+    }
+
+    .emoji-picker button {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 8px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .emoji-picker.hidden {
+      display: none;
+    }
+
+    .chat-input {
+      flex: 1;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      background: rgba(8, 8, 12, 0.8);
+      color: #ffffff;
+      padding: 10px 12px;
+      font-size: 13px;
+      outline: none;
+      margin-right: 8px;
+    }
+
+    .chat-window.light .chat-input {
+      background: #ffffff;
+      color: #222;
+      border-color: rgba(0,0,0,0.12);
+    }
+
+    .chat-send-btn {
+      min-width: 70px;
+      border-radius: 14px;
+      border: none;
+      background: #0e639c;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 10px 18px;
+      white-space: nowrap;
+    }
+
+    .chat-message {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .chat-message-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .chat-message-like-btn,
+    .chat-message-pin-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.08);
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .chat-message-like-btn:hover,
+    .chat-message-pin-btn:hover {
+      background: rgba(255,255,255,0.14);
+    }
+
+    .chat-message-pin-btn.liked,
+    .chat-message-like-btn.liked {
+      background: #dc2626;
+      border-color: rgba(220,38,38,0.4);
+      color: #ffffff;
+    }
+
+    .chat-pinned-banner {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px 14px;
+      margin: 0 12px 6px;
+      border-radius: 14px;
+      background: rgba(14, 99, 156, 0.12);
+      border: 1px solid rgba(14, 99, 156, 0.3);
+      color: #dbeafe;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .chat-pinned-banner strong {
+      color: #ffffff;
+      font-size: 13px;
+    }
+
+    .chat-pinned-banner .pinned-text {
+      color: #d1d5db;
+      font-size: 12px;
+    }
+
+    .chat-message-like-btn:hover {
+      background: rgba(255,255,255,0.14);
+    }
+
+    .chat-message-like-btn.liked {
+      background: #dc2626;
+      border-color: rgba(220,38,38,0.4);
+      color: #ffffff;
+    }
+
+    .chat-message.light .timestamp {
+      color: #6b7280;
+    }
+
+    .chat-message .sender {
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .chat-message .timestamp {
+      font-size: 9px;
+      color: #8a8fbc;
+    }
+
+    .chat-message.light .timestamp {
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app-container" style="display:flex;flex-direction:column;min-height:100vh;">
+    <!-- Top Header Bar -->
+    <header id="app-header" style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#1e1e1e;border-bottom:1px solid #333;color:#fff;">
+      <div id="header-left" style="display:flex;align-items:center;gap:12px;">
+        <h1 style="font-size:16px;margin:0;color:#ffffff;">EchoPoly IDE</h1>
+        <span id="project-title" style="color:#9aa0c7;font-size:13px;">New Project</span>
+        <div id="collab-status" style="display:none;color:#4ec9b0;font-size:12px;padding:4px 8px;background:#1e3a4a;border-radius:12px;border:1px solid #4ec9b0;">
+          🔴 Live Collaboration
+        </div>
+      </div>
+      <div id="header-actions" style="display:flex;align-items:center;gap:8px;">
+        <button id="save-btn" style="padding: 8px 12px; margin-right: 8px;">💾 Save</button>
+        <button id="share-btn" style="padding: 8px 12px; margin-right: 8px;">🔗 Share & Collaborate</button>
+        <button id="run-code-header-btn" style="padding: 8px 12px; margin-right: 8px; background: #0e639c; color: #ffffff; border: 1px solid #0e639c; border-radius: 4px; cursor: pointer;">▶️ Run</button>
+        <button id="preview-btn" style="padding: 8px 12px; margin-right: 8px;">👁️ Preview</button>
+        <button id="settings-btn" style="padding: 8px 12px; margin-right: 10px;">⚙️ Settings</button>
+        <div id="user-profile" style="padding: 8px 12px; display: flex; align-items: center;"></div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="main-content" style="display:flex;flex:1;">
+      <!-- Activity Bar -->
+      <div id="activity-bar" style="width:48px;background:#252526;display:flex;flex-direction:column;gap:8px;padding:8px;">
+        <button id="explorer-btn" title="Projects" class="activity-icon active">📁</button>
+        <button id="users-btn" title="Users" class="activity-icon">👥</button>
+        <button id="dashboard-btn" title="Dashboard" class="activity-icon">📊</button>
+        <button id="quiz-btn" title="Quiz" class="activity-icon">🃏</button>
+        <button id="output-btn" title="Output" class="activity-icon">▶️</button>
+        <button id="settings-btn-sidebar" title="Settings" class="activity-icon">⚙️</button>
+      </div>
+
+      <!-- Sidebar -->
+      <aside id="sidebar" style="width:260px;background:#1f1f1f;border-right:1px solid #333;padding:8px;">
+        <div id="sidebar-controls" style="display:flex;justify-content:space-between;align-items:center;padding:0 0 8px;font-size:12px;color:#9aa0c7;">
+          <span>Sidebar</span>
+          <button id="sidebar-toggle-btn" style="padding:4px 8px;background:#2c2f42;color:#ffffff;border:1px solid #3e414f;border-radius:4px;cursor:pointer;">⇔</button>
+        </div>
+        <!-- Explorer Panel -->
+        <div id="explorer-panel" class="sidebar-panel active">
+          <div class="sidebar-header" style="color:#9aa0c7;margin-bottom:8px;">Files</div>
+          <button id="new-file-btn" style="width: 100%; padding: 8px 12px; margin: 8px 0; background: #3e3e42; color: #cccccc; border: 1px solid #555; border-radius: 4px; cursor: pointer;">➕ New File</button>
+          <div id="file-list" class="sidebar-content" style="padding: 8px; max-height: calc(100vh - 240px); overflow-y: auto;"></div>
+        </div>
+
+        <!-- Users Panel -->
+        <div id="users-panel" class="sidebar-panel hidden">
+          <div class="sidebar-header">Active Users</div>
+          <div id="active-users" class="sidebar-content" style="padding: 8px;"></div>
+        </div>
+
+        <!-- Dashboard Panel -->
+        <div id="dashboard-panel" class="sidebar-panel hidden">
+          <div class="sidebar-header">Dashboard</div>
+          <div id="dashboard-content" class="sidebar-content" style="padding: 8px; color: #cccccc; font-size: 12px;"></div>
+        </div>
+
+        <!-- Quiz Panel -->
+        <div id="quiz-panel" class="sidebar-panel hidden">
+          <div class="sidebar-header">Flashcard Quiz</div>
+          <div class="sidebar-content" style="padding: 8px; color: #cccccc; font-size: 12px;">
+            <button id="start-quiz-btn" style="width: 100%; padding: 8px; margin-bottom: 8px; background: #0e639c; color: #ffffff; border: 1px solid #0e639c; border-radius: 4px; cursor: pointer;">Start Quiz</button>
+            <div id="quiz-status">No quiz active</div>
+          </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="sidebar-panel hidden">
+          <div class="sidebar-header">Settings</div>
+          <div class="sidebar-content" style="padding: 8px; color: #cccccc; font-size: 12px;">
+            <button id="logout-btn" style="width: 100%; padding: 8px; margin-top: 8px; background: #0e639c; color: #ffffff; border: 1px solid #0e639c; border-radius: 4px; cursor: pointer;">Logout</button>
+          </div>
+        </div>
+
+        <!-- Output Panel -->
+        <div id="output-panel" class="sidebar-panel hidden">
+          <div class="sidebar-header">Output</div>
+          <div class="sidebar-content" style="padding: 8px;">
+            <button id="run-code-btn" style="width: 100%; padding: 8px; margin-bottom: 8px; background: #0e639c; color: #ffffff; border: 1px solid #0e639c; border-radius: 4px; cursor: pointer;">▶️ Run Code</button>
+            <div id="output-console" style="background: #1e1e1e; border: 1px solid #3e3e42; border-radius: 4px; padding: 8px; height: 300px; overflow-y: auto; font-family: 'Consolas', 'Monaco', monospace; font-size: 12px; color: #d4d4d4; white-space: pre-wrap;"></div>
+            <button id="clear-output-btn" style="width: 100%; padding: 6px; margin-top: 8px; background: #3e3e42; color: #cccccc; border: 1px solid #555; border-radius: 4px; cursor: pointer;">🗑️ Clear Output</button>
+          </div>
+        </div>
+      </aside>
+      <div id="sidebar-resizer" class="resizer" title="Drag to resize sidebar"></div>
+
+      <!-- Editor Area -->
+      <div id="editor-area" style="flex:1;display:flex;flex-direction:column;">
+        <div id="tab-bar" style="display:flex;gap:0;border-bottom:1px solid #3e3e42;background:#252526;overflow-x:auto;"></div>
+        <div id="editor-container" style="flex:1;display:flex;">
+          <div id="editor" style="flex:1;">
+            <div id="monaco-editor" style="height:calc(100vh - 140px);"></div>
+          </div>
+          <div id="preview-resizer" class="resizer" title="Drag to resize preview" style="display:none"></div>
+          <div id="preview-panel" style="width:400px;border-left:1px solid #3e3e42;background:#1e1e1e;display:none;">
+            <div style="padding:8px;color:#cccccc;border-bottom:1px solid #3e3e42;">Preview</div>
+            <iframe id="preview-iframe" style="width:100%;height:calc(100vh - 168px);border:none;background:#ffffff;"></iframe>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:3000;">
+    <div class="modal-content" style="width:400px;background:#2d2d30;border:1px solid #3e3e42;padding:20px;border-radius:6px;">
+      <h3 style="color:#cccccc;margin-top:0;">Login to EchoPoly</h3>
+      
+      <div style="margin-bottom:16px;">
+        <label style="display:block;color:#cccccc;font-size:13px;margin-bottom:6px;">Email:</label>
+        <input type="email" id="login-email" placeholder="Enter your email" style="width:100%;padding:8px;background:#1e1e1e;color:#ffffff;border:1px solid #3e3e42;border-radius:4px;box-sizing:border-box;font-size:13px;">
+      </div>
+      
+      <div style="margin-bottom:16px;">
+        <label style="display:block;color:#cccccc;font-size:13px;margin-bottom:6px;">Password:</label>
+        <input type="password" id="login-password" placeholder="Enter your password" style="width:100%;padding:8px;background:#1e1e1e;color:#ffffff;border:1px solid #3e3e42;border-radius:4px;box-sizing:border-box;font-size:13px;">
+      </div>
+      
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button id="login-submit" style="flex:1;padding:8px 16px;background:#0e639c;color:#ffffff;border:1px solid #0e639c;border-radius:4px;cursor:pointer;">Email Login</button>
+      </div>
+
+      <div style="display:flex;align-items:center;margin-bottom:12px;gap:8px;">
+        <div style="flex:1;height:1px;background:#3e3e42;"></div>
+        <span style="color:#8a8fbc;font-size:12px;">OR</span>
+        <div style="flex:1;height:1px;background:#3e3e42;"></div>
+      </div>
+
+      <button id="google-login-btn" style="width:100%;padding:10px 16px;background:#ffffff;color:#1f1f23;border:1px solid #e0e0e0;border-radius:4px;cursor:pointer;font-weight:500;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <span style="font-size:16px;">🔵</span> Sign in with Google
+      </button>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button id="guest-login-btn" style="padding:8px 16px;background:#2d2d30;color:#ffffff;border:1px solid #555;border-radius:4px;cursor:pointer;">Continue as Guest</button>
+      </div>
+      
+      <p style="margin:8px 0 0;color:#cccccc;font-size:12px;">Don't have an account? <a href="register.html" style="color:#0e639c;text-decoration:none;">Register</a></p>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:2000;">
+    <div class="modal-content" style="width:480px;background:#2d2d30;border:1px solid #3e3e42;padding:20px;border-radius:6px;">
+      <h3 style="color:#cccccc;margin-top:0;">Settings</h3>
+      
+      <label style="display:block;margin:15px 0;color:#cccccc;">
+        <input type="checkbox" id="autosave-toggle" checked style="margin-right:8px;"> Autosave
+      </label>
+      
+      <label style="display:block;margin:15px 0;color:#cccccc;">
+        Font Size:
+        <select id="font-size-select" style="margin-left:8px;padding:6px;background:#3e3e42;color:#cccccc;border:1px solid #555;">
+          <option value="12">12px</option>
+          <option value="14">14px</option>
+          <option value="16" selected>16px</option>
+          <option value="18">18px</option>
+          <option value="20">20px</option>
+        </select>
+      </label>
+
+      <label style="display:block;margin:15px 0;color:#cccccc;">
+        Theme:
+        <select id="theme-select" style="margin-left:8px;padding:6px;background:#3e3e42;color:#cccccc;border:1px solid #555;">
+          <option value="dark" selected>Dark</option>
+          <option value="light">Light</option>
+        </select>
+      </label>
+      
+      <div style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end;">
+        <button id="close-settings" style="padding:8px 16px;background:#3e3e42;color:#cccccc;border:1px solid #555;border-radius:4px;cursor:pointer;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New File Modal -->
+  <div id="new-file-modal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:2000;">
+    <div class="modal-content" style="width:400px;background:#2d2d30;border:1px solid #3e3e42;padding:20px;border-radius:6px;">
+      <h3 style="margin-top:0;color:#ffffff;font-size:18px;">Create New File</h3>
+      
+      <div style="margin-bottom:16px;">
+        <label style="display:block;color:#cccccc;font-size:13px;margin-bottom:6px;">Filename:</label>
+        <input type="text" id="new-file-name" placeholder="Enter filename (e.g., script.js)" style="width:100%;padding:8px;background:#1e1e1e;color:#ffffff;border:1px solid #3e3e42;border-radius:4px;box-sizing:border-box;font-size:13px;">
+      </div>
+      
+      <div style="margin-bottom:16px;">
+        <label style="display:block;color:#cccccc;font-size:13px;margin-bottom:6px;">Language:</label>
+        <select id="new-file-language" style="width:100%;padding:8px;background:#1e1e1e;color:#ffffff;border:1px solid #3e3e42;border-radius:4px;font-size:13px;">
+          <option value="javascript">JavaScript (.js)</option>
+          <option value="python">Python (.py)</option>
+          <option value="html">HTML (.html)</option>
+          <option value="css">CSS (.css)</option>
+          <option value="java">Java (.java)</option>
+          <option value="cpp">C++ (.cpp)</option>
+          <option value="typescript">TypeScript (.ts)</option>
+          <option value="json">JSON (.json)</option>
+          <option value="markdown">Markdown (.md)</option>
+          <option value="sql">SQL (.sql)</option>
+          <option value="shell">Shell (.sh)</option>
+        </select>
+      </div>
+      
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button id="cancel-new-file" style="padding:8px 16px;background:#3e3e42;color:#cccccc;border:1px solid #555;border-radius:4px;cursor:pointer;">Cancel</button>
+        <button id="create-new-file" style="padding:8px 16px;background:#0e639c;color:#ffffff;border:1px solid #0e639c;border-radius:4px;cursor:pointer;">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz Modal -->
+  <div id="quiz-modal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:2000;">
+    <div class="modal-content" style="width:500px;background:#2d2d30;border:1px solid #3e3e42;padding:20px;border-radius:6px;">
+      <h3 style="margin-top:0;color:#ffffff;font-size:18px;">Flashcard Quiz</h3>
+      
+      <div id="quiz-question" style="margin:20px 0;color:#cccccc;font-size:16px;"></div>
+      
+      <div id="quiz-options" style="margin:20px 0;">
+        <!-- Options will be dynamically added here -->
+      </div>
+      
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button id="submit-answer-btn" style="padding:8px 16px;background:#0e639c;color:#ffffff;border:1px solid #0e639c;border-radius:4px;cursor:pointer;">Submit Answer</button>
+        <button id="close-quiz-btn" style="padding:8px 16px;background:#3e3e42;color:#cccccc;border:1px solid #555;border-radius:4px;cursor:pointer;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="hidden" style="position:fixed;bottom:20px;left:20px;background:#1e1e1e;color:#4ec9b0;padding:12px 16px;border:1px solid #4ec9b0;border-radius:4px;z-index:3000;font-size:14px;"></div>
+
+  <!-- Chat UI -->
+  <button id="chat-floating-button" class="chat-floating-button" title="Open chat">💬</button>
+  <div id="chat-window" class="chat-window hidden">
+    <div class="chat-header">
+      <span>Project Chat</span>
+      <button id="chat-close-btn">✕</button>
+    </div>
+    <div id="chat-pinned-banner" class="chat-pinned-banner hidden"></div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <div class="chat-input-row">
+      <div class="chat-input-tools">
+        <button id="chat-emoji-btn" class="chat-tool-button" title="Add emoji">😀</button>
+        <button id="chat-snippet-btn" class="chat-tool-button" title="Share code snippet">&lt;/&gt;</button>
+      </div>
+      <input id="chat-input" class="chat-input" placeholder="Type a message..." autocomplete="off" />
+      <button id="chat-send-btn" type="button" class="chat-send-btn">Send</button>
+    </div>
+    <div id="emoji-picker" class="emoji-picker hidden">
+      <button type="button">😀</button>
+      <button type="button">😄</button>
+      <button type="button">😉</button>
+      <button type="button">👍</button>
+      <button type="button">💬</button>
+      <button type="button">🚀</button>
+      <button type="button">🔥</button>
+      <button type="button">🎉</button>
+      <button type="button">🛠️</button>
+      <button type="button">📎</button>
+      <button type="button">💡</button>
+      <button type="button">✅</button>
+    </div>
+  </div>
+
+  <!-- Monaco Loader -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- Firebase SDKs (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBCcyLy_rNx-riDjmK4SUu-gZbKtDPqEYQ",
+      authDomain: "echopoly-ide.firebaseapp.com",
+      databaseURL: "https://echopoly-ide-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "echopoly-ide",
+      storageBucket: "echopoly-ide.appspot.com",
+      messagingSenderId: "290647098484",
+      appId: "1:290647098484:web:61a9a5503c43d465bdbd21",
+      measurementId: "G-LYBESX64E5"
+    };
+
+    let db = null;
+    let auth = null;
+    let googleAuthProvider = null;
+
+    if (window.firebase && typeof window.firebase.initializeApp === 'function') {
+      firebase.initializeApp(firebaseConfig);
+      db = typeof firebase.database === 'function' ? firebase.database() : null;
+      auth = typeof firebase.auth === 'function' ? firebase.auth() : null;
+      if (typeof firebase.auth.GoogleAuthProvider === 'function') {
+        googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+        googleAuthProvider.addScope('profile');
+        googleAuthProvider.addScope('email');
+      }
+    } else {
+      console.warn('Firebase SDK unavailable. Editor will still load, but auth/database features are disabled.');
+    }
+
+    // Global variables
+    let editorInstance = null;
+    let fallbackEditor = null;
+    let currentLanguage = 'javascript';
+    let isSaved = true;
+    let autoSaveEnabled = true;
+    let fontSize = 16;
+    let autoSaveTimeout = null;
+    let currentUser = null;
+    let userId = null;
+    let currentProjectId = null;
+    let previewEnabled = false;
+    let presenceRef = null;
+    let currentUserPresenceRef = null;
+    let activeUsersData = [];
+    let socket = null;
+    let chatMessages = [];
+    let chatHistoryRef = null;
+    let currentGuest = null;
+    let currentUserRole = 'Guest';
+    const guestInfoKey = 'echopoly_guest_user';
+
+    // Starter code
+    const starterCodeMap = {
+      'javascript': 'console.log("Hello, World!");',
+      'python': 'print("Hello, World!")',
+      'html': '<!DOCTYPE html>\n<html>\n<head>\n  <title>Page</title>\n</head>\n<body>\n  <h1>Hello</h1>\n</body>\n</html>',
+      'css': 'body {\n  margin: 0;\n  padding: 0;\n}',
+      'java': 'public class Main {\n  public static void main(String[] args) {\n    System.out.println("Hello, World!");\n  }\n}',
+      'cpp': '#include <iostream>\nusing namespace std;\nint main() {\n  cout << "Hello, World!" << endl;\n  return 0;\n}',
+      'typescript': 'const message: string = "Hello, World!";\nconsole.log(message);',
+      'json': '{\n  "key": "value"\n}',
+      'markdown': '# Title\n\nYour markdown content here',
+      'sql': 'SELECT * FROM table_name;',
+      'shell': '#!/bin/bash\necho "Hello, World!"'
+    };
+
+    const languageMap = {
+      javascript: 'javascript',
+      html: 'html',
+      css: 'css',
+      python: 'python',
+      java: 'java',
+      cpp: 'cpp',
+      typescript: 'typescript',
+      json: 'json',
+      markdown: 'markdown',
+      sql: 'sql',
+      shell: 'shell'
+    };
+
+    const extensionMap = {
+      'javascript': 'js',
+      'python': 'py',
+      'html': 'html',
+      'css': 'css',
+      'java': 'java',
+      'cpp': 'cpp',
+      'typescript': 'ts',
+      'json': 'json',
+      'markdown': 'md',
+      'sql': 'sql',
+      'shell': 'sh'
+    };
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.style.display = 'none';
+        toast.classList.add('hidden');
+      }, 3000);
+    }
+
+    // Code execution functions
+    function runCode() {
+      const outputConsole = document.getElementById('output-console');
+      if (!outputConsole) return;
+
+      // Get current code from editor
+      let code = '';
+      let language = 'javascript';
+
+      if (editorInstance) {
+        code = editorInstance.getValue();
+        language = editorInstance.getModel().getLanguageId();
+      } else {
+        const fallbackEditor = document.getElementById('fallback-editor');
+        if (fallbackEditor) {
+          code = fallbackEditor.value;
+        }
+      }
+
+      if (!code.trim()) {
+        appendToOutput('No code to execute\n', 'error');
+        return;
+      }
+
+      // Clear previous output and show running message
+      outputConsole.textContent = 'Running...\n';
+      outputConsole.scrollTop = outputConsole.scrollHeight;
+
+      // Execute based on language
+      if (language === 'javascript') {
+        executeJavaScript(code);
+      } else {
+        appendToOutput(`Code execution for ${language} is not yet supported. Only JavaScript execution is available.\n`, 'error');
+      }
+    }
+
+    function executeJavaScript(code) {
+      const outputConsole = document.getElementById('output-console');
+      
+      // Create a safe execution environment
+      const logs = [];
+      const errors = [];
+      
+      // Override console methods to capture output
+      const originalConsole = {
+        log: console.log,
+        error: console.error,
+        warn: console.warn,
+        info: console.info
+      };
+
+      console.log = (...args) => {
+        logs.push(args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' '));
+        originalConsole.log(...args);
+      };
+
+      console.error = (...args) => {
+        errors.push(args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' '));
+        originalConsole.error(...args);
+      };
+
+      console.warn = (...args) => {
+        logs.push('⚠️ ' + args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' '));
+        originalConsole.warn(...args);
+      };
+
+      console.info = (...args) => {
+        logs.push('ℹ️ ' + args.map(arg => 
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' '));
+        originalConsole.info(...args);
+      };
+
+      try {
+        // Execute the code
+        const result = eval(code);
+        
+        // Restore original console
+        console.log = originalConsole.log;
+        console.error = originalConsole.error;
+        console.warn = originalConsole.warn;
+        console.info = originalConsole.info;
+
+        // Display output
+        let output = '';
+        
+        if (logs.length > 0) {
+          output += logs.join('\n') + '\n';
+        }
+        
+        if (errors.length > 0) {
+          output += 'Errors:\n' + errors.join('\n') + '\n';
+        }
+        
+        if (result !== undefined) {
+          output += 'Result: ' + (typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result)) + '\n';
+        }
+
+        if (!output.trim()) {
+          output = 'Code executed successfully (no output)\n';
+        }
+
+        appendToOutput(output, errors.length > 0 ? 'error' : 'success');
+        
+      } catch (error) {
+        // Restore original console
+        console.log = originalConsole.log;
+        console.error = originalConsole.error;
+        console.warn = originalConsole.warn;
+        console.info = originalConsole.info;
+
+        appendToOutput('Error: ' + error.message + '\n', 'error');
+      }
+    }
+
+    function appendToOutput(text, type = 'normal') {
+      const outputConsole = document.getElementById('output-console');
+      if (!outputConsole) return;
+
+      const timestamp = new Date().toLocaleTimeString();
+      const prefix = `[${timestamp}] `;
+      
+      // Create a span for the new output with appropriate styling
+      const outputSpan = document.createElement('span');
+      outputSpan.textContent = prefix + text;
+      
+      if (type === 'error') {
+        outputSpan.style.color = '#f48771';
+      } else if (type === 'success') {
+        outputSpan.style.color = '#4ec9b0';
+      } else {
+        outputSpan.style.color = '#d4d4d4';
+      }
+      
+      outputConsole.appendChild(outputSpan);
+      outputConsole.scrollTop = outputConsole.scrollHeight;
+    }
+
+    function clearOutput() {
+      const outputConsole = document.getElementById('output-console');
+      if (outputConsole) {
+        outputConsole.textContent = '';
+      }
+    }
+
+    // Collaboration status functions
+    function updateCollaborationStatus() {
+      const collabStatus = document.getElementById('collab-status');
+      if (!collabStatus) return;
+      
+      const activeCollaborators = activeUsersData.filter(user => !user.isLocal && user.online).length;
+      
+      if (activeCollaborators > 0) {
+        collabStatus.style.display = 'inline-block';
+        collabStatus.innerHTML = `🟢 ${activeCollaborators} collaborator${activeCollaborators > 1 ? 's' : ''}`;
+      } else {
+        collabStatus.style.display = 'none';
+      }
+    }
+
+    // Collaborative editor functions
+    let editorSyncRef = null;
+    let cursorSyncRef = null;
+
+    function setupEditorSync(projectId) {
+      if (!db || !projectId) return;
+      if (editorSyncRef) editorSyncRef.off();
+      if (cursorSyncRef) cursorSyncRef.off();
+
+      editorSyncRef = db.ref('projectEditor/' + projectId + '/changes');
+      editorSyncRef.on('child_added', snapshot => {
+        const change = snapshot.val();
+        if (!change) return;
+        const currentUserId = userId || (currentGuest && currentGuest.id);
+        if (change.userId && currentUserId && change.userId !== currentUserId) {
+          applyRemoteEditorChange(change);
+        }
+      });
+
+      cursorSyncRef = db.ref('projectEditor/' + projectId + '/cursors');
+      cursorSyncRef.on('value', snapshot => {
+        const cursors = snapshot.val() || {};
+        const currentUserId = userId || (currentGuest && currentGuest.id);
+        Object.keys(cursors).forEach(userId => {
+          if (userId !== currentUserId && cursors[userId]) {
+            updateRemoteCursor(cursors[userId]);
+          }
+        });
+      });
+    }
+
+    function emitEditorChangeViaFirebase(changes) {
+      if (!db || !currentProjectId || isRemoteUpdate || !changes) return;
+      const currentUserId = userId || (currentGuest && currentGuest.id);
+      if (!currentUserId) return;
+
+      try {
+        changes.forEach(change => {
+          if (change && change.range && change.text !== undefined) {
+            const changeId = 'change-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+            db.ref('projectEditor/' + currentProjectId + '/changes/' + changeId).set({
+              userId: currentUserId,
+              range: change.range,
+              text: change.text,
+              timestamp: Date.now()
+            }).catch(err => console.warn('Failed to emit editor change:', err));
+          }
+        });
+      } catch (error) {
+        console.error('Error emitting editor change via Firebase:', error);
+      }
+    }
+
+    function emitCursorPositionViaFirebase() {
+      if (!db || !currentProjectId || !editorInstance) return;
+      const currentUserId = userId || (currentGuest && currentGuest.id);
+      if (!currentUserId) return;
+
+      try {
+        const position = editorInstance.getPosition();
+        db.ref('projectEditor/' + currentProjectId + '/cursors/' + currentUserId).set({
+          userId: currentUserId,
+          position: position,
+          userName: getChatSenderName(),
+          timestamp: Date.now()
+        }).catch(err => console.warn('Failed to emit cursor position:', err));
+      } catch (error) {
+        console.error('Error emitting cursor position via Firebase:', error);
+      }
+    }
+
+    function applyRemoteEditorChange(data) {
+      if (isRemoteUpdate || !data) return;
+      
+      isRemoteUpdate = true;
+      try {
+        if (editorInstance) {
+          // Handle Monaco editor
+          const model = editorInstance.getModel();
+          if (model) {
+            if (data.isFullContent) {
+              // Full content update
+              model.setValue(data.text || '');
+            } else {
+              // Partial change
+              const range = new monaco.Range(
+                data.range.startLineNumber || 1,
+                data.range.startColumn || 1,
+                data.range.endLineNumber || 1,
+                data.range.endColumn || 1
+              );
+              
+              const editOperation = {
+                range: range,
+                text: data.text || ''
+              };
+              
+              model.pushEditOperations([], [editOperation], () => null);
+            }
+          }
+        } else if (fallbackEditor) {
+          // Handle fallback textarea
+          if (data.isFullContent) {
+            fallbackEditor.value = data.text || '';
+          }
+        }
+      } catch (error) {
+        console.error('Error applying remote editor change:', error);
+      } finally {
+        isRemoteUpdate = false;
+      }
+    }
+
+    function updateRemoteCursor(data) {
+      // Update remote user cursor positions (for future enhancement)
+      remoteCursors[data.userId] = {
+        position: data.position,
+        userName: data.userName,
+        timestamp: Date.now()
+      };
+      
+      // Clean up old cursors (older than 30 seconds)
+      const now = Date.now();
+      Object.keys(remoteCursors).forEach(userId => {
+        if (now - remoteCursors[userId].timestamp > 30000) {
+          delete remoteCursors[userId];
+        }
+      });
+    }
+
+    function emitEditorChange(changes) {
+      emitEditorChangeViaFirebase(changes);
+      if (!socket || !socket.connected || isRemoteUpdate || !changes) return;
+      try {
+        const currentUserId = userId || (currentGuest && currentGuest.id);
+        if (!currentUserId) return;
+        changes.forEach(change => {
+          if (change && change.range && change.text !== undefined) {
+            socket.emit('editorContentUpdate', {
+              userId: currentUserId,
+              range: change.range,
+              text: change.text,
+              projectId: currentProjectId
+            });
+          }
+        });
+      } catch (error) {
+        console.error('Error emitting editor change:', error);
+      }
+    }
+
+    function emitCursorPosition() {
+      emitCursorPositionViaFirebase();
+      if (!socket || !socket.connected || !editorInstance) return;
+      try {
+        const currentUserId = userId || (currentGuest && currentGuest.id);
+        if (!currentUserId) return;
+        const position = editorInstance.getPosition();
+        socket.emit('cursorPositionUpdate', {
+          userId: currentUserId,
+          position: position,
+          userName: getChatSenderName(),
+          projectId: currentProjectId
+        });
+      } catch (error) {
+        console.error('Error emitting cursor position:', error);
+      }
+    }
+
+    function scheduleSave() {
+      if (!autoSaveEnabled) return;
+      if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+      autoSaveTimeout = setTimeout(() => {
+        saveCurrentTabContent();
+        saveProjectStateToLocal();
+        if (currentProjectId && currentUser) {
+          saveProject();
+        }
+      }, 1000);
+    }
+
+    function getProjectIdFromUrl() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('project');
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function isCollaborationMode() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('collab') === 'true';
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function getProjectStorageKey(projectId) {
+      return 'echopoly_project_' + projectId;
+    }
+
+    function saveLastProjectId(projectId) {
+      if (!projectId) return;
+      localStorage.setItem('echopoly_last_project', projectId);
+    }
+
+    function loadLastProjectId() {
+      return localStorage.getItem('echopoly_last_project');
+    }
+
+    function saveProjectStateToLocal() {
+      if (!currentProjectId) return;
+      saveCurrentTabContent();
+      const projectState = {
+        id: currentProjectId,
+        title: document.getElementById('project-title')?.textContent || 'Project',
+        currentTabId: currentTabId,
+        openTabs: openTabs,
+        updatedAt: new Date().toISOString()
+      };
+      try {
+        localStorage.setItem(getProjectStorageKey(currentProjectId), JSON.stringify(projectState));
+        saveLastProjectId(currentProjectId);
+      } catch (err) {
+        console.warn('Failed to save project state locally:', err);
+      }
+    }
+
+    function loadProjectStateFromLocal(projectId) {
+      if (!projectId) return null;
+      try {
+        const raw = localStorage.getItem(getProjectStorageKey(projectId));
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (err) {
+        console.warn('Failed to load project state from local storage:', err);
+        return null;
+      }
+    }
+
+    function restoreProjectState() {
+      const projectId = getProjectIdFromUrl() || loadLastProjectId();
+      if (!projectId) return;
+      const savedState = loadProjectStateFromLocal(projectId);
+      currentProjectId = projectId;
+      if (savedState && Array.isArray(savedState.openTabs) && savedState.openTabs.length > 0) {
+        openTabs = savedState.openTabs;
+        currentTabId = savedState.currentTabId || openTabs[0].id;
+        const title = savedState.title || (openTabs[0] && openTabs[0].name) || 'Project';
+        const projectTitle = document.getElementById('project-title');
+        if (projectTitle) projectTitle.textContent = title;
+      }
+    }
+
+    function initializeProjectTabs() {
+      if (openTabs.length === 0) {
+        createNewFile('main.js', 'javascript');
+        return;
+      }
+
+      if (!currentTabId) {
+        currentTabId = openTabs[0].id;
+      }
+
+      renderTabs();
+      switchTab(currentTabId);
+    }
+
+    function getEditorContent() {
+      if (editorInstance) return editorInstance.getValue();
+      const textarea = document.getElementById('fallback-editor');
+      return textarea ? textarea.value : '';
+    }
+
+    function setEditorContent(value) {
+      if (editorInstance) {
+        editorInstance.setValue(value);
+      } else {
+        const textarea = document.getElementById('fallback-editor');
+        if (textarea) textarea.value = value;
+      }
+    }
+
+    function ensureEditorLayout() {
+      if (editorInstance && typeof editorInstance.layout === 'function') {
+        setTimeout(() => {
+          try { editorInstance.layout(); } catch (e) {}
+        }, 100);
+      }
+    }
+
+    function getUserDisplayName(user) {
+      if (!user) return 'Guest';
+      return user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+    }
+
+    function getUserName(user) {
+      if (!user) return 'guest';
+      return user.email ? user.email.split('@')[0] : ('user_' + (user.uid || '').slice(0, 6));
+    }
+
+    function getUserRole(user) {
+      if (!user) return 'Guest';
+      const email = (user.email || '').toLowerCase();
+      if (email.includes('admin')) return 'Admin';
+      if (email.includes('teacher')) return 'Teacher';
+      return 'Student';
+    }
+
+    function getInitials(name) {
+      if (!name) return 'GU';
+      const parts = name.trim().split(/\s+/);
+      if (parts.length === 1) {
+        return parts[0].slice(0, 2).toUpperCase();
+      }
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    }
+
+    function renderUserProfile() {
+      const profileDiv = document.getElementById('user-profile');
+      if (!profileDiv) return;
+      let initials = 'GU';
+      let label = 'Not signed in';
+      if (currentUser) {
+        const username = getUserDisplayName(currentUser);
+        initials = getInitials(username);
+        label = username;
+      } else if (currentGuest) {
+        initials = getInitials(currentGuest.name || 'Guest');
+        label = `${currentGuest.name} (Guest)`;
+      }
+      profileDiv.innerHTML = `
+        <div class="profile-avatar">${initials}</div>
+        <div class="profile-name">
+          <span class="name">${label}</span>
+        </div>
+        <button class="logout-btn" id="header-logout-btn">Logout</button>
+      `;
+      const logoutBtn = document.getElementById('header-logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('currentUser');
+      if (auth && typeof auth.signOut === 'function') {
+        auth.signOut().catch(() => {});
+      }
+      window.location.href = 'index.html';
+    }
+
+    function ensureGuestProfile() {
+      if (!currentGuest) {
+        currentGuest = getGuestInfo();
+      }
+      renderUserProfile();
+    }
+
+    function getGuestInfo() {
+      try {
+        const raw = localStorage.getItem(guestInfoKey);
+        if (raw) return JSON.parse(raw);
+      } catch (err) {
+        console.warn('Failed to parse guest info', err);
+      }
+      const guest = {
+        id: 'guest-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+        name: 'Guest' + Math.floor(Math.random() * 900 + 100),
+        username: 'guest_' + Math.floor(Math.random() * 9000 + 1000),
+        role: 'Guest'
+      };
+      localStorage.setItem(guestInfoKey, JSON.stringify(guest));
+      return guest;
+    }
+
+    function getChatSenderName() {
+      if (currentUser) return getUserDisplayName(currentUser);
+      if (currentGuest) return currentGuest.name;
+      return 'Guest';
+    }
+
+    function getChatSenderUsername() {
+      if (currentUser) return getUserName(currentUser);
+      if (currentGuest) return currentGuest.username;
+      return 'guest';
+    }
+
+    function getChatUserRole() {
+      if (currentUser) return getUserRole(currentUser);
+      if (currentGuest) return 'Guest';
+      return 'Guest';
+    }
+
+    function applyThemeMode(theme) {
+      const chatWindow = document.getElementById('chat-window');
+      if (!chatWindow) return;
+      if (theme === 'light') {
+        document.body.classList.add('light-mode');
+        chatWindow.classList.add('light');
+      } else {
+        document.body.classList.remove('light-mode');
+        chatWindow.classList.remove('light');
+      }
+      localStorage.setItem('echopoly_theme', theme);
+    }
+
+    function initializeTheme() {
+      const savedTheme = localStorage.getItem('echopoly_theme') || 'dark';
+      const themeSelect = document.getElementById('theme-select');
+      if (themeSelect) themeSelect.value = savedTheme;
+      applyThemeMode(savedTheme);
+    }
+
+    function clearPresenceListeners() {
+      if (presenceRef) {
+        presenceRef.off();
+        presenceRef = null;
+      }
+      if (currentUserPresenceRef) {
+        currentUserPresenceRef.off();
+        currentUserPresenceRef = null;
+      }
+    }
+
+    function setCurrentUserPresence(online) {
+      if (!db || !auth || !currentUser || !currentProjectId) return;
+      const localUser = getLocalUser();
+      const activeSeconds = localUser ? Math.max(0, localUser.activeSeconds || 0) : 0;
+      currentUserPresenceRef = db.ref('projectPresence/' + currentProjectId + '/' + currentUser.uid);
+      currentUserPresenceRef.onDisconnect().remove();
+      const presenceData = {
+        name: getUserDisplayName(currentUser),
+        username: getUserName(currentUser),
+        online: !!online,
+        activeSeconds,
+        startedAt: online ? Date.now() : (localUser && localUser.startedAt) || Date.now(),
+        lastSeen: Date.now()
+      };
+      currentUserPresenceRef.set(presenceData).catch(err => {
+        console.warn('Presence update failed:', err);
+      });
+    }
+
+    function setupPresenceListener(projectId) {
+      if (!db || !projectId) return;
+      if (presenceRef) {
+        presenceRef.off();
+      }
+
+      presenceRef = db.ref('projectPresence/' + projectId);
+      presenceRef.on('value', snapshot => {
+        const raw = snapshot.val() || {};
+        const users = Object.keys(raw).map(uid => {
+          const item = raw[uid] || {};
+          return {
+            id: uid,
+            name: item.name || 'Guest',
+            username: item.username || ('user_' + uid.slice(0, 6)),
+            role: uid === (currentUser && currentUser.uid) ? 'You' : 'Participant',
+            avatar: (item.name || 'G').charAt(0).toUpperCase(),
+            status: item.online ? 'Online' : 'Away',
+            online: !!item.online,
+            activeSeconds: item.activeSeconds || 0,
+            startedAt: item.startedAt || Date.now(),
+            lastSeen: item.lastSeen || Date.now(),
+            isLocal: uid === (currentUser && currentUser.uid)
+          };
+        });
+
+        if (currentUser && !users.some(u => u.id === currentUser.uid)) {
+          users.unshift({
+            id: currentUser.uid,
+            name: getUserDisplayName(currentUser),
+            username: getUserName(currentUser),
+            role: 'You',
+            avatar: getUserDisplayName(currentUser).charAt(0).toUpperCase(),
+            status: 'Offline',
+            online: false,
+            activeSeconds: 0,
+            startedAt: Date.now(),
+            lastSeen: Date.now(),
+            isLocal: true
+          });
+        }
+
+        activeUsersData = users;
+        renderActiveUsers();
+        renderDashboardMetrics();
+      });
+
+      if (currentUser) {
+        setCurrentUserPresence(true);
+      }
+    }
+
+    function updateLocalUserVisibility(isVisible) {
+      const localUser = getLocalUser();
+      if (!localUser) return;
+      localUser.online = isVisible;
+      localUser.status = isVisible ? 'Online' : 'Away';
+      if (currentUser) {
+        setCurrentUserPresence(isVisible);
+      }
+      renderActiveUsers();
+      renderDashboardMetrics();
+    }
+
+    function initChat() {
+      currentGuest = currentGuest || getGuestInfo();
+      currentUserRole = getChatUserRole();
+      updateChatHeader();
+      console.debug('initChat', { currentProjectId, hasWindowIo: !!window.io, hasIo: typeof io !== 'undefined' });
+
+      const socketFactory = window.io || (typeof io !== 'undefined' ? io : null);
+      if (socketFactory) {
+        try {
+          socket = socketFactory();
+          socket.on('connect', () => {
+            console.debug('Socket connected', socket.id);
+            if (currentProjectId) {
+              socket.emit('joinProject', {
+                projectId: currentProjectId,
+                user: {
+                  id: userId || currentGuest.id,
+                  name: getChatSenderName(),
+                  username: getChatSenderUsername(),
+                  role: currentUserRole
+                }
+              });
+              socket.emit('openProject', {
+                projectId: currentProjectId
+              });
+
+              // Show collaboration welcome message
+              if (isCollaborationMode()) {
+                setTimeout(() => {
+                  addSystemChat('🎉 Welcome to collaborative coding! You can now code together with others in real-time.');
+                }, 1000);
+              }
+            }
+          });
+
+          socket.on('connect_error', (err) => {
+            console.error('Socket connect error', err);
+          });
+
+          socket.on('disconnect', (reason) => {
+            console.debug('Socket disconnected', reason);
+          });
+        } catch (error) {
+          console.error('Error initializing Socket.io:', error);
+          socket = null;
+        }
+
+        socket.on('newMessage', message => {
+          console.debug('received newMessage', message);
+          addChatMessage(message);
+        });
+
+        socket.on('activeUsersUpdate', users => {
+          console.debug('activeUsersUpdate', users);
+          const localId = userId || (currentGuest && currentGuest.id);
+          activeUsersData = users.map(user => ({
+            ...user,
+            isLocal: user.id === localId,
+            activeSeconds: user.activeSeconds || 0
+          }));
+          renderActiveUsers();
+          renderDashboardMetrics();
+          updateCollaborationStatus();
+        });
+
+        socket.on('participantJoined', data => {
+          if (data?.user) {
+            addSystemChat(`${data.user.name} joined the collaboration.`);
+          }
+          updateCollaborationStatus();
+        });
+
+        socket.on('participantLeft', data => {
+          if (data?.user) {
+            addSystemChat(`${data.user.name} left the collaboration.`);
+          }
+          updateCollaborationStatus();
+        });
+
+        socket.on('projectDetails', data => {
+          console.debug('projectDetails received', data);
+          if (!data || !data.projectId) return;
+          applyProjectDetails(data);
+        });
+
+        // Collaborative editor events
+        socket.on('editorContentUpdate', data => {
+          try {
+            const currentUserId = userId || (currentGuest && currentGuest.id);
+            if (data && data.userId && currentUserId && data.userId !== currentUserId) {
+              applyRemoteEditorChange(data);
+            }
+          } catch (error) {
+            console.error('Error handling editor content update:', error);
+          }
+        });
+
+        socket.on('cursorPositionUpdate', data => {
+          try {
+            const currentUserId = userId || (currentGuest && currentGuest.id);
+            if (data && data.userId && currentUserId && data.userId !== currentUserId) {
+              updateRemoteCursor(data);
+            }
+          } catch (error) {
+            console.error('Error handling cursor position update:', error);
+          }
+        });
+
+        socket.on('projectShared', data => {
+          try {
+            if (data && data.sharedBy) {
+              addSystemChat(`${data.sharedBy} shared the project! Others can now join.`);
+            }
+          } catch (error) {
+            console.error('Error handling project shared event:', error);
+          }
+        });
+      }
+
+      if (currentProjectId) {
+        loadChatHistory(currentProjectId);
+        setupChatListeners(currentProjectId);
+        setupEditorSync(currentProjectId);
+      }
+    }
+
+    function applyProjectDetails(data) {
+      currentProjectId = data.projectId || currentProjectId;
+      const projectTitle = document.getElementById('project-title');
+      if (projectTitle && data.title) {
+        projectTitle.textContent = data.title;
+      }
+      const savedState = loadProjectStateFromLocal(currentProjectId);
+      if (savedState && Array.isArray(savedState.openTabs) && savedState.openTabs.length > 0) {
+        openTabs = savedState.openTabs;
+        currentTabId = savedState.currentTabId || savedState.openTabs[0].id;
+        initializeProjectTabs();
+      } else if (Array.isArray(data.openTabs) && data.openTabs.length > 0) {
+        openTabs = data.openTabs;
+        currentTabId = data.currentTabId || data.openTabs[0].id;
+        initializeProjectTabs();
+      } else {
+        if (!currentTabId || openTabs.length === 0) {
+          currentProjectId = currentProjectId || getProjectIdFromUrl() || loadLastProjectId() || 'project-' + Date.now();
+          initializeProjectTabs();
+        }
+      }
+      updateChatHeader();
+      saveProjectStateToLocal();
+    }
+
+    function ensureChatMessageData(message) {
+      if (!message || typeof message !== 'object') return null;
+      const likedBy = Array.isArray(message.likedBy) ? [...new Set(message.likedBy)] : [];
+      return {
+        ...message,
+        likedBy,
+        likes: likedBy.length,
+        pinnedBy: message.pinnedBy || null,
+        pinnedByName: message.pinnedByName || null,
+        pinnedAt: message.pinnedAt || null,
+        text: message.text || '',
+        timestamp: message.timestamp || Date.now()
+      };
+    }
+
+    function getCurrentChatUserId() {
+      return userId || (currentGuest && currentGuest.id) || null;
+    }
+
+    function setupChatListeners(projectId) {
+      if (!db || !projectId) return;
+      if (chatHistoryRef) {
+        chatHistoryRef.off();
+        chatHistoryRef = null;
+      }
+      chatHistoryRef = db.ref('projectChats/' + projectId);
+      chatHistoryRef.orderByChild('timestamp').limitToLast(200).on('child_added', snapshot => {
+        const message = ensureChatMessageData(snapshot.val());
+        if (message) addChatMessage(message);
+      });
+      chatHistoryRef.on('child_changed', snapshot => {
+        const message = ensureChatMessageData(snapshot.val());
+        if (!message || !message.id) return;
+        const index = chatMessages.findIndex(msg => msg.id === message.id);
+        if (index !== -1) {
+          chatMessages[index] = message;
+          renderChatMessages();
+          scrollChatToBottom();
+        }
+      });
+    }
+
+    function loadChatHistory(projectId) {
+      if (!db || !projectId) return;
+      db.ref('projectChats/' + projectId).orderByChild('timestamp').limitToLast(200).once('value', snapshot => {
+        const raw = snapshot.val() || {};
+        chatMessages = Object.keys(raw).sort((a, b) => raw[a].timestamp - raw[b].timestamp).map(key => ensureChatMessageData(raw[key])).filter(Boolean);
+        renderChatMessages();
+        scrollChatToBottom();
+      });
+    }
+
+    function addChatMessage(message) {
+      if (!message || !message.id) return;
+      if (chatMessages.some(msg => msg.id === message.id)) return;
+      chatMessages.push(ensureChatMessageData(message));
+      renderChatMessages();
+      scrollChatToBottom();
+    }
+
+    function addSystemChat(text) {
+      if (!text) return;
+      const message = {
+        id: 'sys-' + Date.now() + '-' + Math.random().toString(36).slice(2),
+        senderName: 'System',
+        senderRole: 'System',
+        text,
+        timestamp: Date.now(),
+        isSystem: true
+      };
+      addChatMessage(message);
+    }
+
+    function updateChatHeader() {
+      const chatHeader = document.querySelector('#chat-window .chat-header span');
+      if (!chatHeader) return;
+      chatHeader.textContent = currentProjectId ? `Project Chat — ${currentProjectId}` : 'Project Chat';
+    }
+
+    function renderChatMessages() {
+      const messagesContainer = document.getElementById('chat-messages');
+      if (!messagesContainer) return;
+      messagesContainer.innerHTML = '';
+
+      renderPinnedBanner();
+      chatMessages.forEach(message => {
+        const messageRow = document.createElement('div');
+        messageRow.className = 'chat-message' + (document.body.classList.contains('light-mode') ? ' light' : '');
+
+        const sender = document.createElement('div');
+        sender.className = 'sender';
+        sender.textContent = message.isSystem ? 'System' : `${message.senderName} (${message.senderRole})`;
+        messageRow.appendChild(sender);
+
+        if (message.type === 'snippet' && message.snippet) {
+          const snippetBox = document.createElement('pre');
+          snippetBox.textContent = message.snippet;
+          snippetBox.style.margin = '8px 0 0';
+          snippetBox.style.padding = '10px';
+          snippetBox.style.borderRadius = '12px';
+          snippetBox.style.background = document.body.classList.contains('light-mode') ? '#f6f7fb' : '#15161d';
+          snippetBox.style.color = document.body.classList.contains('light-mode') ? '#111' : '#f5f5f7';
+          snippetBox.style.whiteSpace = 'pre-wrap';
+          snippetBox.style.wordBreak = 'break-word';
+          snippetBox.style.fontSize = '12px';
+          snippetBox.style.fontFamily = 'Consolas, monospace, monospace';
+          messageRow.appendChild(snippetBox);
+        }
+
+        const text = document.createElement('div');
+        text.textContent = message.text;
+        messageRow.appendChild(text);
+
+        const actions = document.createElement('div');
+        actions.className = 'chat-message-actions';
+
+        const likeButton = document.createElement('button');
+        likeButton.type = 'button';
+        likeButton.className = 'chat-message-like-btn';
+        const currentUserId = getCurrentChatUserId();
+        const alreadyLiked = currentUserId && Array.isArray(message.likedBy) && message.likedBy.includes(currentUserId);
+        if (alreadyLiked) {
+          likeButton.classList.add('liked');
+        }
+        likeButton.innerHTML = `${alreadyLiked ? '❤' : '♡'} <span>${message.likes || 0}</span>`;
+        likeButton.title = alreadyLiked ? 'Unlike this message' : 'Like this message';
+        likeButton.addEventListener('click', () => toggleChatMessageLike(message.id));
+        actions.appendChild(likeButton);
+
+        const pinned = message.pinnedAt && message.pinnedBy;
+        const pinButton = document.createElement('button');
+        pinButton.type = 'button';
+        pinButton.className = 'chat-message-pin-btn';
+        if (pinned) pinButton.classList.add('liked');
+        pinButton.innerHTML = `${pinned ? '📌' : '📍'} <span>${pinned ? 'Pinned' : 'Pin'}</span>`;
+        pinButton.title = pinned ? 'Unpin this message' : 'Pin this message';
+        pinButton.addEventListener('click', () => toggleChatMessagePin(message.id));
+        actions.appendChild(pinButton);
+
+        messageRow.appendChild(actions);
+
+        const timestamp = document.createElement('div');
+        timestamp.className = 'timestamp';
+        timestamp.textContent = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        messageRow.appendChild(timestamp);
+
+        messagesContainer.appendChild(messageRow);
+      });
+    }
+
+    function getPinnedMessage() {
+      const pinned = chatMessages.filter(msg => msg.pinnedAt && msg.pinnedBy);
+      if (!pinned.length) return null;
+      return pinned.sort((a, b) => b.pinnedAt - a.pinnedAt)[0];
+    }
+
+    function renderPinnedBanner() {
+      const pinnedBanner = document.getElementById('chat-pinned-banner');
+      if (!pinnedBanner) return;
+      const pinnedMessage = getPinnedMessage();
+      if (!pinnedMessage) {
+        pinnedBanner.classList.add('hidden');
+        pinnedBanner.innerHTML = '';
+        return;
+      }
+      pinnedBanner.classList.remove('hidden');
+      pinnedBanner.innerHTML = `<strong>Pinned message</strong><div class="pinned-text">${pinnedMessage.text}</div><div style="font-size:10px;color:rgba(209,213,219,0.85);">Pinned by ${pinnedMessage.pinnedByName || pinnedMessage.pinnedBy} • ${new Date(pinnedMessage.pinnedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
+    }
+
+    function toggleChatMessageLike(messageId) {
+      const currentUserId = getCurrentChatUserId();
+      if (!currentUserId || !messageId || !currentProjectId) return;
+
+      const index = chatMessages.findIndex(msg => msg.id === messageId);
+      if (index === -1) return;
+
+      const message = chatMessages[index];
+      const likedBy = Array.isArray(message.likedBy) ? [...message.likedBy] : [];
+      const alreadyLiked = likedBy.includes(currentUserId);
+      if (alreadyLiked) {
+        message.likedBy = likedBy.filter(id => id !== currentUserId);
+      } else {
+        likedBy.push(currentUserId);
+        message.likedBy = [...new Set(likedBy)];
+      }
+      message.likes = Array.isArray(message.likedBy) ? message.likedBy.length : 0;
+      chatMessages[index] = message;
+      renderChatMessages();
+      scrollChatToBottom();
+
+      if (db) {
+        db.ref('projectChats/' + currentProjectId + '/' + messageId).update({ likedBy: message.likedBy }).catch(err => {
+          console.warn('Failed to update message like count:', err);
+        });
+      }
+
+      if (socket) {
+        try {
+          socket.emit('messageLiked', {
+            projectId: currentProjectId,
+            messageId,
+            userId: currentUserId,
+            action: alreadyLiked ? 'unlike' : 'like'
+          });
+        } catch (err) {
+          console.warn('messageLiked socket emit failed', err);
+        }
+      }
+    }
+
+    function toggleChatMessagePin(messageId) {
+      const currentUserId = getCurrentChatUserId();
+      if (!currentUserId || !messageId || !currentProjectId) return;
+
+      const index = chatMessages.findIndex(msg => msg.id === messageId);
+      if (index === -1) return;
+
+      const message = chatMessages[index];
+      const currentlyPinned = message.pinnedAt && message.pinnedBy;
+      if (currentlyPinned) {
+        message.pinnedAt = null;
+        message.pinnedBy = null;
+        message.pinnedByName = null;
+      } else {
+        message.pinnedAt = Date.now();
+        message.pinnedBy = currentUserId;
+        message.pinnedByName = getChatSenderName();
+      }
+
+      chatMessages[index] = message;
+      renderChatMessages();
+      scrollChatToBottom();
+
+      if (db) {
+        db.ref('projectChats/' + currentProjectId + '/' + messageId).update({
+          pinnedAt: message.pinnedAt || null,
+          pinnedBy: message.pinnedBy || null,
+          pinnedByName: message.pinnedByName || null
+        }).catch(err => {
+          console.warn('Failed to update pinned message:', err);
+        });
+      }
+
+      if (socket) {
+        try {
+          socket.emit('messagePinned', {
+            projectId: currentProjectId,
+            messageId,
+            userId: currentUserId,
+            action: currentlyPinned && message.pinnedBy === null ? 'unpin' : 'pin'
+          });
+        } catch (err) {
+          console.warn('messagePinned socket emit failed', err);
+        }
+      }
+    }
+
+    function scrollChatToBottom() {
+      const messagesContainer = document.getElementById('chat-messages');
+      if (!messagesContainer) return;
+      setTimeout(() => {
+        messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' });
+      }, 50);
+    }
+
+    function insertEmojiAtCursor(emoji) {
+      const input = document.getElementById('chat-input');
+      if (!input) return;
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const value = input.value;
+      input.value = value.slice(0, start) + emoji + value.slice(end);
+      input.focus();
+      const position = start + emoji.length;
+      input.setSelectionRange(position, position);
+    }
+
+    function toggleEmojiPicker() {
+      const picker = document.getElementById('emoji-picker');
+      if (!picker) return;
+      picker.classList.toggle('hidden');
+    }
+
+    function promptChatSnippet() {
+      const snippet = prompt('Paste code snippet or markdown here:');
+      if (!snippet) return;
+      const summary = prompt('Optional message summary:') || 'Code snippet shared';
+      const message = {
+        id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2),
+        projectId: currentProjectId,
+        senderId: userId || currentGuest.id,
+        senderName: getChatSenderName(),
+        senderRole: getChatUserRole(),
+        text: summary,
+        snippet,
+        type: 'snippet',
+        timestamp: Date.now(),
+        likes: 0,
+        likedBy: []
+      };
+
+      if (socket) {
+        socket.emit('sendMessage', message);
+      }
+      if (db) {
+        db.ref('projectChats/' + currentProjectId + '/' + message.id).set(message).catch(err => {
+          console.warn('Chat save failed:', err);
+        });
+      }
+      addChatMessage(message);
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      if (!input) return;
+      const chatWindow = document.getElementById('chat-window');
+      if (chatWindow && chatWindow.classList.contains('hidden')) {
+        chatWindow.classList.remove('hidden');
+      }
+
+      const text = input.value.trim();
+      if (!text) {
+        showToast('Type a message before sending');
+        return;
+      }
+      if (!currentProjectId) {
+        currentProjectId = getProjectIdFromUrl() || loadLastProjectId() || 'project-' + Date.now();
+        updateChatHeader();
+      }
+
+      const message = {
+        id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2),
+        projectId: currentProjectId,
+        senderId: userId || currentGuest.id,
+        senderName: getChatSenderName(),
+        senderRole: getChatUserRole(),
+        text,
+        timestamp: Date.now(),
+        likes: 0,
+        likedBy: []
+      };
+
+      if (!socket) {
+        initChat();
+      }
+      if (socket) {
+        try {
+          socket.emit('sendMessage', message);
+        } catch (err) {
+          console.warn('sendMessage socket emit failed', err);
+        }
+      }
+      if (db) {
+        db.ref('projectChats/' + currentProjectId + '/' + message.id).set(message).catch(err => {
+          console.warn('Chat save failed:', err);
+        });
+      }
+      console.debug('sendChatMessage', message, { socketConnected: !!socket });
+      addChatMessage(message);
+      scrollChatToBottom();
+      input.value = '';
+    }
+
+    function hideEmojiPicker() {
+      const picker = document.getElementById('emoji-picker');
+      if (!picker) return;
+      if (!picker.classList.contains('hidden')) {
+        picker.classList.add('hidden');
+      }
+    }
+
+    function toggleChatWindow() {
+      const chatWindow = document.getElementById('chat-window');
+      if (!chatWindow) return;
+      chatWindow.classList.toggle('hidden');
+      if (!chatWindow.classList.contains('hidden')) {
+        scrollChatToBottom();
+      }
+    }
+
+    function openGuestSession() {
+      currentGuest = getGuestInfo();
+      currentUser = null;
+      userId = currentGuest.id;
+      currentUserRole = 'Guest';
+      renderUserProfile();
+      const loginModal = document.getElementById('login-modal');
+      if (loginModal) loginModal.classList.add('hidden');
+      const appContainer = document.getElementById('app-container');
+      if (appContainer) appContainer.style.display = 'flex';
+      if (!currentProjectId) {
+        currentProjectId = getProjectIdFromUrl() || loadLastProjectId() || 'project-' + Date.now();
+      }
+      initChat();
+      ensureEditorLayout();
+    }
+
+    function loadStoredCurrentUser() {
+      try {
+        const raw = localStorage.getItem('currentUser');
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object' && (parsed.uid || parsed.email)) {
+          return parsed;
+        }
+      } catch (err) {
+        console.warn('Failed to parse currentUser from localStorage', err);
+      }
+      return null;
+    }
+
+    function restoreStoredUserSession() {
+      const stored = loadStoredCurrentUser();
+      if (stored) {
+        currentUser = stored;
+        userId = stored.uid || null;
+        currentUserRole = getUserRole(stored);
+        renderUserProfile();
+        return true;
+      }
+      return false;
+    }
+
+    function setupFallbackEditor() {
+      const textarea = document.getElementById('fallback-editor');
+      if (!textarea) return;
+      fallbackEditor = textarea;
+      textarea.addEventListener('input', () => {
+        isSaved = false;
+        scheduleSave();
+        updatePreview();
+        
+        // Emit collaborative changes for fallback editor
+        if (socket && socket.connected) {
+          socket.emit('editorContentUpdate', {
+            userId: userId || (currentGuest && currentGuest.id),
+            range: { startLineNumber: 1, startColumn: 1, endLineNumber: 1, endColumn: 1 },
+            text: textarea.value,
+            projectId: currentProjectId,
+            isFullContent: true
+          });
+        }
+      });
+    }
+
+    // Auth state handler - will be called during initialize()
+    function setupAuthStateListener() {
+      if (auth && typeof auth.onAuthStateChanged === 'function') {
+        auth.onAuthStateChanged(user => {
+          if (user) {
+            currentUser = user;
+            userId = user.uid;
+            document.getElementById('login-modal').classList.add('hidden');
+            document.getElementById('app-container').style.display = 'flex';
+            currentUserRole = getUserRole(user);
+            renderUserProfile();
+            if (!currentProjectId) {
+              currentProjectId = getProjectIdFromUrl() || loadLastProjectId() || 'project-' + Date.now();
+            }
+            initChat();
+            ensureEditorLayout();
+          } else {
+            const storedUser = loadStoredCurrentUser();
+            if (storedUser) {
+              currentUser = storedUser;
+              userId = storedUser.uid || null;
+              document.getElementById('login-modal').classList.add('hidden');
+              document.getElementById('app-container').style.display = 'flex';
+              currentUserRole = getUserRole(storedUser);
+              renderUserProfile();
+              if (!currentProjectId) {
+                currentProjectId = getProjectIdFromUrl() || loadLastProjectId() || 'project-' + Date.now();
+              }
+              initChat();
+              ensureEditorLayout();
+            } else {
+              // User is not authenticated - redirect to login page
+              const currentUrl = window.location.href;
+              sessionStorage.setItem('redirectAfterLogin', currentUrl);
+              window.location.href = 'login.html';
+            }
+          }
+        });
+      } else {
+        const storedUser = loadStoredCurrentUser();
+        if (storedUser) {
+          currentUser = storedUser;
+          userId = storedUser.uid || null;
+          document.getElementById('login-modal').classList.add('hidden');
+          document.getElementById('app-container').style.display = 'flex';
+          currentUserRole = getUserRole(storedUser);
+          renderUserProfile();
+          if (!currentProjectId) {
+            currentProjectId = getProjectIdFromUrl() || loadLastProjectId() || 'project-' + Date.now();
+          }
+          initChat();
+          ensureEditorLayout();
+        } else {
+          // Firebase auth unavailable - use guest mode
+          setupGuestMode();
+        }
+      }
+    }
+
+    function setupGuestMode() {
+      console.warn('Firebase auth is not available. Starting in guest mode.');
+      document.getElementById('login-modal').classList.add('hidden');
+      document.getElementById('app-container').style.display = 'flex';
+      currentProjectId = currentProjectId || getProjectIdFromUrl() || loadLastProjectId() || 'project-' + Date.now();
+      currentGuest = getGuestInfo();
+      currentUser = null;
+      userId = currentGuest.id;
+      currentUserRole = 'Guest';
+      renderUserProfile();
+      initChat();
+      ensureEditorLayout();
+    }
+
+    // This block will no longer execute early
+
+    // Initialize editor
+    function initialize() {
+      try {
+        restoreStoredUserSession();
+        setupAuthStateListener();
+
+        restoreProjectState();
+        initializeTheme();
+        setupUserActivityTracking();
+        setupSidebarResizer();
+        setupPreviewResizer();
+        const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (sidebarToggleBtn) sidebarToggleBtn.addEventListener('click', toggleSidebarCollapse);
+        currentProjectId = currentProjectId || getProjectIdFromUrl() || loadLastProjectId() || 'project-' + Date.now();
+
+        const monacoContainer = document.getElementById('monaco-editor');
+        if (!monacoContainer) return;
+
+        const loader = window.require || window.requirejs;
+        if (!loader) {
+          console.warn('Monaco loader not available. Falling back to textarea.');
+          monacoContainer.innerHTML = '<textarea id="fallback-editor" style="width:100%;height:100%;background:#1e1e1e;color:#d4d4d4;border:none;padding:16px;font-family: Consolas, monospace; font-size:14px; box-sizing:border-box;"></textarea>';
+          const ta = document.getElementById('fallback-editor');
+          if (ta) {
+            ta.value = starterCodeMap['javascript'];
+            setupFallbackEditor();
+          }
+          initializeProjectTabs();
+          setupEventListeners();
+          return;
+        }
+
+        loader.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' }});
+        loader(['vs/editor/editor.main'], function() {
+          try {
+            monacoContainer.style.width = '100%';
+            monacoContainer.style.height = '100%';
+
+            editorInstance = monaco.editor.create(monacoContainer, {
+              value: starterCodeMap['javascript'],
+              language: 'javascript',
+              theme: 'vs-dark',
+              automaticLayout: true,
+              fontSize: 16,
+              minimap: { enabled: false }
+            });
+
+            window.editor = editorInstance;
+            fallbackEditor = null;
+
+            editorInstance.onDidChangeModelContent((e) => {
+              try {
+                isSaved = false;
+                scheduleSave();
+                updatePreview();
+                emitEditorChange(e.changes);
+              } catch (error) {
+                console.error('Error in editor change handler:', error);
+              }
+            });
+
+            editorInstance.onDidChangeCursorPosition((e) => {
+              try {
+                emitCursorPosition();
+              } catch (error) {
+                console.error('Error in cursor position handler:', error);
+              }
+            });
+
+            ensureEditorLayout();
+          } catch (err) {
+            console.error('ERROR creating editor:', err.message);
+            monacoContainer.innerHTML = '<textarea id="fallback-editor" style="width:100%;height:100%;background:#1e1e1e;color:#d4d4d4;border:none;padding:16px;font-family: Consolas, monospace; font-size:14px; box-sizing:border-box;"></textarea>';
+            const ta = document.getElementById('fallback-editor');
+            if (ta) {
+              ta.value = starterCodeMap['javascript'];
+              setupFallbackEditor();
+            }
+          }
+
+          initializeProjectTabs();
+          setupEventListeners();
+        }, function(err) {
+          console.error('Monaco failed to load:', err);
+          monacoContainer.innerHTML = '<textarea id="fallback-editor" style="width:100%;height:100%;background:#1e1e1e;color:#d4d4d4;border:none;padding:16px;font-family: Consolas, monospace; font-size:14px; box-sizing:border-box;"></textarea>';
+          const ta = document.getElementById('fallback-editor');
+          if (ta) {
+            ta.value = starterCodeMap['javascript'];
+            setupFallbackEditor();
+          }
+
+          initializeProjectTabs();
+          setupEventListeners();
+        });
+      } catch (err) {
+        console.error('Initialize error:', err);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initialize);
+    } else {
+      initialize();
+    }
+
+    // Tab management
+    let openTabs = [];
+    let currentTabId = null;
+
+    function createTabElement(tab) {
+      const tabDiv = document.createElement('div');
+      tabDiv.id = 'tab-' + tab.id;
+      tabDiv.style.display = 'flex';
+      tabDiv.style.alignItems = 'center';
+      tabDiv.style.gap = '8px';
+      tabDiv.style.padding = '6px 12px 3px';
+      tabDiv.style.borderRight = '1px solid #3e3e42';
+      tabDiv.style.borderBottom = currentTabId === tab.id ? '3px solid #0e639c' : '3px solid transparent';
+      tabDiv.style.cursor = 'pointer';
+      tabDiv.style.userSelect = 'none';
+      tabDiv.style.whiteSpace = 'nowrap';
+      
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = tab.name;
+      nameSpan.style.fontSize = '13px';
+      nameSpan.style.color = currentTabId === tab.id ? '#ffffff' : '#cccccc';
+      
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = '✕';
+      closeBtn.style.background = 'none';
+      closeBtn.style.border = 'none';
+      closeBtn.style.color = '#858585';
+      closeBtn.style.cursor = 'pointer';
+      closeBtn.style.fontSize = '14px';
+      closeBtn.style.padding = '0 4px';
+      
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeTab(tab.id);
+      });
+      
+      tabDiv.appendChild(nameSpan);
+      tabDiv.appendChild(closeBtn);
+      
+      tabDiv.addEventListener('click', () => switchTab(tab.id));
+      tabDiv.addEventListener('mouseenter', () => {
+        if (currentTabId !== tab.id) {
+          tabDiv.style.background = 'rgba(255,255,255,0.02)';
+        }
+      });
+      tabDiv.addEventListener('mouseleave', () => {
+        if (currentTabId !== tab.id) {
+          tabDiv.style.background = 'transparent';
+        }
+      });
+      
+      return tabDiv;
+    }
+
+    function renderTabs() {
+      const tabBar = document.getElementById('tab-bar');
+      if (!tabBar) return;
+      tabBar.innerHTML = '';
+      
+      const openTabsList = openTabs.filter(tab => tab.isOpen !== false);
+      openTabsList.forEach((tab) => {
+        const tabEl = createTabElement(tab);
+        tabBar.appendChild(tabEl);
+      });
+      updateSidebarFiles();
+    }
+
+    function saveCurrentTabContent() {
+      if (!currentTabId) return;
+      const currentTab = openTabs.find(t => t.id === currentTabId);
+      if (!currentTab) return;
+      currentTab.content = getEditorContent();
+    }
+
+    function switchTab(tabId) {
+      const tab = openTabs.find(t => t.id === tabId);
+      if (!tab) return;
+      
+      if (currentTabId && currentTabId !== tabId) {
+        saveCurrentTabContent();
+      }
+      
+      if (tab.isOpen === false) {
+        tab.isOpen = true;
+        renderTabs();
+      }
+      
+      currentTabId = tabId;
+      if (editorInstance) {
+        const monacoLang = languageMap[tab.language] || 'plaintext';
+        monaco.editor.setModelLanguage(editorInstance.getModel(), monacoLang);
+        editorInstance.setValue(tab.content);
+      } else {
+        const textarea = document.getElementById('fallback-editor');
+        if (textarea) {
+          textarea.value = tab.content;
+        }
+      }
+      
+      renderTabs();
+      document.getElementById('project-title').textContent = tab.name;
+      showToast('Switched to: ' + tab.name);
+      updatePreview();
+    }
+
+    function closeTab(tabId) {
+      const tab = openTabs.find(t => t.id === tabId);
+      if (!tab) return;
+      
+      tab.isOpen = false;
+      
+      if (currentTabId === tabId) {
+        const openTabsList = openTabs.filter(t => t.isOpen !== false && t.id !== tabId);
+        if (openTabsList.length > 0) {
+          currentTabId = openTabsList[0].id;
+          switchTab(currentTabId);
+        } else {
+          renderTabs();
+        }
+      } else {
+        renderTabs();
+      }
+      
+      showToast('Closed: ' + tabId);
+    }
+
+    function createNewFile(filename, language) {
+      const extension = extensionMap[language] || 'txt';
+      const finalName = filename.endsWith('.' + extension) ? filename : filename + '.' + extension;
+      const timestamp = Date.now();
+      const tabId = finalName + '-' + timestamp;
+      
+      const newTab = {
+        id: tabId,
+        name: finalName,
+        language: language,
+        content: starterCodeMap[language] || '// New file',
+        isOpen: true
+      };
+
+      openTabs.push(newTab);
+      renderTabs();
+      switchTab(newTab.id);
+      showToast('Created: ' + finalName);
+    }
+
+    function deleteFile(tabId) {
+      const tab = openTabs.find(t => t.id === tabId);
+      if (!tab) return;
+      
+      const fileName = tab.name;
+      openTabs = openTabs.filter(t => t.id !== tabId);
+      
+      if (currentTabId === tabId) {
+        const openTabsList = openTabs.filter(t => t.isOpen !== false);
+        if (openTabsList.length > 0) {
+          currentTabId = openTabsList[0].id;
+          switchTab(currentTabId);
+        } else if (openTabs.length > 0) {
+          currentTabId = openTabs[0].id;
+          switchTab(currentTabId);
+        }
+      }
+      
+      renderTabs();
+      showToast('Deleted: ' + fileName);
+    }
+
+    function renameFile(tabId, newName) {
+      const tab = openTabs.find(t => t.id === tabId);
+      if (!tab) return;
+      
+      const oldName = tab.name;
+      tab.name = newName;
+      
+      if (currentTabId === tabId) {
+        document.getElementById('project-title').textContent = newName;
+      }
+      
+      renderTabs();
+      showToast('Renamed to: ' + newName);
+    }
+
+    function showNewFileModal() {
+      const modal = document.getElementById('new-file-modal');
+      if (modal) modal.classList.remove('hidden');
+      const nameInput = document.getElementById('new-file-name');
+      if (nameInput) {
+        nameInput.focus();
+        const timestamp = Date.now();
+        nameInput.value = 'untitled-' + timestamp;
+      }
+    }
+
+    function hideNewFileModal() {
+      const modal = document.getElementById('new-file-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function updateSidebarFiles() {
+      const fileList = document.getElementById('file-list');
+      if (!fileList) return;
+      
+      const children = fileList.querySelectorAll(':scope > div');
+      children.forEach(child => {
+        if (child.id !== 'new-file-btn' && child.id !== 'new-project-btn') {
+          child.remove();
+        }
+      });
+
+      const groups = {};
+      openTabs.forEach(tab => {
+        const ext = (tab.name.split('.').pop() || 'other').toLowerCase();
+        if (!groups[ext]) groups[ext] = [];
+        groups[ext].push(tab);
+      });
+
+      const preferred = ['js','javascript','html','css','ts','typescript','py','python','java','cpp','other'];
+      const keys = Object.keys(groups).sort((a,b) => {
+        const ai = preferred.indexOf(a) === -1 ? preferred.length : preferred.indexOf(a);
+        const bi = preferred.indexOf(b) === -1 ? preferred.length : preferred.indexOf(b);
+        return ai - bi || a.localeCompare(b);
+      });
+
+      keys.forEach(k => {
+        const groupName = k.toUpperCase();
+        const folder = document.createElement('div');
+        folder.style.marginBottom = '8px';
+
+        const header = document.createElement('div');
+        header.textContent = groupName;
+        header.style.fontSize = '12px';
+        header.style.color = '#9aa0c7';
+        header.style.margin = '6px 0';
+        folder.appendChild(header);
+
+        const ul = document.createElement('div');
+        ul.style.display = 'flex';
+        ul.style.flexDirection = 'column';
+        ul.style.gap = '4px';
+
+        groups[k].forEach(tab => {
+          const row = document.createElement('div');
+          row.style.display = 'flex';
+          row.style.alignItems = 'center';
+          row.style.justifyContent = 'space-between';
+          row.style.padding = '6px 8px';
+          row.style.borderRadius = '4px';
+          row.style.cursor = 'pointer';
+          row.style.color = currentTabId === tab.id ? '#ffffff' : '#cccccc';
+          row.style.background = currentTabId === tab.id ? '#0e639c' : 'transparent';
+          row.style.fontSize = '13px';
+          
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = tab.name;
+          nameSpan.style.flex = '1';
+          row.appendChild(nameSpan);
+          
+          const menuBtn = document.createElement('button');
+          menuBtn.textContent = '⋯';
+          menuBtn.style.background = 'none';
+          menuBtn.style.border = 'none';
+          menuBtn.style.color = currentTabId === tab.id ? '#ffffff' : '#cccccc';
+          menuBtn.style.cursor = 'pointer';
+          menuBtn.style.fontSize = '16px';
+          menuBtn.style.padding = '0 4px';
+          menuBtn.style.opacity = '0.6';
+          menuBtn.style.transition = 'opacity 0.2s';
+          
+          menuBtn.addEventListener('mouseenter', () => menuBtn.style.opacity = '1');
+          menuBtn.addEventListener('mouseleave', () => menuBtn.style.opacity = '0.6');
+          
+          const dropdown = document.createElement('div');
+          dropdown.style.position = 'absolute';
+          dropdown.style.background = '#3e3e42';
+          dropdown.style.border = '1px solid #555';
+          dropdown.style.borderRadius = '4px';
+          dropdown.style.minWidth = '120px';
+          dropdown.style.display = 'none';
+          dropdown.style.zIndex = '1000';
+          dropdown.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+          
+          const renameBtn = document.createElement('div');
+          renameBtn.textContent = '✏️ Rename';
+          renameBtn.style.padding = '8px 12px';
+          renameBtn.style.cursor = 'pointer';
+          renameBtn.style.color = '#cccccc';
+          renameBtn.style.fontSize = '12px';
+          renameBtn.style.userSelect = 'none';
+          renameBtn.addEventListener('mouseenter', () => renameBtn.style.background = '#555');
+          renameBtn.addEventListener('mouseleave', () => renameBtn.style.background = 'transparent');
+          renameBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const newName = prompt('Enter new filename:', tab.name);
+            if (newName && newName.trim()) {
+              renameFile(tab.id, newName.trim());
+            }
+            dropdown.style.display = 'none';
+          });
+          dropdown.appendChild(renameBtn);
+          
+          const separator = document.createElement('div');
+          separator.style.height = '1px';
+          separator.style.background = '#555';
+          separator.style.margin = '4px 0';
+          dropdown.appendChild(separator);
+          
+          const deleteBtn = document.createElement('div');
+          deleteBtn.textContent = '🗑️ Delete';
+          deleteBtn.style.padding = '8px 12px';
+          deleteBtn.style.cursor = 'pointer';
+          deleteBtn.style.color = '#ff6b6b';
+          deleteBtn.style.fontSize = '12px';
+          deleteBtn.style.userSelect = 'none';
+          deleteBtn.addEventListener('mouseenter', () => deleteBtn.style.background = '#555');
+          deleteBtn.addEventListener('mouseleave', () => deleteBtn.style.background = 'transparent');
+          deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm('Are you sure you want to delete ' + tab.name + '? This cannot be undone.')) {
+              deleteFile(tab.id);
+            }
+            dropdown.style.display = 'none';
+          });
+          dropdown.appendChild(deleteBtn);
+          
+          menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            const rect = menuBtn.getBoundingClientRect();
+            dropdown.style.top = (rect.bottom + 5) + 'px';
+            dropdown.style.left = (rect.left - 100) + 'px';
+          });
+          
+          row.appendChild(menuBtn);
+          row.appendChild(dropdown);
+          
+          row.addEventListener('click', () => {
+            switchTab(tab.id);
+          });
+          
+          ul.appendChild(row);
+        });
+
+        folder.appendChild(ul);
+        fileList.appendChild(folder);
+      });
+    }
+
+    // Firebase project functions removed (New Project feature disabled)
+
+    function saveProject() {
+      saveCurrentTabContent();
+      saveProjectStateToLocal();
+
+      const code = getEditorContent();
+      if (!code) {
+        showToast('Nothing to save yet.');
+        return;
+      }
+
+      if (!userId || !currentProjectId) {
+        showToast('Saved locally. Sign in to sync to cloud.');
+        return;
+      }
+
+      if (!db || typeof db.ref !== 'function') {
+        showToast('Saved locally. Cloud save unavailable.');
+        return;
+      }
+
+      db.ref('projects/' + userId + '/' + currentProjectId + '/code').set(code).then(() => {
+        isSaved = true;
+        showToast('Saved!');
+      }).catch(err => {
+        console.error('Save error:', err);
+        showToast('Saved locally, cloud save failed');
+      });
+    }
+
+    
+
+    // Panel switching
+    const panels = {
+      explorer: document.getElementById('explorer-panel'),
+      users: document.getElementById('users-panel'),
+      dashboard: document.getElementById('dashboard-panel'),
+      quiz: document.getElementById('quiz-panel'),
+      output: document.getElementById('output-panel'),
+      settings: document.getElementById('settings-panel')
+    };
+
+    function setActivePanelButton(panelName) {
+      document.querySelectorAll('#activity-bar .activity-icon').forEach(button => {
+        button.classList.remove('active');
+      });
+
+      const panelButtonMap = {
+        explorer: document.getElementById('explorer-btn'),
+        users: document.getElementById('users-btn'),
+        dashboard: document.getElementById('dashboard-btn'),
+        quiz: document.getElementById('quiz-btn'),
+        output: document.getElementById('output-btn'),
+        settings: document.getElementById('settings-btn-sidebar')
+      };
+
+      const activeButton = panelButtonMap[panelName];
+      if (activeButton) {
+        activeButton.classList.add('active');
+      }
+    }
+
+    function formatActiveTime(seconds) {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const secs = seconds % 60;
+      if (hours) return `${hours}h ${minutes}m`;
+      if (minutes) return `${minutes}m ${secs}s`;
+      return `${secs}s`;
+    }
+
+    function getComputedActiveSeconds(user) {
+      if (!user) return 0;
+      return Math.max(0, user.activeSeconds || 0);
+    }
+
+    function updateUserStatus(userId, status, online) {
+      const user = activeUsersData.find(u => u.id === userId);
+      if (!user) return;
+      user.status = status;
+      user.online = online;
+      renderActiveUsers();
+      renderDashboardMetrics();
+    }
+
+    function ensureCurrentUserInActiveUsers() {
+      // Ensure current user is in the active users list
+      if (activeUsersData.length === 0) {
+        if (currentUser) {
+          activeUsersData = [{
+            id: currentUser.uid,
+            name: getUserDisplayName(currentUser),
+            username: getUserName(currentUser),
+            role: getUserRole(currentUser),
+            avatar: getUserDisplayName(currentUser).charAt(0).toUpperCase(),
+            online: true,
+            status: 'Online',
+            activeSeconds: 0,
+            startedAt: Date.now(),
+            isLocal: true
+          }];
+        } else if (currentGuest) {
+          activeUsersData = [{
+            id: currentGuest.id,
+            name: currentGuest.name,
+            username: currentGuest.username,
+            role: 'Guest',
+            avatar: currentGuest.name.charAt(0).toUpperCase(),
+            online: true,
+            status: 'Online',
+            activeSeconds: 0,
+            startedAt: Date.now(),
+            isLocal: true
+          }];
+        }
+      }
+    }
+
+    function renderActiveUsers() {
+      const usersContainer = document.getElementById('active-users');
+      if (!usersContainer) return;
+      usersContainer.innerHTML = '';
+
+      // Ensure we have at least the current user
+      ensureCurrentUserInActiveUsers();
+
+      if (activeUsersData.length === 0) {
+        usersContainer.innerHTML = '<div style="color:#8a8fbc;font-size:12px;padding:12px;">No users online</div>';
+        return;
+      }
+
+      activeUsersData.forEach(user => {
+        const userRow = document.createElement('div');
+        userRow.style.display = 'flex';
+        userRow.style.alignItems = 'center';
+        userRow.style.justifyContent = 'space-between';
+        userRow.style.padding = '10px 8px';
+        userRow.style.marginBottom = '8px';
+        userRow.style.border = '1px solid #2f3243';
+        userRow.style.borderRadius = '8px';
+        userRow.style.background = '#1c1d28';
+
+        const left = document.createElement('div');
+        left.style.display = 'flex';
+        left.style.alignItems = 'center';
+        left.style.gap = '10px';
+
+        const avatar = document.createElement('div');
+        avatar.textContent = user.avatar;
+        avatar.style.width = '32px';
+        avatar.style.height = '32px';
+        avatar.style.borderRadius = '50%';
+        avatar.style.display = 'flex';
+        avatar.style.alignItems = 'center';
+        avatar.style.justifyContent = 'center';
+        avatar.style.background = user.role === 'Host' ? '#0e639c' : '#3e3e42';
+        avatar.style.color = '#ffffff';
+        avatar.style.fontWeight = '700';
+
+        const meta = document.createElement('div');
+        const name = document.createElement('div');
+        name.textContent = user.name + (user.isLocal ? ' (You)' : '');
+        name.style.color = '#ffffff';
+        name.style.fontSize = '13px';
+        const details = document.createElement('div');
+        details.textContent = user.role + ' · ' + user.username;
+        details.style.color = '#8a8fbc';
+        details.style.fontSize = '11px';
+        const activeTime = document.createElement('div');
+        activeTime.textContent = 'Active: ' + formatActiveTime(getComputedActiveSeconds(user));
+        activeTime.style.color = '#9aa0c7';
+        activeTime.style.fontSize = '11px';
+
+        meta.appendChild(name);
+        meta.appendChild(details);
+        meta.appendChild(activeTime);
+        left.appendChild(avatar);
+        left.appendChild(meta);
+
+        const status = document.createElement('div');
+        status.textContent = user.status;
+        status.style.color = user.online ? '#4ec9b0' : '#f0ad4e';
+        status.style.fontSize = '11px';
+        status.style.fontWeight = '600';
+
+        userRow.appendChild(left);
+        userRow.appendChild(status);
+        usersContainer.appendChild(userRow);
+      });
+    }
+
+    function renderDashboardMetrics() {
+      const dashboardContainer = document.getElementById('dashboard-content');
+      if (!dashboardContainer) return;
+      dashboardContainer.innerHTML = '';
+
+      // Ensure we have at least the current user
+      ensureCurrentUserInActiveUsers();
+
+      const activeUsers = activeUsersData.filter(user => user.online).length;
+      const totalUsers = activeUsersData.length;
+      const localUser = activeUsersData.find(user => user.isLocal) || activeUsersData[0] || { online: false, activeSeconds: 0 };
+
+      const summaryRows = [
+        { label: 'Users Online', value: `${activeUsers} / ${totalUsers}` },
+        { label: 'Your Active Time', value: formatActiveTime(getComputedActiveSeconds(localUser)) },
+        { label: 'Current Tab Status', value: localUser.online ? 'Active' : 'Away' }
+      ];
+
+      summaryRows.forEach(row => {
+        const statRow = document.createElement('div');
+        statRow.style.marginBottom = '14px';
+
+        const label = document.createElement('div');
+        label.textContent = row.label;
+        label.style.color = '#8a8fbc';
+        label.style.fontSize = '11px';
+        label.style.marginBottom = '4px';
+
+        const value = document.createElement('div');
+        value.textContent = row.value;
+        value.style.color = '#ffffff';
+        value.style.fontSize = '18px';
+        value.style.fontWeight = '700';
+
+        statRow.appendChild(label);
+        statRow.appendChild(value);
+        dashboardContainer.appendChild(statRow);
+      });
+
+      const header = document.createElement('div');
+      header.textContent = 'User Activity Cards';
+      header.style.color = '#9aa0c7';
+      header.style.fontSize = '12px';
+      header.style.margin = '16px 0 10px';
+      dashboardContainer.appendChild(header);
+
+      const cardsContainer = document.createElement('div');
+      cardsContainer.style.display = 'grid';
+      cardsContainer.style.gridTemplateColumns = '1fr';
+      cardsContainer.style.gap = '10px';
+
+      activeUsersData.forEach(user => {
+        const card = document.createElement('div');
+        card.style.padding = '12px';
+        card.style.border = '1px solid #2f3243';
+        card.style.borderRadius = '10px';
+        card.style.background = '#1a1b26';
+
+        const top = document.createElement('div');
+        top.style.display = 'flex';
+        top.style.alignItems = 'center';
+        top.style.justifyContent = 'space-between';
+        top.style.marginBottom = '10px';
+
+        const title = document.createElement('div');
+        title.style.display = 'flex';
+        title.style.alignItems = 'center';
+        title.style.gap = '10px';
+
+        const avatar = document.createElement('div');
+        avatar.textContent = user.avatar;
+        avatar.style.width = '32px';
+        avatar.style.height = '32px';
+        avatar.style.borderRadius = '50%';
+        avatar.style.display = 'flex';
+        avatar.style.alignItems = 'center';
+        avatar.style.justifyContent = 'center';
+        avatar.style.background = user.role === 'Host' ? '#0e639c' : '#3e3e42';
+        avatar.style.color = '#ffffff';
+        avatar.style.fontWeight = '700';
+
+        const name = document.createElement('div');
+        name.innerHTML = `<strong style="color:#ffffff;">${user.name}${user.isLocal ? ' (You)' : ''}</strong><br><span style="color:#8a8fbc;font-size:11px;">${user.role} · ${user.username}</span>`;
+
+        title.appendChild(avatar);
+        title.appendChild(name);
+        top.appendChild(title);
+
+        const status = document.createElement('div');
+        status.textContent = user.online ? 'Online' : 'Away';
+        status.style.color = user.online ? '#4ec9b0' : '#f0ad4e';
+        status.style.fontSize = '12px';
+        status.style.fontWeight = '700';
+        top.appendChild(status);
+
+        card.appendChild(top);
+
+        const timeRow = document.createElement('div');
+        timeRow.style.display = 'flex';
+        timeRow.style.justifyContent = 'space-between';
+        timeRow.style.gap = '10px';
+
+        const timeLabel = document.createElement('div');
+        timeLabel.textContent = 'Active Time';
+        timeLabel.style.color = '#8a8fbc';
+        timeLabel.style.fontSize = '11px';
+
+        const timeValue = document.createElement('div');
+        timeValue.textContent = formatActiveTime(getComputedActiveSeconds(user));
+        timeValue.style.color = '#ffffff';
+        timeValue.style.fontSize = '13px';
+        timeValue.style.fontWeight = '700';
+
+        timeRow.appendChild(timeLabel);
+        timeRow.appendChild(timeValue);
+        card.appendChild(timeRow);
+
+        const note = document.createElement('div');
+        note.textContent = user.isLocal ? 'Tab focus tracking enabled for anti-cheat' : 'Session activity monitored';
+        note.style.color = '#8a8fbc';
+        note.style.fontSize = '11px';
+        note.style.marginTop = '10px';
+        card.appendChild(note);
+
+        cardsContainer.appendChild(card);
+      });
+
+      dashboardContainer.appendChild(cardsContainer);
+    }
+
+    function getLocalUser() {
+      return activeUsersData.find(user => user.isLocal) || activeUsersData[0];
+    }
+
+    function tickUserTimers() {
+      activeUsersData.forEach(user => {
+        if (user.online) {
+          user.activeSeconds = (user.activeSeconds || 0) + 1;
+        }
+      });
+      renderActiveUsers();
+      renderDashboardMetrics();
+    }
+
+    let sidebarCollapsed = false;
+    let lastSidebarWidth = 260;
+    let previewPanelWidth = 400;
+
+    function setupUserActivityTracking() {
+      document.addEventListener('visibilitychange', () => {
+        updateLocalUserVisibility(document.visibilityState === 'visible');
+      });
+
+      window.addEventListener('blur', () => {
+        updateLocalUserVisibility(false);
+      });
+
+      window.addEventListener('focus', () => {
+        updateLocalUserVisibility(true);
+      });
+
+      setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          tickUserTimers();
+        }
+      }, 1000);
+
+      updateLocalUserVisibility(document.visibilityState === 'visible');
+    }
+
+    function setSidebarWidth(width) {
+      const sidebar = document.getElementById('sidebar');
+      if (!sidebar) return;
+      width = Math.max(80, Math.min(420, width));
+      sidebar.style.width = width + 'px';
+      lastSidebarWidth = width;
+      if (sidebarCollapsed && width > 80) {
+        sidebarCollapsed = false;
+        sidebar.classList.remove('collapsed');
+      }
+    }
+
+    function toggleSidebarCollapse() {
+      const sidebar = document.getElementById('sidebar');
+      if (!sidebar) return;
+      sidebarCollapsed = !sidebarCollapsed;
+      if (sidebarCollapsed) {
+        sidebar.classList.add('collapsed');
+        sidebar.style.width = '60px';
+      } else {
+        sidebar.classList.remove('collapsed');
+        sidebar.style.width = (lastSidebarWidth || 260) + 'px';
+      }
+    }
+
+    function setupSidebarResizer() {
+      const resizer = document.getElementById('sidebar-resizer');
+      const sidebar = document.getElementById('sidebar');
+      if (!resizer || !sidebar) return;
+      let isResizing = false;
+      let startX = 0;
+      let startWidth = 0;
+
+      resizer.addEventListener('mousedown', (event) => {
+        isResizing = true;
+        startX = event.clientX;
+        startWidth = sidebar.offsetWidth;
+        document.body.style.cursor = 'ew-resize';
+        event.preventDefault();
+      });
+
+      document.addEventListener('mousemove', (event) => {
+        if (!isResizing) return;
+        const diff = event.clientX - startX;
+        setSidebarWidth(startWidth + diff);
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (!isResizing) return;
+        isResizing = false;
+        document.body.style.cursor = '';
+      });
+    }
+
+    function setPreviewPanelVisible(show) {
+      const previewPanel = document.getElementById('preview-panel');
+      const previewResizer = document.getElementById('preview-resizer');
+      if (!previewPanel) return;
+      if (show) {
+        previewPanel.style.display = 'block';
+        previewPanel.style.width = previewPanelWidth + 'px';
+        if (previewResizer) previewResizer.style.display = 'block';
+      } else {
+        previewPanel.style.display = 'none';
+        if (previewResizer) previewResizer.style.display = 'none';
+      }
+    }
+
+    function setupPreviewResizer() {
+      const previewResizer = document.getElementById('preview-resizer');
+      const previewPanel = document.getElementById('preview-panel');
+      if (!previewResizer || !previewPanel) return;
+      let isResizing = false;
+      let startX = 0;
+      let startWidth = 0;
+
+      previewResizer.addEventListener('mousedown', (event) => {
+        isResizing = true;
+        startX = event.clientX;
+        startWidth = previewPanel.offsetWidth;
+        document.body.style.cursor = 'ew-resize';
+        event.preventDefault();
+      });
+
+      document.addEventListener('mousemove', (event) => {
+        if (!isResizing) return;
+        const diff = startX - event.clientX;
+        previewPanelWidth = Math.max(220, Math.min(650, startWidth + diff));
+        previewPanel.style.width = previewPanelWidth + 'px';
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (!isResizing) return;
+        isResizing = false;
+        document.body.style.cursor = '';
+      });
+    }
+
+    function switchPanel(panelName) {
+      Object.values(panels).forEach(p => {
+        if (p) {
+          p.classList.remove('active');
+          p.classList.add('hidden');
+        }
+      });
+      if (panels[panelName]) {
+        panels[panelName].classList.remove('hidden');
+        panels[panelName].classList.add('active');
+      }
+      setActivePanelButton(panelName);
+      if (panelName === 'users') {
+        ensureCurrentUserInActiveUsers();
+        renderActiveUsers();
+      }
+      if (panelName === 'dashboard') {
+        ensureCurrentUserInActiveUsers();
+        renderDashboardMetrics();
+      }
+    }
+
+    function setupEventListeners() {
+      const explorerBtn = document.getElementById('explorer-btn');
+      if (explorerBtn) explorerBtn.addEventListener('click', () => switchPanel('explorer'));
+      const usersBtn = document.getElementById('users-btn');
+      if (usersBtn) usersBtn.addEventListener('click', () => switchPanel('users'));
+      const dashboardBtn = document.getElementById('dashboard-btn');
+      if (dashboardBtn) dashboardBtn.addEventListener('click', () => switchPanel('dashboard'));
+      const quizBtn = document.getElementById('quiz-btn');
+      if (quizBtn) quizBtn.addEventListener('click', () => switchPanel('quiz'));
+      const outputBtn = document.getElementById('output-btn');
+      if (outputBtn) outputBtn.addEventListener('click', () => switchPanel('output'));
+      const settingsBtnSidebar = document.getElementById('settings-btn-sidebar');
+      if (settingsBtnSidebar) settingsBtnSidebar.addEventListener('click', () => switchPanel('settings'));
+
+      const newFileBtn = document.getElementById('new-file-btn');
+      if (newFileBtn) newFileBtn.addEventListener('click', () => {
+        showNewFileModal();
+      });
+
+      const createNewFileBtn = document.getElementById('create-new-file');
+      if (createNewFileBtn) createNewFileBtn.addEventListener('click', () => {
+        const newFileName = document.getElementById('new-file-name');
+        const filename = newFileName ? newFileName.value.trim() : '';
+        const newFileLanguage = document.getElementById('new-file-language');
+        const language = newFileLanguage ? newFileLanguage.value : 'javascript';
+
+        if (!filename) {
+          showToast('Please enter a filename');
+          return;
+        }
+
+        createNewFile(filename, language);
+        hideNewFileModal();
+      });
+
+      const cancelNewFileBtn = document.getElementById('cancel-new-file');
+      if (cancelNewFileBtn) cancelNewFileBtn.addEventListener('click', () => {
+        hideNewFileModal();
+      });
+
+      const newFileNameInput = document.getElementById('new-file-name');
+      if (newFileNameInput) newFileNameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const createBtn = document.getElementById('create-new-file');
+          if (createBtn) createBtn.click();
+        }
+      });
+
+      const saveBtn = document.getElementById('save-btn');
+      if (saveBtn) saveBtn.addEventListener('click', saveProject);
+
+      const shareBtn = document.getElementById('share-btn');
+      if (shareBtn) shareBtn.addEventListener('click', () => {
+        if (!currentProjectId) {
+          showToast('No project to share');
+          return;
+        }
+
+        const shareLink = window.location.href.split('?')[0] + '?project=' + encodeURIComponent(currentProjectId) + '&collab=true';
+        navigator.clipboard.writeText(shareLink).then(() => {
+          showToast('Collaborative share link copied!');
+        }).catch(() => {
+          showToast('Failed to copy link');
+        });
+      });
+
+      const settingsBtn = document.getElementById('settings-btn');
+      if (settingsBtn) settingsBtn.addEventListener('click', () => {
+        const modal = document.getElementById('settings-modal');
+        if (modal) modal.classList.remove('hidden');
+      });
+
+      const closeSettingsBtn = document.getElementById('close-settings');
+      if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => {
+        const modal = document.getElementById('settings-modal');
+        if (modal) modal.classList.add('hidden');
+      });
+
+      const previewBtn = document.getElementById('preview-btn');
+      if (previewBtn) previewBtn.addEventListener('click', togglePreview);
+
+      const runCodeBtn = document.getElementById('run-code-btn');
+      if (runCodeBtn) runCodeBtn.addEventListener('click', runCode);
+
+      const runCodeHeaderBtn = document.getElementById('run-code-header-btn');
+      if (runCodeHeaderBtn) runCodeHeaderBtn.addEventListener('click', runCode);
+
+      const clearOutputBtn = document.getElementById('clear-output-btn');
+      if (clearOutputBtn) clearOutputBtn.addEventListener('click', clearOutput);
+
+      const chatToggleBtn = document.getElementById('chat-floating-button');
+      if (chatToggleBtn) chatToggleBtn.addEventListener('click', () => {
+        toggleChatWindow();
+      });
+
+      const chatCloseBtn = document.getElementById('chat-close-btn');
+      if (chatCloseBtn) chatCloseBtn.addEventListener('click', () => {
+        const chatWindow = document.getElementById('chat-window');
+        if (chatWindow) chatWindow.classList.add('hidden');
+      });
+
+      const chatSendBtn = document.getElementById('chat-send-btn');
+      if (chatSendBtn) chatSendBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        sendChatMessage();
+      });
+
+      const chatEmojiBtn = document.getElementById('chat-emoji-btn');
+      if (chatEmojiBtn) chatEmojiBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleEmojiPicker();
+      });
+
+      const chatSnippetBtn = document.getElementById('chat-snippet-btn');
+      if (chatSnippetBtn) chatSnippetBtn.addEventListener('click', promptChatSnippet);
+
+      const chatInput = document.getElementById('chat-input');
+      if (chatInput) {
+        chatInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === 'ArrowRight') {
+            if (e.key === 'ArrowRight') {
+              const cursorAtEnd = chatInput.selectionStart === chatInput.value.length && chatInput.selectionEnd === chatInput.value.length;
+              if (!cursorAtEnd) return;
+            }
+            e.preventDefault();
+            sendChatMessage();
+          }
+        });
+
+        chatInput.addEventListener('keyup', (e) => {
+          if (e.key === 'ArrowRight') {
+            const cursorAtEnd = chatInput.selectionStart === chatInput.value.length && chatInput.selectionEnd === chatInput.value.length;
+            if (cursorAtEnd && chatInput.value.trim()) {
+              sendChatMessage();
+            }
+          }
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        const emojiPicker = document.getElementById('emoji-picker');
+        if (!emojiPicker) return;
+        const chatEmojiBtn = document.getElementById('chat-emoji-btn');
+        if (emojiPicker.contains(e.target) || chatEmojiBtn === e.target) return;
+        hideEmojiPicker();
+      });
+    }
+
+    // Preview functionality
+    function togglePreview() {
+      previewEnabled = !previewEnabled;
+      setPreviewPanelVisible(previewEnabled);
+      
+      if (previewEnabled) {
+        updatePreview();
+        showToast('Preview enabled');
+      } else {
+        showToast('Preview disabled');
+      }
+      
+      // Resize Monaco editor
+      if (editorInstance) {
+        setTimeout(() => editorInstance.layout(), 100);
+      }
+    }
+
+    function updatePreview() {
+      if (!previewEnabled) return;
+      
+      const iframe = document.getElementById('preview-iframe');
+      const currentTab = openTabs.find(tab => tab.id === currentTabId);
+      
+      if (!currentTab) return;
+      
+      const content = editorInstance ? (currentTab.content || '') : getEditorContent();
+      if (!editorInstance) currentTab.content = content;
+      const language = currentTab.language || 'javascript';
+      
+      if (language === 'html') {
+        if (iframe) iframe.srcdoc = content;
+      } else if (language === 'javascript') {
+        const html = '<html><body><script>' + content.replace(new RegExp('<' + '/script>', 'gi'), '<\\/script>') + '<' + '/script></body></html>';
+        if (iframe) iframe.srcdoc = html;
+      } else if (language === 'css') {
+        // Create CSS preview
+        const cssHtml = '<html><head><style>' + content + '</style></head><body><h1>CSS Preview</h1><div>Styles applied above</div></body></html>';
+        if (iframe) iframe.srcdoc = cssHtml;
+      } else {
+        const escaped = content.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        if (iframe) iframe.srcdoc = '<html><body><pre>' + escaped + '</pre></body></html>';
+      }
+    }
+
+    // Quiz functionality
+    let currentQuiz = null;
+    let quizQuestions = [
+      {
+        question: "What does 'var' declare in JavaScript?",
+        options: ["A variable", "A constant", "A function", "A class"],
+        correct: 0
+      },
+      {
+        question: "Which method adds an element to the end of an array?",
+        options: ["push()", "pop()", "shift()", "unshift()"],
+        correct: 0
+      },
+      {
+        question: "What is the correct way to write a comment in Python?",
+        options: ["// comment", "# comment", "/* comment */", "<!-- comment -->"],
+        correct: 1
+      },
+      {
+        question: "Which HTML tag is used for the largest heading?",
+        options: ["&lt;h6&gt;", "&lt;h1&gt;", "&lt;p&gt;", "&lt;div&gt;"],
+        correct: 1
+      },
+      {
+        question: "What does CSS stand for?",
+        options: ["Computer Style Sheets", "Cascading Style Sheets", "Creative Style Sheets", "Colorful Style Sheets"],
+        correct: 1
+      }
+    ];
+
+    const startQuizBtn = document.getElementById('start-quiz-btn');
+    if (startQuizBtn) startQuizBtn.addEventListener('click', () => {
+      if (currentQuiz) {
+        showToast('Quiz already active');
+        return;
+      }
+      startQuiz();
+    });
+
+    const submitAnswerBtn = document.getElementById('submit-answer-btn');
+    if (submitAnswerBtn) submitAnswerBtn.addEventListener('click', () => {
+      submitAnswer();
+    });
+
+    const closeQuizBtn = document.getElementById('close-quiz-btn');
+    if (closeQuizBtn) closeQuizBtn.addEventListener('click', () => {
+      const quizModal = document.getElementById('quiz-modal');
+      if (quizModal) quizModal.classList.add('hidden');
+      currentQuiz = null;
+      const quizStatus = document.getElementById('quiz-status');
+      if (quizStatus) quizStatus.textContent = 'No quiz active';
+    });
+
+    function startQuiz() {
+      currentQuiz = {
+        currentQuestion: 0,
+        score: 0,
+        answers: []
+      };
+      const quizStatus = document.getElementById('quiz-status');
+      if (quizStatus) quizStatus.textContent = 'Quiz in progress...';
+      showQuestion();
+      const quizModal = document.getElementById('quiz-modal');
+      if (quizModal) quizModal.classList.remove('hidden');
+    }
+
+    function showQuestion() {
+      const question = quizQuestions[currentQuiz.currentQuestion];
+      const quizQuestion = document.getElementById('quiz-question');
+      if (quizQuestion) quizQuestion.textContent = question.question;
+      
+      const optionsDiv = document.getElementById('quiz-options');
+      if (!optionsDiv) return;
+      optionsDiv.innerHTML = '';
+      
+      question.options.forEach((option, index) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.style.margin = '8px 0';
+        
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'quiz-option';
+        radio.value = index;
+        radio.id = 'option-' + index;
+        
+        const label = document.createElement('label');
+        label.htmlFor = 'option-' + index;
+        label.textContent = option;
+        label.style.color = '#cccccc';
+        label.style.marginLeft = '8px';
+        
+        optionDiv.appendChild(radio);
+        optionDiv.appendChild(label);
+        optionsDiv.appendChild(optionDiv);
+      });
+    }
+
+    function submitAnswer() {
+      const selected = document.querySelector('input[name="quiz-option"]:checked');
+      if (!selected) {
+        showToast('Please select an answer');
+        return;
+      }
+      
+      const answer = parseInt(selected.value);
+      const question = quizQuestions[currentQuiz.currentQuestion];
+      
+      currentQuiz.answers.push(answer);
+      if (answer === question.correct) {
+        currentQuiz.score++;
+        showToast('Correct!');
+      } else {
+        showToast('Incorrect. Correct answer: ' + question.options[question.correct]);
+      }
+      
+      currentQuiz.currentQuestion++;
+      
+      if (currentQuiz.currentQuestion < quizQuestions.length) {
+        showQuestion();
+      } else {
+        endQuiz();
+      }
+    }
+
+    function endQuiz() {
+      const percentage = Math.round((currentQuiz.score / quizQuestions.length) * 100);
+      const quizQuestion = document.getElementById('quiz-question');
+      if (quizQuestion) quizQuestion.textContent = 'Quiz completed! Score: ' + currentQuiz.score + '/' + quizQuestions.length + ' (' + percentage + '%)';
+      const optionsDiv = document.getElementById('quiz-options');
+      if (optionsDiv) optionsDiv.innerHTML = '<button id="restart-quiz-btn" style="padding:8px 16px;background:#0e639c;color:#ffffff;border:1px solid #0e639c;border-radius:4px;cursor:pointer;">Restart Quiz</button>';
+      const submitBtn = document.getElementById('submit-answer-btn');
+      if (submitBtn) submitBtn.style.display = 'none';
+      
+      const restartBtn = document.getElementById('restart-quiz-btn');
+      if (restartBtn) restartBtn.addEventListener('click', () => {
+        const quizModal = document.getElementById('quiz-modal');
+        if (quizModal) quizModal.classList.add('hidden');
+        currentQuiz = null;
+        const quizStatus = document.getElementById('quiz-status');
+        if (quizStatus) quizStatus.textContent = 'No quiz active';
+        const submitBtn2 = document.getElementById('submit-answer-btn');
+        if (submitBtn2) submitBtn2.style.display = 'inline-block';
+      });
+      
+      // Save quiz result to Firebase
+      if (currentUser && currentProjectId) {
+        const quizRef = db.ref('projects/' + currentProjectId + '/quizzes');
+        quizRef.push({
+          userId: currentUser.uid,
+          score: currentQuiz.score,
+          total: quizQuestions.length,
+          timestamp: Date.now()
+        });
+      }
+    }
+
+    // Load project from URL (projects feature removed)
+  </script>
+</body>
+</html>

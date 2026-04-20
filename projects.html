@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EchoPoly Projects</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1a1f35 100%);
+      position: relative;
+      overflow-x: hidden;
+      color: #e3eaf2;
+    }
+
+    /* Animated background */
+    .bg-gradient {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(-45deg, #122548, #1b3665, #0f172a, #17202e);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+      z-index: 0;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .glow-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.08;
+      z-index: 0;
+    }
+
+    .glow-blob-1 {
+      width: 300px;
+      height: 300px;
+      background: #7c3aed;
+      top: -100px;
+      right: -50px;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .glow-blob-2 {
+      width: 200px;
+      height: 200px;
+      background: #3b82f6;
+      bottom: -50px;
+      left: -50px;
+      animation: float 15s ease-in-out infinite reverse;
+    }
+
+    .glow-blob-3 {
+      width: 250px;
+      height: 250px;
+      background: #06b6d4;
+      top: 50%;
+      left: 10%;
+      animation: float 25s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(30px); }
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: white;
+    }
+
+    .logout-btn {
+      padding: 6px 12px;
+      background: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    .add-card-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .add-card-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+    }
+
+    .settings-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .settings-btn:hover {
+      color: #7c3aed;
+      background: rgba(124, 58, 237, 0.1);
+    }
+        color: var(--primary);
+        font-size: 1.2em;
+      }
+      .settings-content label {
+        display: block;
+        margin: 1em 0 0.5em 0;
+        font-weight: 500;
+      }
+      .settings-content select, .settings-content button {
+        padding: 0.5em 1em;
+        border-radius: 6px;
+        border: 1px solid var(--border-dark);
+        font-size: 1em;
+        margin-bottom: 1em;
+      }
+      .settings-content button {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        margin-left: 0.5em;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .settings-content button:hover {
+        background: var(--primary-dark);
+      }
+      .settings-close {
+        position: absolute;
+        top: 1em;
+        right: 1.2em;
+        font-size: 1.5em;
+        color: #bdbdfc;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+    /* Project Dashboard */
+    .project-dashboard {
+      padding: 120px 2rem 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 10;
+    }
+
+    .project-dashboard h2 {
+      margin-bottom: 2rem;
+      font-size: 1.8rem;
+      color: #f1f5f9;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .project-card {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 16px;
+      padding: 1.5rem;
+      position: relative;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .project-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59, 130, 246, 0.3);
+      box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+    }
+
+    .project-thumb {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .project-thumb.no-image-thumb {
+      background: rgba(30, 41, 59, 0.8);
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      border-radius: 12px;
+      height: 120px;
+      font-size: 2rem;
+    }
+
+    .card-info h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+      color: #f1f5f9;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+
+    .card-info p {
+      margin: 0.2rem 0;
+      font-size: 0.9rem;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+
+    .card-info p:last-child {
+      color: #7c3aed;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .card-menu {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 0.3rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .menu-btn:hover {
+      background: rgba(124, 58, 237, 0.1);
+      color: #7c3aed;
+    }
+
+    .menu-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 32px;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 12px;
+      padding: 0.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      z-index: 10;
+      min-width: 140px;
+    }
+
+    .menu-dropdown button {
+      display: block;
+      width: 100%;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      padding: 0.6rem 1rem;
+      text-align: left;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .menu-dropdown button:hover {
+      background: rgba(124, 58, 237, 0.1);
+      color: #7c3aed;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-content {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      margin: 7% auto;
+      padding: 2.5rem 2rem 2rem;
+      border-radius: 16px;
+      width: 360px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .modal-content h2 {
+      color: #f1f5f9;
+      margin-bottom: 1.5rem;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .modal-content input,
+    .modal-content select {
+      width: 92%;
+      margin: 0.7rem 0;
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      background: rgba(30, 41, 59, 0.5);
+      color: #f1f5f9;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .modal-content input:focus,
+    .modal-content select:focus {
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    }
+
+    .modal-content button {
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.5rem;
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .modal-content button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      font-size: 1.5rem;
+      color: #94a3b8;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.3rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .close-btn:hover {
+      color: #f1f5f9;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* Settings Modal */
+    .settings-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .settings-modal.active {
+      display: flex;
+    }
+
+    .settings-content {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 2em 2.5em;
+      border-radius: 16px;
+      min-width: 320px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .settings-content h2 {
+      margin-top: 0;
+      color: #f1f5f9;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .settings-content label {
+      display: block;
+      margin: 1.5em 0 0.5em 0;
+      font-weight: 500;
+      color: #94a3b8;
+    }
+
+    .settings-content select {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      background: rgba(30, 41, 59, 0.5);
+      color: #f1f5f9;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .settings-content select:focus {
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    }
+
+    .settings-content button {
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.5rem;
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .settings-content button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+    }
+
+    .settings-close {
+      position: absolute;
+      top: 1em;
+      right: 1.2em;
+      font-size: 1.5em;
+      color: #94a3b8;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.3rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .settings-close:hover {
+      color: #f1f5f9;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem;
+      }
+
+      .logo {
+        font-size: 20px;
+      }
+
+      .header-actions {
+        gap: 0.5rem;
+      }
+
+      .add-card-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      .project-dashboard {
+        padding: 100px 1rem 40px;
+      }
+
+      .project-dashboard h2 {
+        font-size: 1.5rem;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .modal-content {
+        margin: 20px;
+        width: calc(100% - 40px);
+        padding: 2rem 1.5rem;
+      }
+
+      .settings-content {
+        padding: 1.5rem 2rem;
+        min-width: 280px;
+      }
+    }
+  padding: 0.6rem 1.5rem;
+  background: linear-gradient(90deg, #7c3aed 0%, #4f46e5 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.modal-content button:hover {
+  background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+  transform: scale(1.04);
+}
+
+.close-btn {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+  font-size: 1.7rem;
+  cursor: pointer;
+  color: #bdbdfc;
+  font-weight: 400;
+  transition: color 0.2s;
+}
+.close-btn:hover {
+  color: #fff;
+}
+
+@media (max-width: 700px) {
+  .project-dashboard {
+    padding: 1.2rem 2vw;
+  }
+  .card-grid {
+    gap: 1.2rem;
+  }
+  .modal-content {
+    width: 96vw;
+    min-width: 0;
+    padding: 1.5rem 0.5rem;
+  }
+}
+
+@media (max-width: 500px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem 1vw;
+  }
+  header h1 {
+    font-size: 1.2rem;
+  }
+  .add-card-btn {
+    margin-top: 0.7rem;
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.7rem 0;
+  }
+  .project-card {
+    height: auto;
+    min-height: 170px;
+    padding: 0.7rem 0.5rem;
+  }
+}
+.polygon-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* allow clicks to pass through to buttons and content */
+  z-index: 0;
+  overflow: hidden;
+}
+.poly {
+  position: absolute;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 18px #7c3aed55) blur(0.5px);
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+.glow1 {
+  fill: rgba(124,58,237,0.10);
+  stroke: #7c3aed;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 16px #7c3aed88);
+}
+.glow2 {
+  fill: rgba(79,70,229,0.09);
+  stroke: #4f46e5;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 12px #4f46e588);
+}
+.glow3 {
+  fill: rgba(189,189,252,0.08);
+  stroke: #bdbdfc;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 10px #bdbdfc88);
+}
+.glow4 {
+  fill: rgba(124,58,237,0.07);
+  stroke: #7c3aed;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 14px #7c3aed66);
+}
+.draggable-poly {
+  cursor: default;
+  pointer-events: none;
+  transition: box-shadow 0.2s;
+}
+.draggable-poly:active {
+  cursor: default;
+}
+
+.pulse-glow {
+  animation: pulse-glow 2.2s infinite cubic-bezier(0.4,0,0.2,1);
+}
+
+@keyframes pulse-glow {
+  0% {
+    filter: drop-shadow(0 0 8px #fffeff88) drop-shadow(0 0 16px #7c3aed44);
+    stroke-width: 3;
+  }
+  50% {
+    filter: drop-shadow(0 0 24px #7c3aedff) drop-shadow(0 0 40px #7c3aed88);
+    stroke-width: 4.5;
+  }
+  100% {
+    filter: drop-shadow(0 0 8px #7c3aed88) drop-shadow(0 0 16px #7c3aed44);
+    stroke-width: 3;
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+  <div class="glow-blob glow-blob-1"></div>
+  <div class="glow-blob glow-blob-2"></div>
+  <div class="glow-blob glow-blob-3"></div>
+
+  <header>
+    <div class="logo">✨ EchoPoly</div>
+    <div class="header-actions">
+      <button type="button" class="add-card-btn" onclick="openModal()">+ Add Project</button>
+      <div id="project-user-profile" class="user-info">
+        <div class="user-avatar" id="user-avatar">U</div>
+        <span class="user-name" id="user-name">User</span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+      <button type="button" class="settings-btn" id="settings-btn" title="Settings">⚙️</button>
+    </div>
+  </header>
+
+  <!-- Polygon background -->
+<div class="polygon-bg">
+  <svg class="poly draggable-poly glow1 pulse-glow" width="220" height="180" style="left: 40px; top: 120px;">
+    <polygon points="110,10 210,60 180,170 40,170 10,60"/>
+  </svg>
+  <svg class="poly draggable-poly glow2 pulse-glow" width="160" height="120" style="left: 800px; top: 350px;">
+    <polygon points="80,10 150,40 130,110 30,110 10,40"/>
+  </svg>
+  <svg class="poly draggable-poly glow3 pulse-glow" width="120" height="100" style="left: 350px; top: 600px;">
+    <polygon points="60,10 110,40 100,90 20,90 10,40"/>
+  </svg>
+  <svg class="poly draggable-poly glow4 pulse-glow" width="180" height="140" style="left: 600px; top: 300px;">
+    <polygon points="90,20 170,60 150,130 30,130 10,60"/>
+  </svg>
+</div>
+  <section class="project-dashboard">
+    <h2>Your Projects</h2>
+    <div class="card-grid" id="project-cards"></div>
+  </section>
+
+  <!-- Modal for creating a project -->
+<div class="settings-modal" id="settings-modal">
+  <div class="settings-content">
+    <button class="settings-close" id="settings-close">&times;</button>
+    <h2>Settings</h2>
+    <label for="theme-select">Theme Mode</label>
+    <select id="theme-select">
+      <option value="system">System Default</option>
+      <option value="light">Light Mode</option>
+      <option value="dark">Dark Mode</option>
+    </select>
+    <br />
+    <button id="save-settings">Save</button>
+  </div>
+</div>
+  <div id="project-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h2>Create New Project</h2>
+      <input type="text" id="project-name" placeholder="Project name" />
+      <select id="project-type">
+        <option value="HTML">HTML</option>
+        <option value="CSS">CSS</option>
+        <option value="JavaScript">JavaScript</option>
+        <option value="TypeScript">TypeScript</option>
+        <option value="Python">Python</option>
+        <option value="PHP">PHP</option>
+        <option value="C#">C#</option>
+        <option value="C++">C++</option>
+        <option value="Java">Java</option>
+        <option value="Kotlin">Kotlin</option>
+      </select>
+<button id="create-project-btn" type="button">Create Project</button>
+    </div>
+  </div>
+
+  <!-- Language Modal -->
+  <style>
+    .hidden { display: none; }
+  </style>
+  <div id="language-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Do you want to change your project code language?</h3>
+      <select id="language-selector">
+        <option value="javascript">JavaScript</option>
+        <option value="python">Python</option>
+        <option value="java">Java</option>
+        <option value="cpp">C++</option>
+        <option value="typescript">TypeScript</option>
+      </select>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;">
+        <button id="confirm-language">Confirm</button>
+        <button id="cancel-language">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Warning Modal -->
+  <div id="warning-modal" class="modal hidden">
+    <div class="modal-content">
+      <p>Are you sure? The previous code will not be saved if you confirm.</p>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;">
+        <button id="final-confirm">Confirm</button>
+        <button id="final-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+
+
+  <script>
+    const firebaseConfig = {
+      apiKey: 'AIzaSyBCcyLy_rNx-riDjmK4SUu-gZbKtDPqEYQ',
+      authDomain: 'echopoly-ide.firebaseapp.com',
+      databaseURL: 'https://echopoly-ide-default-rtdb.asia-southeast1.firebasedatabase.app',
+      projectId: 'echopoly-ide',
+      storageBucket: 'echopoly-ide.appspot.com',
+      messagingSenderId: '290647098484',
+      appId: '1:290647098484:web:61a9a5503c43d465bdbd21',
+      measurementId: 'G-LYBESX64E5'
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+    const projectsRef = db.ref('projects');
+
+    const starterCode = {
+      HTML: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>New Project</title>
+</head>
+<body>
+  <h1>Hello World</h1>
+</body>
+</html>`,
+      CSS: `/* main.css */
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  color: #111;
+}`,
+      JavaScript: `// main.js
+console.log('Hello from JavaScript');`,
+      TypeScript: `// main.ts
+const greet = (name: string) => {
+  return \`Hello, \${name}\`;
+};
+console.log(greet('World'));`,
+      Python: `# main.py
+if __name__ == '__main__':
+    print('Hello, World')`,
+      Java: `// Main.java
+public class Main {
+  public static void main(String[] args) {
+    System.out.println("Hello, World");
+  }
+}`,
+      "C++": `// main.cpp
+#include <iostream>
+int main(){
+  std::cout << "Hello, World" << std::endl;
+  return 0;
+}`,
+      "C#": `// Program.cs
+using System;
+class Program {
+  static void Main(){
+    Console.WriteLine("Hello, World");
+  }
+}`,
+      PHP: `<?php
+echo "Hello, World";
+?>`,
+      Kotlin: `// Main.kt
+fun main() {
+  println("Hello, World")
+}`
+    };
+
+    function applyTheme(mode) {
+      document.body.classList.remove('light-mode', 'dark-mode');
+      if (mode === 'dark') {
+        document.body.classList.add('dark-mode');
+      } else if (mode === 'light') {
+        document.body.classList.add('light-mode');
+      } else {
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.body.classList.add(prefersDark ? 'dark-mode' : 'light-mode');
+      }
+    }
+
+    function loadThemeSetting() {
+      const mode = localStorage.getItem('theme-mode') || 'system';
+      const el = document.getElementById('theme-select');
+      if (el) el.value = mode;
+      applyTheme(mode);
+    }
+
+    function saveThemeSetting() {
+      const mode = document.getElementById('theme-select').value;
+      localStorage.setItem('theme-mode', mode);
+      applyTheme(mode);
+    }
+
+    function openModal() {
+      const modal = document.getElementById('project-modal');
+      if (modal) modal.style.display = 'block';
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('project-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function openProject(projectId) {
+      const encoded = encodeURIComponent(projectId);
+      window.location.href = 'editor.html?project=' + encoded;
+    }
+
+    function toggleMenu(id) {
+      const menu = document.getElementById('menu-' + id);
+      if (!menu) return;
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function renderCards(snapshot) {
+      const container = document.getElementById('project-cards');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const projects = snapshot.val();
+      if (!projects) return;
+
+      Object.entries(projects).forEach(([id, project]) => {
+        const card = document.createElement('div');
+        card.className = 'project-card';
+
+        const hasImage = project.screenshot && typeof project.screenshot === 'string' && project.screenshot.startsWith('http') && project.screenshot.length > 10;
+        const imageSection = hasImage
+          ? `<img src="${project.screenshot}" alt="${project.name || 'Project Screenshot'}" class="project-thumb" onerror="this.style.display='none';" />`
+          : `<div class="project-thumb no-image-thumb"><span>No Image Found</span></div>`;
+
+        card.innerHTML = `
+          ${imageSection}
+          <div class="card-info">
+            <h3>${project.name || 'Untitled Project'}</h3>
+            <p>${project.type || 'Unknown'}</p>
+            <p>Status: ${project.status || 'inactive'}</p>
+          </div>
+          <div class="card-menu">
+            <button class="menu-btn" onclick="toggleMenu('${id}')">?</button>
+            <div id="menu-${id}" class="menu-dropdown">
+              <button onclick="openProject('${id}')">Open</button>
+              <button onclick="renameProject('${id}')">Rename</button>
+              <button onclick="setActive('${id}')">Set Active</button>
+              <button onclick="openLanguageModal('${id}')">Change Language</button>
+              <button onclick="deleteProject('${id}')">Delete</button>
+            </div>
+          </div>
+        `;
+
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('.card-menu')) return;
+          openProject(id);
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function submitNewProject() {
+      const nameInput = document.getElementById('project-name');
+      const typeSelect = document.getElementById('project-type');
+      const name = (nameInput?.value || '').trim();
+      const type = typeSelect?.value;
+
+      if (!name || !type) {
+        alert('Please enter a name and select a type.');
+        return;
+      }
+
+      const newRef = projectsRef.push();
+      const projectId = newRef.key;
+      const payload = {
+        id: projectId,
+        name,
+        title: name,
+        type,
+        status: 'inactive',
+        createdAt: Date.now(),
+        createdBy: (auth && auth.currentUser) ? auth.currentUser.uid : null,
+        code: starterCode[type] || ''
+      };
+
+      newRef.set(payload)
+        .then(() => {
+          if (nameInput) nameInput.value = '';
+          if (typeSelect) typeSelect.selectedIndex = 0;
+          closeModal();
+          window.location.href = 'editor.html?project=' + projectId;
+        })
+        .catch((err) => {
+          console.error('Failed to create project:', err);
+          alert('Failed to create project: ' + (err.message || err));
+        });
+    }
+
+    function setActive(activeId) {
+      projectsRef.once('value', (snapshot) => {
+        const updates = {};
+        snapshot.forEach((child) => {
+          updates[child.key + '/status'] = child.key === activeId ? 'active' : 'inactive';
+        });
+        projectsRef.update(updates);
+      });
+    }
+
+    function renameProject(id) {
+      const newName = prompt('New project name:');
+      if (newName) {
+        projectsRef.child(id).update({ name: newName });
+      }
+    }
+
+    function deleteProject(id) {
+      if (confirm('Delete this project?')) {
+        projectsRef.child(id).remove();
+      }
+    }
+
+    let selectedLanguageProjectId = null;
+
+    function openLanguageModal(projectId) {
+      selectedLanguageProjectId = projectId;
+      const lm = document.getElementById('language-modal');
+      if (lm) lm.classList.remove('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const settingsBtn = document.getElementById('settings-btn');
+      const settingsModal = document.getElementById('settings-modal');
+      const settingsClose = document.getElementById('settings-close');
+      const saveSettingsBtn = document.getElementById('save-settings');
+      const createBtn = document.getElementById('create-project-btn');
+      const cancelLang = document.getElementById('cancel-language');
+      const confirmLang = document.getElementById('confirm-language');
+      const finalConfirm = document.getElementById('final-confirm');
+      const finalCancel = document.getElementById('final-cancel');
+
+      if (settingsBtn && settingsModal) {
+        settingsBtn.addEventListener('click', () => settingsModal.classList.add('active'));
+      }
+      if (settingsClose && settingsModal) {
+        settingsClose.addEventListener('click', () => settingsModal.classList.remove('active'));
+      }
+      if (saveSettingsBtn && settingsModal) {
+        saveSettingsBtn.addEventListener('click', () => {
+          saveThemeSetting();
+          settingsModal.classList.remove('active');
+        });
+      }
+      if (createBtn) {
+        createBtn.addEventListener('click', submitNewProject);
+      }
+      if (cancelLang) {
+        cancelLang.addEventListener('click', () => {
+          const lm = document.getElementById('language-modal');
+          if (lm) lm.classList.add('hidden');
+        });
+      }
+      if (confirmLang) {
+        confirmLang.addEventListener('click', () => {
+          const warningModal = document.getElementById('warning-modal');
+          if (warningModal) warningModal.classList.remove('hidden');
+        });
+      }
+      if (finalCancel) {
+        finalCancel.addEventListener('click', () => {
+          const warningModal = document.getElementById('warning-modal');
+          if (warningModal) warningModal.classList.add('hidden');
+        });
+      }
+      if (finalConfirm) {
+        finalConfirm.addEventListener('click', () => {
+          const selector = document.getElementById('language-selector');
+          const newLang = selector ? selector.value : null;
+          const warningModal = document.getElementById('warning-modal');
+          if (!selectedLanguageProjectId) {
+            alert('No project selected.');
+            if (warningModal) warningModal.classList.add('hidden');
+            return;
+          }
+          if (!newLang) {
+            alert('Please select a language.');
+            return;
+          }
+          db.ref('projects/' + selectedLanguageProjectId + '/language').set(newLang)
+            .then(() => {
+              alert('Project language changed to ' + newLang);
+              if (warningModal) warningModal.classList.add('hidden');
+            })
+            .catch((err) => {
+              console.error('Failed to update language:', err);
+              alert('Failed to update language: ' + (err.message || err));
+              if (warningModal) warningModal.classList.add('hidden');
+            });
+        });
+      }
+      loadThemeSetting();
+      if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+          if ((localStorage.getItem('theme-mode') || 'system') === 'system') {
+            applyTheme('system');
+          }
+        });
+      }
+    });
+
+    projectsRef.on('value', renderCards);
+
+    function getUserDisplayName(user) {
+      if (!user) return 'User';
+      return user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+    }
+
+    function updateProjectUserProfile() {
+      const userData = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      const user = (auth && auth.currentUser) ? auth.currentUser : (userData && Object.keys(userData).length ? userData : null);
+      const userName = user ? getUserDisplayName(user) : 'Guest';
+      const avatarElement = document.getElementById('user-avatar');
+      const nameElement = document.getElementById('user-name');
+      if (avatarElement) avatarElement.textContent = userName.charAt(0).toUpperCase();
+      if (nameElement) nameElement.textContent = userName;
+    }
+
+    function logout() {
+      localStorage.removeItem('currentUser');
+      if (auth && typeof auth.signOut === 'function') {
+        auth.signOut().catch(() => {});
+      }
+      window.location.href = 'index.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', updateProjectUserProfile);
+  </script>
+</body>
+</html>
