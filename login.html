@@ -207,7 +207,28 @@
       color: #a78bfa;
       text-decoration: underline;
     }
-
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 8px 12px;
+  background: rgba(148, 163, 184, 0.1);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 20;
+}
+.back-btn:hover {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+}
     .btn-primary {
       padding: 12px 16px;
       background: linear-gradient(135deg, #7c3aed, #6d28d9);
@@ -399,7 +420,7 @@
   <div class="glow-blob glow-blob-1"></div>
   <div class="glow-blob glow-blob-2"></div>
   <div class="glow-blob glow-blob-3"></div>
-
+<a href="index.html" class="back-btn">← Back to Home</a>
   <div class="container-wrapper">
     <div class="card">
       <div class="header">
@@ -481,15 +502,16 @@
         <span id="toggle-text">Don't have an account? </span>
         <button type="button" onclick="toggleForms()" id="toggle-btn">Sign Up</button>
       </div>
-    </div>
+  </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-    import { 
-      getAuth, 
-      signInWithEmailAndPassword, 
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
       createUserWithEmailAndPassword,
+      updateProfile,
       signInWithPopup,
       GoogleAuthProvider,
       sendPasswordResetEmail,
@@ -516,17 +538,17 @@
     // Login Form Handler
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('login-email').value;
+      const email = document.getElementById('login-email').value.trim().toLowerCase();
       const password = document.getElementById('login-password').value;
-      
+
       await signIn(email, password);
     });
 
     // Signup Form Handler
     document.getElementById('signup-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = document.getElementById('signup-name').value;
-      const email = document.getElementById('signup-email').value;
+      const name = document.getElementById('signup-name').value.trim();
+      const email = document.getElementById('signup-email').value.trim().toLowerCase();
       const password = document.getElementById('signup-password').value;
       const confirm = document.getElementById('signup-confirm').value;
 
@@ -541,17 +563,17 @@
     // Forgot Password Form Handler
     document.getElementById('forgot-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('reset-email').value;
-      
+      const email = document.getElementById('reset-email').value.trim().toLowerCase();
+
       try {
-        setLoading(true, getDemoForm());
+        setLoading(true, 'forgot-form');
         await sendPasswordResetEmail(auth, email);
         showMessage('Password reset link sent to your email', 'success');
         setTimeout(hideForgotPassword, 2000);
       } catch (error) {
         showMessage('Error: ' + error.message, 'error');
       } finally {
-        setLoading(false);
+        setLoading(false, 'forgot-form');
       }
     });
 
@@ -581,7 +603,15 @@
           window.location.href = destination;
         }, 1500);
       } catch (error) {
-        showMessage('Error: ' + error.message, 'error');
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+          showMessage('Incorrect email or password. Please try again.', 'error');
+        } else if (error.code === 'auth/too-many-requests') {
+          showMessage('Too many failed attempts. Please wait a few minutes or reset your password.', 'error');
+        } else if (error.code === 'auth/user-disabled') {
+          showMessage('This account has been disabled. Contact support.', 'error');
+        } else {
+          showMessage('Login failed: ' + error.message, 'error');
+        }
       } finally {
         setLoading(false, 'login-form');
       }
@@ -592,10 +622,8 @@
         setLoading(true, 'signup-form');
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         
-        // Update user profile
-        await userCredential.user.updateProfile({
-          displayName: name
-        });
+        // Update user profile (modular SDK — updateProfile is a standalone function)
+        await updateProfile(userCredential.user, { displayName: name });
 
         showMessage('Account created successfully! Redirecting...', 'success');
         setTimeout(() => {
@@ -615,11 +643,16 @@
     }
 
     window.handleGoogleSignIn = async function() {
+      const googleBtn = document.getElementById('google-btn');
+      const originalHTML = googleBtn ? googleBtn.innerHTML : '';
       try {
-        setLoading(true, getDemoForm());
+        if (googleBtn) {
+          googleBtn.disabled = true;
+          googleBtn.innerHTML = '<span class="loading"></span> Signing in...';
+        }
         const result = await signInWithPopup(auth, googleProvider);
         const user = result.user;
-        
+
         showMessage('Google Sign-In successful! Redirecting...', 'success');
         setTimeout(() => {
           localStorage.setItem('currentUser', JSON.stringify({
@@ -632,11 +665,16 @@
           window.location.href = destination;
         }, 1500);
       } catch (error) {
-        if (error.code !== 'auth/popup-closed-by-user') {
-          showMessage('Error: ' + error.message, 'error');
+        if (error.code === 'auth/popup-blocked') {
+          showMessage('Pop-up was blocked. Please allow pop-ups for this site and try again.', 'error');
+        } else if (error.code !== 'auth/popup-closed-by-user') {
+          showMessage('Google Sign-In error: ' + error.message, 'error');
         }
       } finally {
-        setLoading(false);
+        if (googleBtn) {
+          googleBtn.disabled = false;
+          googleBtn.innerHTML = originalHTML;
+        }
       }
     };
 
@@ -706,13 +744,15 @@
     }
 
     function setLoading(loading, formId) {
+      if (!formId) return;
       const btn = document.querySelector(`#${formId} button[type="submit"]`);
       if (btn) {
         btn.disabled = loading;
         if (loading) {
           btn.innerHTML = '<span class="loading"></span> Processing...';
         } else {
-          btn.innerHTML = isLoginView ? 'Sign In' : 'Create Account';
+          if (formId === 'forgot-form') btn.innerHTML = 'Send Reset Link';
+          else btn.innerHTML = isLoginView ? 'Sign In' : 'Create Account';
         }
       }
     }

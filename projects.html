@@ -723,6 +723,194 @@
     stroke-width: 3;
   }
 }
+    /* Wide creation modal */
+    #project-modal .modal-content {
+      width: 460px;
+      max-width: calc(100vw - 40px);
+      text-align: left;
+    }
+    #project-modal h2 {
+      text-align: center;
+    }
+    .modal-label {
+      display: block;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin: 1rem 0 0.3rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    #project-modal input,
+    #project-modal select {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    /* Invite email rows */
+    .invite-section {
+      margin-top: 1rem;
+    }
+    .invite-email-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .invite-email-input {
+      flex: 1;
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+      border: 1px solid rgba(148,163,184,0.2);
+      background: rgba(30,41,59,0.5);
+      color: #f1f5f9;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .invite-email-input:focus {
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 2px rgba(124,58,237,0.15);
+    }
+    .remove-email-btn {
+      background: rgba(239,68,68,0.1) !important;
+      color: #fca5a5 !important;
+      border: 1px solid rgba(239,68,68,0.3) !important;
+      border-radius: 6px !important;
+      width: 30px !important;
+      height: 30px !important;
+      padding: 0 !important;
+      font-size: 1.1rem !important;
+      line-height: 1 !important;
+      cursor: pointer !important;
+      margin-top: 0 !important;
+      flex-shrink: 0;
+    }
+    .add-email-btn {
+      background: none !important;
+      color: #7c3aed !important;
+      border: 1px dashed rgba(124,58,237,0.5) !important;
+      border-radius: 8px !important;
+      padding: 0.5rem !important;
+      font-size: 0.85rem !important;
+      font-weight: 500 !important;
+      cursor: pointer !important;
+      width: 100% !important;
+      margin-top: 4px !important;
+      transition: background 0.2s !important;
+    }
+    .add-email-btn:hover {
+      background: rgba(124,58,237,0.08) !important;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 1.5rem;
+    }
+    .modal-actions .btn-create {
+      flex: 1;
+      padding: 0.8rem;
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 0;
+    }
+    .modal-actions .btn-create:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(124,58,237,0.3);
+    }
+    /* Invite success dialog */
+    #invite-success-dialog {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+    }
+    #invite-success-dialog.active { display: flex; }
+    .invite-dialog-box {
+      background: rgba(15,23,42,0.97);
+      border: 1px solid rgba(148,163,184,0.2);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 480px;
+      width: calc(100vw - 40px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      position: relative;
+    }
+    .invite-dialog-box h3 {
+      color: #f1f5f9;
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+    }
+    .invite-dialog-box p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .invite-url-bar {
+      display: flex;
+      gap: 8px;
+      background: rgba(30,41,59,0.8);
+      border: 1px solid rgba(148,163,184,0.15);
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      margin-bottom: 1rem;
+    }
+    .invite-url-bar span {
+      flex: 1;
+      color: #7c3aed;
+      font-size: 0.82rem;
+      word-break: break-all;
+      line-height: 1.4;
+    }
+    .invite-url-bar button {
+      flex-shrink: 0;
+      background: rgba(124,58,237,0.2);
+      color: #a78bfa;
+      border: none;
+      border-radius: 6px;
+      padding: 0.3rem 0.7rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-top: 0;
+    }
+    .invited-emails-list {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 1rem;
+    }
+    .invite-dialog-box .btn-open {
+      width: 100%;
+      padding: 0.8rem;
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0;
+    }
+    /* Member badge on project cards */
+    .card-member-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.78rem;
+      color: #7c3aed;
+      background: rgba(124,58,237,0.1);
+      border: 1px solid rgba(124,58,237,0.2);
+      border-radius: 999px;
+      padding: 2px 8px;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -783,20 +971,42 @@
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">&times;</span>
       <h2>Create New Project</h2>
-      <input type="text" id="project-name" placeholder="Project name" />
-      <select id="project-type">
-        <option value="HTML">HTML</option>
-        <option value="CSS">CSS</option>
-        <option value="JavaScript">JavaScript</option>
-        <option value="TypeScript">TypeScript</option>
-        <option value="Python">Python</option>
-        <option value="PHP">PHP</option>
-        <option value="C#">C#</option>
-        <option value="C++">C++</option>
-        <option value="Java">Java</option>
-        <option value="Kotlin">Kotlin</option>
+      <label class="modal-label" for="project-name">Project Name</label>
+      <input type="text" id="project-name" placeholder="e.g. My Awesome App" />
+      <label class="modal-label" for="project-max-users">Maximum Collaborators</label>
+      <select id="project-max-users">
+        <option value="5">Up to 5 people</option>
+        <option value="10" selected>Up to 10 people</option>
+        <option value="20">Up to 20 people</option>
+        <option value="50">Up to 50 people</option>
       </select>
-<button id="create-project-btn" type="button">Create Project</button>
+      <div class="invite-section">
+        <label class="modal-label">Invite Collaborators by Email <span style="color:#475569;font-weight:400;text-transform:none;">(optional)</span></label>
+        <div id="invite-email-list">
+          <div class="invite-email-row">
+            <input type="email" class="invite-email-input" placeholder="colleague@example.com" />
+            <button type="button" class="remove-email-btn" onclick="removeEmailRow(this)" title="Remove">&times;</button>
+          </div>
+        </div>
+        <button type="button" class="add-email-btn" onclick="addEmailRow()">+ Add another email</button>
+      </div>
+      <div class="modal-actions">
+        <button id="create-project-btn" type="button" class="btn-create">Create Project</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invite success dialog -->
+  <div id="invite-success-dialog">
+    <div class="invite-dialog-box">
+      <h3>Project Created!</h3>
+      <p>Share this link with your collaborators:</p>
+      <div class="invite-url-bar">
+        <span id="invite-share-url"></span>
+        <button type="button" onclick="copyInviteUrl()">Copy</button>
+      </div>
+      <div class="invited-emails-list" id="invited-emails-display"></div>
+      <button type="button" class="btn-open" id="invite-open-btn">Open Project</button>
     </div>
   </div>
 
@@ -838,6 +1048,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 
 
   <script>
@@ -855,7 +1066,10 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const auth = firebase.auth();
+    const fsdb = firebase.firestore();
     const projectsRef = db.ref('projects');
+    let firestoreUnsub = null;
+    let _pendingOpenProjectId = null;
 
     const starterCode = {
       HTML: `<!DOCTYPE html>
@@ -952,7 +1166,7 @@ fun main() {
 
     function openProject(projectId) {
       const encoded = encodeURIComponent(projectId);
-      window.location.href = 'editor.html?project=' + encoded;
+      window.location.href = 'editor.html?project=' + encoded + '&collab=true';
     }
 
     function toggleMenu(id) {
@@ -961,37 +1175,43 @@ fun main() {
       menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
     }
 
-    function renderCards(snapshot) {
+    function renderCards(querySnapshot) {
       const container = document.getElementById('project-cards');
       if (!container) return;
       container.innerHTML = '';
 
-      const projects = snapshot.val();
-      if (!projects) return;
+      if (querySnapshot.empty) return;
 
-      Object.entries(projects).forEach(([id, project]) => {
+      querySnapshot.forEach(doc => {
+        const id = doc.id;
+        const project = doc.data();
+
         const card = document.createElement('div');
         card.className = 'project-card';
 
-        const hasImage = project.screenshot && typeof project.screenshot === 'string' && project.screenshot.startsWith('http') && project.screenshot.length > 10;
+        const hasImage = project.screenshot && typeof project.screenshot === 'string' && project.screenshot.startsWith('http');
         const imageSection = hasImage
-          ? `<img src="${project.screenshot}" alt="${project.name || 'Project Screenshot'}" class="project-thumb" onerror="this.style.display='none';" />`
-          : `<div class="project-thumb no-image-thumb"><span>No Image Found</span></div>`;
+          ? `<img src="${project.screenshot}" alt="${project.name || 'Project'}" class="project-thumb" onerror="this.style.display='none';" />`
+          : `<div class="project-thumb no-image-thumb"><span>💻</span></div>`;
+
+        const maxUsers = project.maxUsers || 10;
+        const isOwner = project.createdBy === (auth.currentUser && auth.currentUser.uid);
+        const roleLabel = isOwner ? 'Owner' : 'Collaborator';
 
         card.innerHTML = `
           ${imageSection}
           <div class="card-info">
-            <h3>${project.name || 'Untitled Project'}</h3>
-            <p>${project.type || 'Unknown'}</p>
-            <p>Status: ${project.status || 'inactive'}</p>
+            <h3>${escapeHtml(project.name || 'Untitled Project')}</h3>
+            <p>${roleLabel} &bull; Max ${maxUsers} users</p>
+            <p>${project.status === 'active' ? '🟢 Active' : '⚪ Inactive'}</p>
+            <span class="card-member-count">👥 ${maxUsers}</span>
           </div>
           <div class="card-menu">
-            <button class="menu-btn" onclick="toggleMenu('${id}')">?</button>
+            <button class="menu-btn" onclick="event.stopPropagation();toggleMenu('${id}')">⋯</button>
             <div id="menu-${id}" class="menu-dropdown">
               <button onclick="openProject('${id}')">Open</button>
               <button onclick="renameProject('${id}')">Rename</button>
-              <button onclick="setActive('${id}')">Set Active</button>
-              <button onclick="openLanguageModal('${id}')">Change Language</button>
+              <button onclick="copyProjectLink('${id}', '${project.inviteToken || ''}')">Copy Invite Link</button>
               <button onclick="deleteProject('${id}')">Delete</button>
             </div>
           </div>
@@ -1006,63 +1226,186 @@ fun main() {
       });
     }
 
-    function submitNewProject() {
-      const nameInput = document.getElementById('project-name');
-      const typeSelect = document.getElementById('project-type');
-      const name = (nameInput?.value || '').trim();
-      const type = typeSelect?.value;
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
 
-      if (!name || !type) {
-        alert('Please enter a name and select a type.');
+    function copyProjectLink(projectId, inviteToken) {
+      const url = window.location.origin + '/editor.html?project=' + encodeURIComponent(projectId) + (inviteToken ? '&invite=' + inviteToken : '&collab=true');
+      navigator.clipboard.writeText(url).then(() => alert('Invite link copied!')).catch(() => prompt('Copy this link:', url));
+    }
+
+    async function submitNewProject() {
+      const nameInput = document.getElementById('project-name');
+      const maxUsersSelect = document.getElementById('project-max-users');
+      const name = (nameInput?.value || '').trim();
+      const maxUsers = parseInt(maxUsersSelect?.value || '10');
+
+      if (!name) {
+        alert('Please enter a project name.');
         return;
       }
 
-      const newRef = projectsRef.push();
-      const projectId = newRef.key;
-      const payload = {
-        id: projectId,
-        name,
-        title: name,
-        type,
-        status: 'inactive',
-        createdAt: Date.now(),
-        createdBy: (auth && auth.currentUser) ? auth.currentUser.uid : null,
-        code: starterCode[type] || ''
-      };
+      const user = auth && auth.currentUser;
+      if (!user) {
+        alert('You must be logged in to create a project.');
+        return;
+      }
 
-      newRef.set(payload)
-        .then(() => {
-          if (nameInput) nameInput.value = '';
-          if (typeSelect) typeSelect.selectedIndex = 0;
-          closeModal();
-          window.location.href = 'editor.html?project=' + projectId;
-        })
-        .catch((err) => {
-          console.error('Failed to create project:', err);
-          alert('Failed to create project: ' + (err.message || err));
+      const btn = document.getElementById('create-project-btn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Creating…'; }
+
+      try {
+        // Collect invited emails FIRST before any Firestore writes
+        const emailInputs = document.querySelectorAll('.invite-email-input');
+        const invitedEmails = [];
+        emailInputs.forEach(input => {
+          const email = (input.value || '').trim().toLowerCase();
+          if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email !== (user.email || '').toLowerCase()) {
+            if (!invitedEmails.includes(email)) invitedEmails.push(email);
+          }
         });
+
+        const projectId = 'proj-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+        const inviteToken = Math.random().toString(36).substr(2, 12) + Math.random().toString(36).substr(2, 12);
+
+        // Build the full memberEmails array upfront (owner + all invitees)
+        const allMemberEmails = [user.email || '', ...invitedEmails].filter(Boolean);
+
+        const projectRef = fsdb.collection('projects').doc(projectId);
+        await projectRef.set({
+          id: projectId,
+          name,
+          maxUsers,
+          inviteToken,
+          status: 'active',
+          createdBy: user.uid,
+          createdByEmail: user.email || '',
+          memberEmails: allMemberEmails,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Add creator as owner member doc
+        await projectRef.collection('members').doc(user.uid).set({
+          email: user.email || '',
+          uid: user.uid,
+          role: 'owner',
+          status: 'active',
+          joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Write each invited member doc sequentially using stable email-based IDs
+        for (const email of invitedEmails) {
+          const safeDocId = email.replace(/[.]/g, ',');  // Firestore doc IDs can't contain '.'
+          await projectRef.collection('members').doc(safeDocId).set({
+            email,
+            uid: null,
+            role: 'editor',
+            status: 'invited',
+            invitedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            invitedBy: user.uid
+          });
+        }
+
+        // Mirror a lightweight entry in RTDB so editor.html can load metadata fast
+        await db.ref('projects/' + projectId).set({
+          code: '',
+          status: 'active',
+          createdAt: Date.now(),
+          createdBy: user.email || user.uid
+        });
+
+        // Reset form
+        if (nameInput) nameInput.value = '';
+        if (maxUsersSelect) maxUsersSelect.selectedIndex = 1;
+        resetEmailRows();
+        closeModal();
+
+        // Show invite dialog or navigate directly
+        const shareUrl = window.location.origin + '/editor.html?project=' + encodeURIComponent(projectId) + '&invite=' + inviteToken;
+        _pendingOpenProjectId = projectId;
+        showInviteDialog(shareUrl, invitedEmails, projectId);
+      } catch (err) {
+        console.error('Failed to create project:', err);
+        alert('Failed to create project: ' + (err.message || err));
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Create Project'; }
+      }
     }
 
-    function setActive(activeId) {
-      projectsRef.once('value', (snapshot) => {
-        const updates = {};
-        snapshot.forEach((child) => {
-          updates[child.key + '/status'] = child.key === activeId ? 'active' : 'inactive';
-        });
-        projectsRef.update(updates);
+    function addEmailRow() {
+      const list = document.getElementById('invite-email-list');
+      const row = document.createElement('div');
+      row.className = 'invite-email-row';
+      row.innerHTML = `
+        <input type="email" class="invite-email-input" placeholder="colleague@example.com" />
+        <button type="button" class="remove-email-btn" onclick="removeEmailRow(this)" title="Remove">&times;</button>
+      `;
+      list.appendChild(row);
+      row.querySelector('input').focus();
+    }
+
+    function removeEmailRow(btn) {
+      const row = btn.closest('.invite-email-row');
+      const list = document.getElementById('invite-email-list');
+      if (list && list.children.length > 1) {
+        row.remove();
+      } else {
+        const input = row.querySelector('input');
+        if (input) input.value = '';
+      }
+    }
+
+    function resetEmailRows() {
+      const list = document.getElementById('invite-email-list');
+      if (!list) return;
+      list.innerHTML = `
+        <div class="invite-email-row">
+          <input type="email" class="invite-email-input" placeholder="colleague@example.com" />
+          <button type="button" class="remove-email-btn" onclick="removeEmailRow(this)" title="Remove">&times;</button>
+        </div>
+      `;
+    }
+
+    function showInviteDialog(shareUrl, invitedEmails, projectId) {
+      const dialog = document.getElementById('invite-success-dialog');
+      const urlSpan = document.getElementById('invite-share-url');
+      const emailsDiv = document.getElementById('invited-emails-display');
+      const openBtn = document.getElementById('invite-open-btn');
+
+      if (urlSpan) urlSpan.textContent = shareUrl;
+      if (emailsDiv) {
+        emailsDiv.textContent = invitedEmails.length > 0
+          ? 'Invited: ' + invitedEmails.join(', ')
+          : 'No collaborators invited. You can share the link above anytime.';
+      }
+      if (openBtn) {
+        openBtn.onclick = () => openProject(projectId);
+      }
+      if (dialog) dialog.classList.add('active');
+    }
+
+    function copyInviteUrl() {
+      const urlSpan = document.getElementById('invite-share-url');
+      if (!urlSpan) return;
+      navigator.clipboard.writeText(urlSpan.textContent).then(() => {
+        const btn = urlSpan.nextElementSibling;
+        if (btn) { btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = 'Copy'; }, 2000); }
       });
     }
 
     function renameProject(id) {
       const newName = prompt('New project name:');
-      if (newName) {
-        projectsRef.child(id).update({ name: newName });
+      if (newName && newName.trim()) {
+        fsdb.collection('projects').doc(id).update({ name: newName.trim() })
+          .catch(err => alert('Rename failed: ' + err.message));
       }
     }
 
     function deleteProject(id) {
-      if (confirm('Delete this project?')) {
-        projectsRef.child(id).remove();
+      if (confirm('Delete this project? This cannot be undone.')) {
+        fsdb.collection('projects').doc(id).delete()
+          .catch(err => alert('Delete failed: ' + err.message));
       }
     }
 
@@ -1072,6 +1415,30 @@ fun main() {
       selectedLanguageProjectId = projectId;
       const lm = document.getElementById('language-modal');
       if (lm) lm.classList.remove('hidden');
+    }
+
+    function setupProjectsListener(user) {
+      if (firestoreUnsub) { firestoreUnsub(); firestoreUnsub = null; }
+      if (!user || !user.uid) {
+        const container = document.getElementById('project-cards');
+        if (container) container.innerHTML = '';
+        return;
+      }
+      firestoreUnsub = fsdb.collection('projects')
+        .where('createdBy', '==', user.uid)
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(
+          snap => renderCards(snap),
+          err => {
+            console.error('Projects listener error:', err);
+            // Fallback without orderBy if composite index not yet created
+            if (err.code === 'failed-precondition' || String(err).includes('index')) {
+              firestoreUnsub = fsdb.collection('projects')
+                .where('createdBy', '==', user.uid)
+                .onSnapshot(snap => renderCards(snap), e2 => console.error('Projects fallback error:', e2));
+            }
+          }
+        );
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -1099,6 +1466,14 @@ fun main() {
       }
       if (createBtn) {
         createBtn.addEventListener('click', submitNewProject);
+      }
+
+      // Close invite dialog on backdrop click
+      const inviteDialog = document.getElementById('invite-success-dialog');
+      if (inviteDialog) {
+        inviteDialog.addEventListener('click', (e) => {
+          if (e.target === inviteDialog) inviteDialog.classList.remove('active');
+        });
       }
       if (cancelLang) {
         cancelLang.addEventListener('click', () => {
@@ -1154,7 +1529,32 @@ fun main() {
       }
     });
 
-    projectsRef.on('value', renderCards);
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Write global presence so Firebase shows this user as online
+      const presenceRef = db.ref('presence/' + user.uid);
+      presenceRef.set({
+        email: user.email || '',
+        displayName: user.displayName || user.email || '',
+        status: 'online',
+        online: true,
+        lastActive: Date.now()
+      }).catch(() => {});
+      presenceRef.onDisconnect().set({
+        email: user.email || '',
+        displayName: user.displayName || user.email || '',
+        status: 'offline',
+        online: false,
+        lastActive: Date.now()
+      }).catch(() => {});
+
+      setupProjectsListener(user);
+      updateProjectUserProfile();
+    });
 
     function getUserDisplayName(user) {
       if (!user) return 'User';
@@ -1171,15 +1571,19 @@ fun main() {
       if (nameElement) nameElement.textContent = userName;
     }
 
-    function logout() {
+    async function logout() {
+      window._navigatingWithinApp = false; // don't cancel onDisconnect — let it fire
       localStorage.removeItem('currentUser');
+      const user = auth && auth.currentUser;
+      if (user && db) {
+        try { await db.ref('presence/' + user.uid).remove(); } catch (_) {}
+      }
       if (auth && typeof auth.signOut === 'function') {
-        auth.signOut().catch(() => {});
+        await auth.signOut().catch(() => {});
       }
       window.location.href = 'index.html';
     }
 
-    document.addEventListener('DOMContentLoaded', updateProjectUserProfile);
   </script>
 </body>
 </html>

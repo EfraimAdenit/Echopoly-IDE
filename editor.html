@@ -22,39 +22,45 @@
       position: fixed;
       bottom: 24px;
       right: 24px;
-      width: 56px;
-      height: 56px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
-      background: #0e639c;
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
       color: #ffffff;
       border: none;
-      box-shadow: 0 14px 28px rgba(0,0,0,0.25);
+      box-shadow: 0 8px 24px rgba(124,58,237,0.4);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-size: 20px;
       z-index: 4000;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .chat-floating-button:hover {
+      transform: scale(1.08);
+      box-shadow: 0 12px 30px rgba(124,58,237,0.55);
     }
 
     .chat-window {
       position: fixed;
-      bottom: 92px;
+      bottom: 86px;
       right: 24px;
-      width: 420px;
+      width: 400px;
       max-width: calc(100vw - 48px);
-      min-width: 380px;
-      max-height: 520px;
-      min-height: 420px;
-      border-radius: 18px;
-      background: rgba(28, 29, 40, 0.98);
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+      min-width: 320px;
+      max-height: 500px;
+      min-height: 380px;
+      border-radius: 16px;
+      background: #13141f;
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.5);
       display: flex;
       flex-direction: column;
       overflow: visible;
       z-index: 4000;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(16px);
     }
 
     .profile-badge {
@@ -136,12 +142,13 @@
 
     .chat-header {
       position: relative;
-      padding: 14px 16px;
+      padding: 13px 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-bottom: 1px solid rgba(255,255,255,0.12);
-      background: rgba(24, 25, 34, 0.96);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(59,130,246,0.06));
+      border-radius: 16px 16px 0 0;
     }
 
     .chat-header span {
@@ -266,16 +273,20 @@
     }
 
     .chat-send-btn {
-      min-width: 70px;
-      border-radius: 14px;
+      min-width: 60px;
+      border-radius: 10px;
       border: none;
-      background: #0e639c;
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
       color: #fff;
       cursor: pointer;
-      font-size: 14px;
-      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 16px;
       white-space: nowrap;
+      transition: opacity 0.15s;
     }
+
+    .chat-send-btn:hover { opacity: 0.88; }
 
     .chat-message {
       display: flex;
@@ -375,147 +386,637 @@
     .chat-message.light .timestamp {
       color: #6b7280;
     }
+
+    /* Remote cursor decorations */
+    .collab-cursor-base {
+      border-left: 2px solid;
+      margin-left: -1px;
+    }
+
+    .collab-cursor-flag {
+      position: absolute;
+      top: -18px;
+      left: -1px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px 3px 3px 0;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* Online indicator dot in sidebar */
+    .presence-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .presence-dot.online  { background: #4ec9b0; }
+    .presence-dot.offline { background: #555; }
+
+    /* ── JDoodle-style Header ────────────────────────────────────── */
+    #app-header {
+      display: flex;
+      align-items: center;
+      height: 52px;
+      padding: 0 14px;
+      background: #1c1c1e;
+      border-bottom: 1px solid #2a2a2e;
+      color: #fff;
+      gap: 10px;
+      position: relative;
+      z-index: 100;
+    }
+
+    #header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .header-logo-link {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .header-logo-icon {
+      font-size: 20px;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      filter: drop-shadow(0 0 6px rgba(167,139,250,0.5));
+    }
+
+    .header-logo-text {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #a78bfa 0%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-ide-badge {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #6d28d9;
+      background: rgba(124,58,237,0.12);
+      border: 1px solid rgba(124,58,237,0.25);
+      border-radius: 5px;
+      padding: 2px 5px;
+      margin-left: 2px;
+      align-self: center;
+      -webkit-text-fill-color: #6d28d9;
+    }
+
+    .header-logo-sep {
+      width: 1px;
+      height: 20px;
+      background: rgba(124,58,237,0.25);
+      margin: 0 8px;
+      flex-shrink: 0;
+    }
+
+    .header-project-name {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #project-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e2e8f0;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #header-center {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    #header-center { flex: 1; }
+
+    #header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 22px;
+      background: #3a3a3e;
+      margin: 0 4px;
+    }
+
+    .header-tool-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 10px;
+      border-radius: 7px;
+      border: 1px solid #3a3a3e;
+      background: #2a2a2e;
+      color: #d1d5db;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+
+    .header-tool-btn:hover {
+      background: #3a3a3e;
+      color: #fff;
+      border-color: #555;
+    }
+
+    .header-icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 7px;
+      border: 1px solid #3a3a3e;
+      background: #2a2a2e;
+      color: #d1d5db;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      transition: background 0.15s;
+    }
+
+    .header-icon-btn:hover {
+      background: #3a3a3e;
+      color: #fff;
+    }
+
+    .execute-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border-radius: 7px;
+      border: none;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      transition: opacity 0.15s, transform 0.1s;
+      box-shadow: 0 2px 8px rgba(249,115,22,0.35);
+    }
+
+    .execute-btn:hover { opacity: 0.9; }
+    .execute-btn:active { transform: scale(0.97); }
+
+    /* Profile avatar button */
+    .profile-avatar-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid #4b5563;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .profile-avatar-btn:hover { border-color: #60a5fa; }
+
+    /* Profile dropdown */
+    .profile-dropdown {
+      position: fixed;
+      top: 58px;
+      right: 14px;
+      width: 240px;
+      background: #1f1f23;
+      border: 1px solid #3a3a3e;
+      border-radius: 12px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+      z-index: 9000;
+      overflow: hidden;
+    }
+
+    .pd-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(6,182,212,0.08));
+    }
+
+    .pd-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: #fff;
+      font-weight: 800;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+
+    .pd-info { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+
+    .pd-name {
+      font-weight: 700;
+      font-size: 13px;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pd-email {
+      font-size: 11px;
+      color: #94a3b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pd-divider { height: 1px; background: #2d2d32; margin: 4px 0; }
+
+    .pd-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 16px;
+      border: none;
+      background: transparent;
+      color: #d1d5db;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .pd-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+
+    .pd-item.pd-logout { color: #f87171; }
+    .pd-item.pd-logout:hover { background: rgba(239,68,68,0.1); color: #fca5a5; }
+
+    /* collab status badge */
+    #collab-status {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #4ec9b0;
+      background: rgba(78,201,176,0.1);
+      border: 1px solid rgba(78,201,176,0.3);
+      border-radius: 10px;
+      padding: 3px 8px;
+    }
+
+    #collab-status.visible { display: flex; }
+
+    /* Right panel (preview + output tabs) */
+    #right-panel-tab-bar {
+      display: flex;
+      align-items: center;
+      background: #252526;
+      border-bottom: 1px solid #3e3e42;
+      padding: 0 8px;
+      height: 38px;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .rp-tab {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px 6px 0 0;
+      background: transparent;
+      color: #8a8fbc;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .rp-tab:hover { background: rgba(255,255,255,0.05); color: #d1d5db; }
+
+    .rp-tab.active {
+      background: rgba(14,99,156,0.2);
+      color: #60a5fa;
+      border-bottom: 2px solid #3b82f6;
+    }
+
+    .rp-close-btn {
+      margin-left: auto;
+      width: 26px;
+      height: 26px;
+      border: none;
+      border-radius: 5px;
+      background: transparent;
+      color: #8a8fbc;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .rp-close-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+    #right-output-console {
+      flex: 1;
+      overflow-y: auto;
+      background: #0d0d0f;
+      border-radius: 6px;
+      padding: 10px;
+      font-family: 'Consolas', 'JetBrains Mono', 'Cascadia Code', monospace;
+      font-size: 12.5px;
+      color: #d4d4d4;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 8px;
+    }
+
+    #rp-output-actions {
+      display: flex;
+      gap: 6px;
+      padding: 0 8px 8px;
+      flex-shrink: 0;
+    }
+
+    .rp-action-btn {
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid #3e3e42;
+      background: #2a2a2e;
+      color: #d1d5db;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .rp-action-btn:hover { background: #3a3a3e; color: #fff; }
+
+    /* Switch Guest btn - make it subtle */
+    #switch-guest-btn {
+      padding: 5px 8px;
+      border-radius: 6px;
+      border: 1px solid #3a3a3e;
+      background: transparent;
+      color: #6b7280;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    #switch-guest-btn:hover { color: #4ec9b0; border-color: #4ec9b0; }
   </style>
 </head>
 <body>
 
   <div id="app-container" style="display:flex;flex-direction:column;min-height:100vh;">
     <!-- Top Header Bar -->
-    <header id="app-header" style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#1e1e1e;border-bottom:1px solid #333;color:#fff;">
-      <div id="header-left" style="display:flex;align-items:center;gap:12px;">
-        <h1 style="font-size:16px;margin:0;color:#ffffff;">EchoPoly IDE</h1>
-        <span id="project-title" style="color:#9aa0c7;font-size:13px;">New Project</span>
-        <div id="collab-status" style="display:none;color:#4ec9b0;font-size:12px;padding:4px 8px;background:#1e3a4a;border-radius:12px;border:1px solid #4ec9b0;">
-          🔴 Live Collaboration
+    <header id="app-header">
+      <!-- Left: Logo + IDE badge + Project name -->
+      <div id="header-left">
+        <a href="index2.html" class="header-logo-link" title="Go to Home">
+          <span class="header-logo-icon">✦</span>
+          <span class="header-logo-text">EchoPoly</span>
+          <span class="header-ide-badge">IDE</span>
+        </a>
+        <div class="header-logo-sep"></div>
+        <div class="header-project-name">
+          <span id="project-title">New Project</span>
+          <div id="collab-status">● Live</div>
         </div>
       </div>
-      <div id="header-actions" style="display:flex;align-items:center;gap:8px;">
-        <button id="save-btn" style="padding: 8px 12px; margin-right: 8px;">💾 Save</button>
-        <button id="share-btn" style="padding: 8px 12px; margin-right: 8px;">🔗 Share & Collaborate</button>
-        <button id="run-code-header-btn" style="padding: 8px 12px; margin-right: 8px; background: #0e639c; color: #ffffff; border: 1px solid #0e639c; border-radius: 4px; cursor: pointer;">▶️ Run</button>
-        <button id="preview-btn" style="padding: 8px 12px; margin-right: 8px;">👁️ Preview</button>
-        <button id="settings-btn" style="padding: 8px 12px; margin-right: 10px;">⚙️ Settings</button>
-        <div id="user-profile" style="padding: 8px 12px; display: flex; align-items: center;"></div>
+
+      <!-- Center spacer -->
+      <div id="header-center"></div>
+
+      <!-- Right: Actions -->
+      <div id="header-right">
+        <!-- File tools -->
+        <button id="import-btn" class="header-tool-btn" title="Import a file from your computer">⬆ Import</button>
+        <button id="export-btn" class="header-tool-btn" title="Export current file">⬇ Export</button>
+        <button id="copy-code-btn" class="header-tool-btn" title="Copy code to clipboard">⎘ Copy</button>
+        <div class="header-divider"></div>
+        <!-- Project tools -->
+        <button id="save-btn" class="header-tool-btn" title="Save project">💾 Save</button>
+        <button id="share-btn" class="header-tool-btn" title="Share project link">🔗 Share</button>
+        <div class="header-divider"></div>
+        <!-- View tools -->
+        <button id="preview-btn" class="header-tool-btn" title="Toggle browser preview">🌐 Browser</button>
+        <button id="run-code-header-btn" class="execute-btn" title="Run code">▶ Execute</button>
+        <div class="header-divider"></div>
+        <!-- Settings + Profile -->
+        <button id="settings-btn" class="header-icon-btn" title="Settings">⚙</button>
+        <button id="profile-avatar-btn" class="profile-avatar-btn" title="Profile">?</button>
+        <button id="switch-guest-btn">Switch</button>
       </div>
     </header>
+
+    <!-- Profile Dropdown -->
+    <div id="profile-dropdown" class="profile-dropdown hidden">
+      <div class="pd-header">
+        <div class="pd-avatar" id="pd-avatar-letter">?</div>
+        <div class="pd-info">
+          <div class="pd-name" id="pd-display-name">Loading…</div>
+          <div class="pd-email" id="pd-display-email"></div>
+        </div>
+      </div>
+      <div class="pd-divider"></div>
+      <button class="pd-item" id="pd-home-btn">🏠 Home Page</button>
+      <button class="pd-item" id="pd-projects-btn">📁 Projects</button>
+      <button class="pd-item" id="pd-settings-btn">⚙️ Settings</button>
+      <div class="pd-divider"></div>
+      <button class="pd-item pd-logout" id="pd-logout-btn">↪ Logout</button>
+    </div>
+
+    <!-- Hidden file input for Import -->
+    <input type="file" id="import-file-input" style="display:none;" accept=".js,.ts,.jsx,.tsx,.html,.css,.py,.java,.cpp,.c,.cs,.json,.md,.txt,.sql,.sh,.xml,.yaml,.yml" />
 
     <!-- Main Content Area -->
     <main id="main-content" style="display:flex;flex:1;">
       <!-- Activity Bar -->
-      <div id="activity-bar" style="width:48px;background:#252526;display:flex;flex-direction:column;gap:8px;padding:8px;">
-        <button id="explorer-btn" title="Projects" class="activity-icon active">📁</button>
-        <button id="users-btn" title="Users" class="activity-icon">👥</button>
+      <div id="activity-bar">
+        <!-- Always-visible sidebar toggle — works even when sidebar is fully hidden -->
+        <button id="sidebar-toggle-btn" class="activity-icon activity-toggle" title="Toggle Sidebar (Ctrl+B)">◀</button>
+        <div class="activity-divider"></div>
+        <button id="explorer-btn" title="Files" class="activity-icon active">📁</button>
+        <button id="users-btn" title="Collaborators" class="activity-icon">👥</button>
         <button id="dashboard-btn" title="Dashboard" class="activity-icon">📊</button>
-        <button id="quiz-btn" title="Quiz" class="activity-icon">🃏</button>
-        <button id="output-btn" title="Output" class="activity-icon">▶️</button>
-        <button id="settings-btn-sidebar" title="Settings" class="activity-icon">⚙️</button>
       </div>
 
       <!-- Sidebar -->
-      <aside id="sidebar" style="width:260px;background:#1f1f1f;border-right:1px solid #333;padding:8px;">
-        <div id="sidebar-controls" style="display:flex;justify-content:space-between;align-items:center;padding:0 0 8px;font-size:12px;color:#9aa0c7;">
-          <span>Sidebar</span>
-          <button id="sidebar-toggle-btn" style="padding:4px 8px;background:#2c2f42;color:#ffffff;border:1px solid #3e414f;border-radius:4px;cursor:pointer;">⇔</button>
+      <aside id="sidebar">
+        <!-- Sidebar top controls -->
+        <div id="sidebar-controls">
+          <span>Explorer</span>
+          <button id="sidebar-maximize-btn" title="Maximize / restore sidebar">⤢</button>
         </div>
+
         <!-- Explorer Panel -->
         <div id="explorer-panel" class="sidebar-panel active">
-          <div class="sidebar-header" style="color:#9aa0c7;margin-bottom:8px;">Files</div>
-          <button id="new-file-btn" style="width: 100%; padding: 8px 12px; margin: 8px 0; background: #3e3e42; color: #cccccc; border: 1px solid #555; border-radius: 4px; cursor: pointer;">➕ New File</button>
-          <div id="file-list" class="sidebar-content" style="padding: 8px; max-height: calc(100vh - 240px); overflow-y: auto;"></div>
+          <div class="sidebar-header">
+            <span>Files</span>
+            <div class="header-actions">
+              <button id="new-file-btn" title="New file">＋</button>
+              <button id="collapse-files-btn" title="Collapse file list">−</button>
+            </div>
+          </div>
+          <div id="file-list" class="sidebar-content"></div>
         </div>
 
         <!-- Users Panel -->
         <div id="users-panel" class="sidebar-panel hidden">
-          <div class="sidebar-header">Active Users</div>
-          <div id="active-users" class="sidebar-content" style="padding: 8px;"></div>
+          <div class="sidebar-header">
+            <span>Collaborators</span>
+            <span id="online-count-badge"></span>
+          </div>
+          <div id="active-users" class="sidebar-content"></div>
         </div>
 
         <!-- Dashboard Panel -->
         <div id="dashboard-panel" class="sidebar-panel hidden">
-          <div class="sidebar-header">Dashboard</div>
-          <div id="dashboard-content" class="sidebar-content" style="padding: 8px; color: #cccccc; font-size: 12px;"></div>
+          <div class="sidebar-header">
+            <span>Dashboard</span>
+          </div>
+          <div id="dashboard-content" class="sidebar-content"></div>
         </div>
 
-        <!-- Quiz Panel -->
+        <!-- Quiz Panel (hidden, for teacher/student pages) -->
         <div id="quiz-panel" class="sidebar-panel hidden">
-          <div class="sidebar-header">Flashcard Quiz</div>
-          <div class="sidebar-content" style="padding: 8px; color: #cccccc; font-size: 12px;">
-            <button id="start-quiz-btn" style="width: 100%; padding: 8px; margin-bottom: 8px; background: #0e639c; color: #ffffff; border: 1px solid #0e639c; border-radius: 4px; cursor: pointer;">Start Quiz</button>
-            <div id="quiz-status">No quiz active</div>
+          <div class="sidebar-header"><span>Flashcard Quiz</span></div>
+          <div class="sidebar-content">
+            <button id="start-quiz-btn" style="width:100%;padding:8px;background:var(--brand-grad);color:#fff;border:none;border-radius:6px;cursor:pointer;font-family:inherit;">Start Quiz</button>
+            <div id="quiz-status" style="margin-top:8px;color:var(--text-muted);font-size:12px;">No quiz active</div>
           </div>
         </div>
 
         <!-- Settings Panel -->
         <div id="settings-panel" class="sidebar-panel hidden">
-          <div class="sidebar-header">Settings</div>
-          <div class="sidebar-content" style="padding: 8px; color: #cccccc; font-size: 12px;">
-            <button id="logout-btn" style="width: 100%; padding: 8px; margin-top: 8px; background: #0e639c; color: #ffffff; border: 1px solid #0e639c; border-radius: 4px; cursor: pointer;">Logout</button>
+          <div class="sidebar-header"><span>Settings</span></div>
+          <div class="sidebar-content">
+            <button id="logout-btn">↪ Logout</button>
           </div>
         </div>
 
-        <!-- Output Panel -->
+        <!-- Output Panel (sidebar mirror) -->
         <div id="output-panel" class="sidebar-panel hidden">
-          <div class="sidebar-header">Output</div>
-          <div class="sidebar-content" style="padding: 8px;">
-            <button id="run-code-btn" style="width: 100%; padding: 8px; margin-bottom: 8px; background: #0e639c; color: #ffffff; border: 1px solid #0e639c; border-radius: 4px; cursor: pointer;">▶️ Run Code</button>
-            <div id="output-console" style="background: #1e1e1e; border: 1px solid #3e3e42; border-radius: 4px; padding: 8px; height: 300px; overflow-y: auto; font-family: 'Consolas', 'Monaco', monospace; font-size: 12px; color: #d4d4d4; white-space: pre-wrap;"></div>
-            <button id="clear-output-btn" style="width: 100%; padding: 6px; margin-top: 8px; background: #3e3e42; color: #cccccc; border: 1px solid #555; border-radius: 4px; cursor: pointer;">🗑️ Clear Output</button>
+          <div class="sidebar-header"><span>Output</span></div>
+          <div class="sidebar-content">
+            <button id="run-code-btn" style="width:100%;padding:7px;background:var(--brand-grad);color:#fff;border:none;border-radius:6px;cursor:pointer;font-family:inherit;margin-bottom:6px;">▶ Run Code</button>
+            <div id="output-console" style="background:#0d0d0f;border-radius:6px;padding:8px;height:280px;overflow-y:auto;font-family:'Consolas',monospace;font-size:12px;color:#d4d4d4;white-space:pre-wrap;"></div>
+            <button id="clear-output-btn" style="width:100%;padding:6px;margin-top:6px;background:transparent;color:var(--text-muted);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-family:inherit;">🗑 Clear</button>
           </div>
         </div>
       </aside>
       <div id="sidebar-resizer" class="resizer" title="Drag to resize sidebar"></div>
 
       <!-- Editor Area -->
-      <div id="editor-area" style="flex:1;display:flex;flex-direction:column;">
-        <div id="tab-bar" style="display:flex;gap:0;border-bottom:1px solid #3e3e42;background:#252526;overflow-x:auto;"></div>
-        <div id="editor-container" style="flex:1;display:flex;">
-          <div id="editor" style="flex:1;">
-            <div id="monaco-editor" style="height:calc(100vh - 140px);"></div>
+      <div id="editor-area">
+        <div id="tab-bar"></div>
+        <div id="editor-container" style="flex:1;display:flex;min-height:0;">
+          <div id="editor" style="flex:1;min-width:0;">
+            <div id="monaco-editor"></div>
           </div>
           <div id="preview-resizer" class="resizer" title="Drag to resize preview" style="display:none"></div>
-          <div id="preview-panel" style="width:400px;border-left:1px solid #3e3e42;background:#1e1e1e;display:none;">
-            <div style="padding:8px;color:#cccccc;border-bottom:1px solid #3e3e42;">Preview</div>
-            <iframe id="preview-iframe" style="width:100%;height:calc(100vh - 168px);border:none;background:#ffffff;"></iframe>
+          <div id="preview-panel" style="width:440px;border-left:1px solid #3e3e42;background:#1e1e1e;display:none;flex-direction:column;">
+            <!-- Tab bar -->
+            <div id="right-panel-tab-bar">
+              <button id="rp-tab-browser" class="rp-tab active">🌐 Browser</button>
+              <button id="rp-tab-output" class="rp-tab">⬛ Output</button>
+              <button id="close-right-panel-btn" class="rp-close-btn" title="Close panel">✕</button>
+            </div>
+            <!-- Browser content -->
+            <div id="rp-browser-content" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+              <iframe id="preview-iframe" style="width:100%;flex:1;border:none;background:#ffffff;height:calc(100vh - 130px);"></iframe>
+            </div>
+            <!-- Output content -->
+            <div id="rp-output-content" style="flex:1;display:none;flex-direction:column;overflow:hidden;">
+              <div id="right-output-console"></div>
+              <div id="rp-output-actions">
+                <button class="rp-action-btn" id="clear-right-output-btn">🗑 Clear</button>
+                <button class="rp-action-btn" id="copy-output-btn">⎘ Copy Output</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </main>
   </div>
 
-  <!-- Login Modal -->
-  <div id="login-modal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;justify-content:center;align-items:center;z-index:3000;">
-    <div class="modal-content" style="width:400px;background:#2d2d30;border:1px solid #3e3e42;padding:20px;border-radius:6px;">
-      <h3 style="color:#cccccc;margin-top:0;">Login to EchoPoly</h3>
-      
-      <div style="margin-bottom:16px;">
-        <label style="display:block;color:#cccccc;font-size:13px;margin-bottom:6px;">Email:</label>
-        <input type="email" id="login-email" placeholder="Enter your email" style="width:100%;padding:8px;background:#1e1e1e;color:#ffffff;border:1px solid #3e3e42;border-radius:4px;box-sizing:border-box;font-size:13px;">
-      </div>
-      
-      <div style="margin-bottom:16px;">
-        <label style="display:block;color:#cccccc;font-size:13px;margin-bottom:6px;">Password:</label>
-        <input type="password" id="login-password" placeholder="Enter your password" style="width:100%;padding:8px;background:#1e1e1e;color:#ffffff;border:1px solid #3e3e42;border-radius:4px;box-sizing:border-box;font-size:13px;">
-      </div>
-      
-      <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <button id="login-submit" style="flex:1;padding:8px 16px;background:#0e639c;color:#ffffff;border:1px solid #0e639c;border-radius:4px;cursor:pointer;">Email Login</button>
+  <!-- Login Modal — shown when visitor/guest tries to open a project -->
+  <div id="login-modal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(8,10,20,0.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;justify-content:center;align-items:center;z-index:3000;">
+    <div style="width:420px;max-width:94vw;background:linear-gradient(160deg,#141d2e,#0f1520);border:1px solid rgba(124,58,237,0.25);border-radius:20px;padding:36px 32px 28px;box-shadow:0 32px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(124,58,237,0.08);">
+      <!-- Brand header -->
+      <div style="text-align:center;margin-bottom:28px;">
+        <div style="font-size:28px;margin-bottom:8px;">✦</div>
+        <div style="font-size:22px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.02em;">EchoPoly</div>
+        <div style="margin-top:8px;color:#64748b;font-size:13px;" id="login-modal-subtitle">Sign in to join this project</div>
       </div>
 
-      <div style="display:flex;align-items:center;margin-bottom:12px;gap:8px;">
-        <div style="flex:1;height:1px;background:#3e3e42;"></div>
-        <span style="color:#8a8fbc;font-size:12px;">OR</span>
-        <div style="flex:1;height:1px;background:#3e3e42;"></div>
+      <!-- Error message -->
+      <div id="login-modal-error" style="display:none;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);border-radius:8px;padding:9px 12px;color:#fca5a5;font-size:12px;margin-bottom:14px;"></div>
+
+      <!-- Email + password -->
+      <div style="margin-bottom:12px;">
+        <input type="email" id="login-email" placeholder="Email address" style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(124,58,237,0.2);color:#e2e8f0;border-radius:10px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;transition:border-color 0.15s;" onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='rgba(124,58,237,0.2)'">
+      </div>
+      <div style="margin-bottom:18px;">
+        <input type="password" id="login-password" placeholder="Password" style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(124,58,237,0.2);color:#e2e8f0;border-radius:10px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;transition:border-color 0.15s;" onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='rgba(124,58,237,0.2)'">
       </div>
 
-      <button id="google-login-btn" style="width:100%;padding:10px 16px;background:#ffffff;color:#1f1f23;border:1px solid #e0e0e0;border-radius:4px;cursor:pointer;font-weight:500;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;">
-        <span style="font-size:16px;">🔵</span> Sign in with Google
+      <button id="login-submit" style="width:100%;padding:11px;background:linear-gradient(135deg,#7c3aed,#3b82f6);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity 0.15s;margin-bottom:14px;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">Sign In</button>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <div style="flex:1;height:1px;background:rgba(255,255,255,0.07);"></div>
+        <span style="color:#374151;font-size:11px;letter-spacing:0.05em;">OR</span>
+        <div style="flex:1;height:1px;background:rgba(255,255,255,0.07);"></div>
+      </div>
+
+      <button id="google-login-btn" style="width:100%;padding:10px 16px;background:rgba(255,255,255,0.06);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;font-family:inherit;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+        <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-3.59-13.46-8.82l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Continue with Google
       </button>
 
-      <div style="display:flex;gap:8px;justify-content:flex-end;">
-        <button id="guest-login-btn" style="padding:8px 16px;background:#2d2d30;color:#ffffff;border:1px solid #555;border-radius:4px;cursor:pointer;">Continue as Guest</button>
-      </div>
-      
-      <p style="margin:8px 0 0;color:#cccccc;font-size:12px;">Don't have an account? <a href="register.html" style="color:#0e639c;text-decoration:none;">Register</a></p>
+      <p style="text-align:center;margin:10px 0 0;color:#374151;font-size:12px;">No account? <a href="register.html" style="color:#a78bfa;text-decoration:none;font-weight:600;">Register here</a></p>
     </div>
   </div>
 
@@ -641,14 +1142,14 @@
     </div>
   </div>
 
-  <!-- Monaco Loader -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
-
-  <!-- Firebase SDKs (compat) -->
+  <!-- Firebase SDKs must load BEFORE Monaco's AMD loader to avoid AMD conflict -->
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+  <!-- Monaco Loader (must come AFTER Firebase so its AMD loader doesn't break Firebase UMD) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
 
   <script>
     // Firebase Configuration
@@ -663,21 +1164,40 @@
       measurementId: "G-LYBESX64E5"
     };
 
-    let db = null;
+    let db = null;    // Realtime Database — presence & cursors only
+    let fsdb = null;  // Firestore — editor content, chat, project structure
     let auth = null;
     let googleAuthProvider = null;
 
     if (window.firebase && typeof window.firebase.initializeApp === 'function') {
-      firebase.initializeApp(firebaseConfig);
-      db = typeof firebase.database === 'function' ? firebase.database() : null;
-      auth = typeof firebase.auth === 'function' ? firebase.auth() : null;
-      if (typeof firebase.auth.GoogleAuthProvider === 'function') {
-        googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-        googleAuthProvider.addScope('profile');
-        googleAuthProvider.addScope('email');
+      // Initialize the app first
+      try {
+        if (!firebase.apps || firebase.apps.length === 0) {
+          firebase.initializeApp(firebaseConfig);
+        }
+      } catch (e) {
+        console.error('[EchoPoly] firebase.initializeApp error:', e);
       }
+
+      // Initialize each service independently so one failure doesn't block the others
+      try { db = firebase.database(); }
+      catch (e) { console.error('[EchoPoly] RTDB init failed:', e); db = null; }
+
+      try { fsdb = firebase.firestore(); }
+      catch (e) { console.error('[EchoPoly] Firestore init failed — check Firebase Console → Firestore Database is created:', e); fsdb = null; }
+
+      try {
+        auth = firebase.auth();
+        if (typeof firebase.auth.GoogleAuthProvider === 'function') {
+          googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+          googleAuthProvider.addScope('profile');
+          googleAuthProvider.addScope('email');
+        }
+      } catch (e) { console.error('[EchoPoly] Auth init failed:', e); auth = null; }
+
+      console.log('[EchoPoly] Firebase init — db:', !!db, '| fsdb:', !!fsdb, '| auth:', !!auth);
     } else {
-      console.warn('Firebase SDK unavailable. Editor will still load, but auth/database features are disabled.');
+      console.warn('[EchoPoly] Firebase SDK unavailable. Editor will still load, but auth/database features are disabled.');
     }
 
     // Global variables
@@ -691,15 +1211,113 @@
     let currentUser = null;
     let userId = null;
     let currentProjectId = null;
+    let isRemoteUpdate = false;
+    let lastLocalTypedAt = 0;       // tracks when this user last typed (for typing immunity)
+    let lastLocalFileWriteAt = {};  // per-file timestamp of last local Firestore write
+
+    // Per-user editing activity stats tracked for this browser session
+    const userActivityStats = {};
+    function getOrCreateUserStats(uid) {
+      if (!userActivityStats[uid]) {
+        userActivityStats[uid] = {
+          charsTyped: 0, linesAdded: 0, editCount: 0,
+          lastEditAt: null, codeLines: 0, codeChars: 0, lastOfflineAt: null
+        };
+      }
+      return userActivityStats[uid];
+    }
+    function timeAgo(ts) {
+      if (!ts) return '—';
+      const s = Math.floor((Date.now() - ts) / 1000);
+      if (s < 5)  return 'Just now';
+      if (s < 60) return s + 's ago';
+      if (s < 3600) return Math.floor(s / 60) + 'm ago';
+      if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+      return Math.floor(s / 86400) + 'd ago';
+    }
+    function fmtNum(n) {
+      return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
+    }
     let previewEnabled = false;
     let presenceRef = null;
     let currentUserPresenceRef = null;
     let activeUsersData = [];
-    let socket = null;
+    let membersData = [];
+    let membersUnsub = null;
+    let socket = null; // unused — kept for compatibility references
     let chatMessages = [];
-    let chatHistoryRef = null;
+    let chatHistoryRef = null; // Firestore unsubscribe function
+    let remoteCursors = {};
+    let remoteDecorations = {};      // uid → decoration ID array
+    let userCursorColors = {};       // uid → hex color
+    let localCursorColor = null;
+
+    // 8 distinct colors — one per collaborator, assigned by UID hash so they're stable
+    const CURSOR_COLORS = [
+      '#FF5733', '#33A8FF', '#33FF57', '#FF33F5',
+      '#F5C842', '#33FFF5', '#FF8C33', '#A833FF'
+    ];
+
+    function getCursorColor(uid) {
+      if (userCursorColors[uid]) return userCursorColors[uid];
+      let hash = 0;
+      for (let i = 0; i < uid.length; i++) { hash = ((hash << 5) - hash + uid.charCodeAt(i)) | 0; }
+      userCursorColors[uid] = CURSOR_COLORS[Math.abs(hash) % CURSOR_COLORS.length];
+      return userCursorColors[uid];
+    }
+
+    // Inject per-user cursor CSS — re-injects if label changes
+    const _injectedCursorStyles = {};  // uid → last label
+    function ensureCursorStyle(uid, color, label) {
+      const displayLabel = (label || 'User').replace(/'/g, "\\'").slice(0, 24);
+      if (_injectedCursorStyles[uid] === displayLabel) return;
+      _injectedCursorStyles[uid] = displayLabel;
+
+      const safeId = 'rc' + uid.replace(/[^a-zA-Z0-9]/g, '').slice(0, 12);
+      const alpha = color + '33';
+      let el = document.getElementById('collab-cursor-styles');
+      if (!el) { el = document.createElement('style'); el.id = 'collab-cursor-styles'; document.head.appendChild(el); }
+
+      const block = `
+        .${safeId}{border-left:2px solid ${color};background:${alpha};margin-left:-1px;position:relative;}
+        .${safeId}::after{content:'${displayLabel}';position:absolute;top:-18px;left:0;background:${color};color:#fff;font-size:10px;font-family:system-ui,sans-serif;padding:2px 6px;border-radius:3px 3px 3px 0;white-space:nowrap;pointer-events:none;z-index:1000;}
+      `;
+
+      // Replace existing block for this uid if present, otherwise append
+      const marker = `/*${safeId}*/`;
+      if (el.textContent.includes(marker)) {
+        el.textContent = el.textContent.replace(
+          new RegExp(`\\/\\*${safeId}\\*\\/[\\s\\S]*?\\/\\*end-${safeId}\\*\\/`),
+          `${marker}${block}/*end-${safeId}*/`
+        );
+      } else {
+        el.textContent += `${marker}${block}/*end-${safeId}*/`;
+      }
+    }
+
+    function renderRemoteCursorDecoration(uid, line, col, userName, color) {
+      if (!editorInstance || typeof monaco === 'undefined') return;
+      ensureCursorStyle(uid, color, userName);
+      const safeId = 'rc' + uid.replace(/[^a-zA-Z0-9]/g, '').slice(0, 12);
+      const old = remoteDecorations[uid] || [];
+      remoteDecorations[uid] = editorInstance.deltaDecorations(old, [{
+        range: new monaco.Range(line, col, line, Math.max(col + 1, col)),
+        options: {
+          className: safeId,
+          hoverMessage: { value: `**${userName}**` },
+          stickiness: 1
+        }
+      }]);
+    }
+
+    function clearRemoteCursorDecoration(uid) {
+      if (!editorInstance || !remoteDecorations[uid]) return;
+      remoteDecorations[uid] = editorInstance.deltaDecorations(remoteDecorations[uid], []);
+    }
+
     let currentGuest = null;
     let currentUserRole = 'Guest';
+    let pendingRemoteEditorContent = null;
     const guestInfoKey = 'echopoly_guest_user';
 
     // Starter code
@@ -780,9 +1398,13 @@
         return;
       }
 
+      // Open right panel on Output tab
+      openRightPanel('output');
+
       // Clear previous output and show running message
-      outputConsole.textContent = 'Running...\n';
-      outputConsole.scrollTop = outputConsole.scrollHeight;
+      clearOutput();
+      appendToOutput('Running…\n', 'normal');
+      if (outputConsole) { outputConsole.textContent = ''; }
 
       // Execute based on language
       if (language === 'javascript') {
@@ -878,33 +1500,30 @@
     }
 
     function appendToOutput(text, type = 'normal') {
-      const outputConsole = document.getElementById('output-console');
-      if (!outputConsole) return;
-
+      const colorMap = { error: '#f48771', success: '#4ec9b0', normal: '#d4d4d4' };
+      const color = colorMap[type] || colorMap.normal;
       const timestamp = new Date().toLocaleTimeString();
       const prefix = `[${timestamp}] `;
-      
-      // Create a span for the new output with appropriate styling
-      const outputSpan = document.createElement('span');
-      outputSpan.textContent = prefix + text;
-      
-      if (type === 'error') {
-        outputSpan.style.color = '#f48771';
-      } else if (type === 'success') {
-        outputSpan.style.color = '#4ec9b0';
-      } else {
-        outputSpan.style.color = '#d4d4d4';
+
+      function writeToEl(el) {
+        if (!el) return;
+        const span = document.createElement('span');
+        span.textContent = prefix + text;
+        span.style.color = color;
+        span.style.display = 'block';
+        el.appendChild(span);
+        el.scrollTop = el.scrollHeight;
       }
-      
-      outputConsole.appendChild(outputSpan);
-      outputConsole.scrollTop = outputConsole.scrollHeight;
+
+      writeToEl(document.getElementById('output-console'));
+      writeToEl(document.getElementById('right-output-console'));
     }
 
     function clearOutput() {
-      const outputConsole = document.getElementById('output-console');
-      if (outputConsole) {
-        outputConsole.textContent = '';
-      }
+      const c1 = document.getElementById('output-console');
+      const c2 = document.getElementById('right-output-console');
+      if (c1) c1.textContent = '';
+      if (c2) c2.textContent = '';
     }
 
     // Collaboration status functions
@@ -915,64 +1534,269 @@
       const activeCollaborators = activeUsersData.filter(user => !user.isLocal && user.online).length;
       
       if (activeCollaborators > 0) {
-        collabStatus.style.display = 'inline-block';
-        collabStatus.innerHTML = `🟢 ${activeCollaborators} collaborator${activeCollaborators > 1 ? 's' : ''}`;
+        collabStatus.classList.add('visible');
+        collabStatus.textContent = `● ${activeCollaborators} live`;
       } else {
-        collabStatus.style.display = 'none';
+        collabStatus.classList.remove('visible');
       }
     }
 
-    // Collaborative editor functions
-    let editorSyncRef = null;
-    let cursorSyncRef = null;
+    // Collaborative editor functions (Firestore-based)
+    let editorSyncUnsub = null;
+    let structureSyncUnsub = null;
+    let fileSyncUnsubs = {};
+    let editorSyncDebounceTimer = null;
 
-    function setupEditorSync(projectId) {
-      if (!db || !projectId) return;
-      if (editorSyncRef) editorSyncRef.off();
-      if (cursorSyncRef) cursorSyncRef.off();
-
-      editorSyncRef = db.ref('projectEditor/' + projectId + '/changes');
-      editorSyncRef.on('child_added', snapshot => {
-        const change = snapshot.val();
-        if (!change) return;
-        const currentUserId = userId || (currentGuest && currentGuest.id);
-        if (change.userId && currentUserId && change.userId !== currentUserId) {
-          applyRemoteEditorChange(change);
-        }
-      });
-
-      cursorSyncRef = db.ref('projectEditor/' + projectId + '/cursors');
-      cursorSyncRef.on('value', snapshot => {
-        const cursors = snapshot.val() || {};
-        const currentUserId = userId || (currentGuest && currentGuest.id);
-        Object.keys(cursors).forEach(userId => {
-          if (userId !== currentUserId && cursors[userId]) {
-            updateRemoteCursor(cursors[userId]);
-          }
-        });
-      });
+    function applyPendingRemoteEditorContent() {
+      if (pendingRemoteEditorContent === null || pendingRemoteEditorContent === undefined) return;
+      if (isRemoteUpdate) return;
+      isRemoteUpdate = true;
+      try {
+        setEditorContent(pendingRemoteEditorContent);
+      } catch (error) {
+        console.error('Error applying pending remote editor content:', error);
+      } finally {
+        isRemoteUpdate = false;
+        pendingRemoteEditorContent = null;
+      }
     }
 
-    function emitEditorChangeViaFirebase(changes) {
-      if (!db || !currentProjectId || isRemoteUpdate || !changes) return;
+    function syncLocalEditorContentToFirebase(projectId) {
+      if (!fsdb || !projectId) return;
+      const currentUserId = userId || (currentGuest && currentGuest.id);
+      if (!currentUserId) return;
+      const content = getEditorContent();
+      if (content === undefined || content === null) return;
+      const fileId = currentTabId || 'main';
+      const tab = openTabs.find(t => t.id === fileId) || {};
+      const writeTime = Date.now();
+      lastLocalFileWriteAt[fileId] = writeTime;
+
+      fsdb.collection('projects').doc(projectId)
+        .collection('files').doc(fileId)
+        .set({
+          content: content,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          writtenAt: writeTime,
+          updatedBy: currentUserId,
+          name: tab.name || 'main',
+          language: tab.language || 'javascript'
+        }, { merge: true })
+        .catch(err => console.warn('Failed to sync local editor content:', err));
+    }
+
+    function syncProjectStructureToFirebase(projectId) {
+      if (!fsdb || !projectId) return;
       const currentUserId = userId || (currentGuest && currentGuest.id);
       if (!currentUserId) return;
 
+      const tabsMeta = openTabs.map(t => ({ id: t.id, name: t.name, language: t.language, isOpen: t.isOpen !== false }));
+      fsdb.collection('projects').doc(projectId).set({
+        openTabs: tabsMeta,
+        currentTabId: currentTabId,
+        title: document.getElementById('project-title')?.textContent || 'Shared Project',
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedBy: currentUserId
+      }, { merge: true }).catch(err => {
+        console.warn('Failed to sync project structure:', err);
+      });
+    }
+
+    async function loadProjectStructureFromFirebase(projectId) {
+      if (!fsdb || !projectId) return null;
       try {
-        changes.forEach(change => {
-          if (change && change.range && change.text !== undefined) {
-            const changeId = 'change-' + Date.now() + '-' + Math.random().toString(36).slice(2);
-            db.ref('projectEditor/' + currentProjectId + '/changes/' + changeId).set({
-              userId: currentUserId,
-              range: change.range,
-              text: change.text,
-              timestamp: Date.now()
-            }).catch(err => console.warn('Failed to emit editor change:', err));
-          }
-        });
-      } catch (error) {
-        console.error('Error emitting editor change via Firebase:', error);
+        const doc = await fsdb.collection('projects').doc(projectId).get();
+        if (!doc.exists) return null;
+        const data = doc.data();
+        if (!data || !Array.isArray(data.openTabs) || data.openTabs.length === 0) return null;
+
+        // Load file contents from the files subcollection so collaborators see content immediately
+        const tabs = data.openTabs.map(t => ({ ...t }));
+        try {
+          const snaps = await Promise.all(
+            tabs.map(t => fsdb.collection('projects').doc(projectId).collection('files').doc(t.id).get())
+          );
+          snaps.forEach((snap, i) => {
+            if (snap.exists && snap.data()) tabs[i].content = snap.data().content || '';
+          });
+        } catch (_) {}
+
+        return { ...data, openTabs: tabs };
+      } catch (err) {
+        console.warn('Failed to load project structure:', err);
+        return null;
       }
+    }
+
+    function setupEditorSync(projectId) {
+      if (!fsdb || !projectId) return;
+
+      // Tear down old listeners
+      if (editorSyncUnsub) { editorSyncUnsub(); editorSyncUnsub = null; }
+      if (structureSyncUnsub) { structureSyncUnsub(); structureSyncUnsub = null; }
+      Object.values(fileSyncUnsubs).forEach(fn => fn());
+      fileSyncUnsubs = {};
+
+      // Real-time project structure sync (new files added by collaborators)
+      structureSyncUnsub = fsdb.collection('projects').doc(projectId).onSnapshot(doc => {
+        if (!doc.exists) { syncProjectStructureToFirebase(projectId); return; }
+        const structure = doc.data();
+        const currentUserId = userId || (currentGuest && currentGuest.id);
+        if (!structure.updatedBy || structure.updatedBy === currentUserId) return;
+
+        if (Array.isArray(structure.openTabs)) {
+          // Merge remote tabs into local list
+          structure.openTabs.forEach(remoteTab => {
+            if (!openTabs.find(t => t.id === remoteTab.id)) {
+              openTabs.push({ ...remoteTab, content: '' });
+            } else {
+              const local = openTabs.find(t => t.id === remoteTab.id);
+              if (local) { local.name = remoteTab.name; local.language = remoteTab.language; }
+            }
+          });
+          // Remove tabs deleted by remote
+          openTabs = openTabs.filter(t => structure.openTabs.find(r => r.id === t.id));
+        }
+
+        const projectTitle = document.getElementById('project-title');
+        if (projectTitle && structure.title) projectTitle.textContent = structure.title;
+        renderTabs();
+
+        // Switch to the first valid tab when currentTabId is null (collab page load
+        // before Firestore returned) OR when it was removed by the remote structure.
+        // This also triggers watchFileContent for the correct file ID.
+        const tabStillValid = currentTabId && openTabs.find(t => t.id === currentTabId);
+        if (!tabStillValid && openTabs.length > 0) {
+          const firstTab = openTabs.find(t => t.isOpen !== false) || openTabs[0];
+          if (firstTab) setTimeout(() => switchTab(firstTab.id), 0);
+        }
+      });
+
+      // Watch a file's content in real-time (Google Docs style)
+      function watchFileContent(fileId) {
+        if (fileSyncUnsubs[fileId]) return;
+        fileSyncUnsubs[fileId] = fsdb.collection('projects').doc(projectId)
+          .collection('files').doc(fileId).onSnapshot(docSnap => {
+            if (!docSnap.exists) return;
+            const data = docSnap.data();
+            if (!data) return;
+            const currentUserId = userId || (currentGuest && currentGuest.id);
+
+            // Skip updates written by this user
+            if (data.updatedBy && data.updatedBy === currentUserId) return;
+
+            // Typing immunity: don't overwrite while user is actively typing (400ms window)
+            if (Date.now() - lastLocalTypedAt < 400) return;
+
+            // Last-write-wins: reject stale remote updates
+            const localWriteAt = lastLocalFileWriteAt[fileId] || 0;
+            if (data.writtenAt && data.writtenAt <= localWriteAt) return;
+
+            // Update in-memory tab content
+            const tab = openTabs.find(t => t.id === fileId);
+            if (tab) tab.content = data.content || '';
+
+            // Track remote user's code progress stats
+            if (data.updatedBy) {
+              const rst = getOrCreateUserStats(data.updatedBy);
+              const rc = data.content || '';
+              rst.codeLines = rc.split('\n').length;
+              rst.codeChars = rc.length;
+              rst.lastEditAt = data.writtenAt || Date.now();
+            }
+
+            // Apply to editor only if this is the active tab
+            if (fileId === currentTabId && !isRemoteUpdate) {
+              isRemoteUpdate = true;
+              try {
+                const cur = editorInstance ? editorInstance.getPosition() : null;
+                setEditorContent(data.content || '');
+                // Restore cursor so it doesn't jump
+                if (editorInstance && cur) {
+                  try { editorInstance.setPosition(cur); } catch (_) {}
+                }
+              } finally {
+                isRemoteUpdate = false;
+              }
+            }
+          }, err => {
+            // Listener rejected (permission-denied before member join, or network).
+            // Clear the slot so watchFileContent can be retried once access is granted.
+            console.warn('[EchoPoly] file listener error:', fileId, err.code);
+            delete fileSyncUnsubs[fileId];
+            setTimeout(() => watchFileContent(fileId), 2000);
+          });
+      }
+
+      // Load initial content then start watching
+      if (currentTabId) {
+        fsdb.collection('projects').doc(projectId)
+          .collection('files').doc(currentTabId).get().then(docSnap => {
+            if (docSnap.exists) {
+              const data = docSnap.data();
+              if (data && data.content !== undefined && !isRemoteUpdate) {
+                isRemoteUpdate = true;
+                try { setEditorContent(data.content); } finally { isRemoteUpdate = false; }
+                const tab = openTabs.find(t => t.id === currentTabId);
+                if (tab) tab.content = data.content;
+              }
+            } else {
+              syncLocalEditorContentToFirebase(projectId);
+            }
+            watchFileContent(currentTabId);
+          }).catch(() => watchFileContent(currentTabId));
+      }
+
+      // Expose watchFileContent so switchTab can start watching new tabs
+      window._watchFileContent = (fileId) => { if (currentProjectId) watchFileContent(fileId); };
+
+      // Realtime Database: cursor positions (low-latency, no persist needed)
+      const cursorRef = db && db.ref ? db.ref('projectEditor/' + projectId + '/cursors') : null;
+      if (cursorRef) {
+        cursorRef.on('value', snapshot => {
+          const cursors = snapshot.val() || {};
+          const currentUserId = userId || (currentGuest && currentGuest.id);
+          Object.keys(cursors).forEach(uid => {
+            if (uid !== currentUserId && cursors[uid]) updateRemoteCursor(cursors[uid]);
+          });
+        });
+      }
+    }
+
+    function emitEditorChangeViaFirebase(changes) {
+      if (!fsdb || !currentProjectId || isRemoteUpdate || !changes) return;
+      const currentUserId = userId || (currentGuest && currentGuest.id);
+      if (!currentUserId) return;
+
+      // Debounce: write to Firestore 300ms after the user stops typing (word-by-word rate)
+      if (editorSyncDebounceTimer) clearTimeout(editorSyncDebounceTimer);
+      editorSyncDebounceTimer = setTimeout(() => {
+        const fileId = currentTabId || 'main';
+        const fullContent = getEditorContent();
+        if (fullContent === undefined || fullContent === null) return;
+        const tab = openTabs.find(t => t.id === fileId) || {};
+        const writeTime = Date.now();
+        lastLocalFileWriteAt[fileId] = writeTime;
+
+        fsdb.collection('projects').doc(currentProjectId)
+          .collection('files').doc(fileId)
+          .set({
+            content: fullContent,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            writtenAt: writeTime,
+            updatedBy: currentUserId,
+            name: tab.name || 'main',
+            language: tab.language || 'javascript'
+          }, { merge: true })
+          .catch(err => console.warn('Failed to emit editor change:', err));
+      }, 300);
+    }
+
+    function updateCursor(uid, line, column, color) {
+      if (!db || !uid) return;
+      db.ref('presence/' + uid + '/cursor')
+        .set({ line, column, color })
+        .catch(() => {});
     }
 
     function emitCursorPositionViaFirebase() {
@@ -980,14 +1804,28 @@
       const currentUserId = userId || (currentGuest && currentGuest.id);
       if (!currentUserId) return;
 
+      if (!localCursorColor) localCursorColor = getCursorColor(currentUserId);
+
       try {
         const position = editorInstance.getPosition();
-        db.ref('projectEditor/' + currentProjectId + '/cursors/' + currentUserId).set({
+        const line = position ? position.lineNumber : 1;
+        const column = position ? position.column : 1;
+
+        const cursorPayload = {
           userId: currentUserId,
           position: position,
           userName: getChatSenderName(),
+          color: localCursorColor,
           timestamp: Date.now()
-        }).catch(err => console.warn('Failed to emit cursor position:', err));
+        };
+
+        // Project-scoped cursor (for editor decorations)
+        db.ref('projectEditor/' + currentProjectId + '/cursors/' + currentUserId)
+          .set(cursorPayload)
+          .catch(err => console.warn('Failed to emit cursor position:', err));
+
+        // Global presence cursor — use dedicated updateCursor function
+        updateCursor(currentUserId, line, column, localCursorColor);
       } catch (error) {
         console.error('Error emitting cursor position via Firebase:', error);
       }
@@ -1036,70 +1874,54 @@
     }
 
     function updateRemoteCursor(data) {
-      // Update remote user cursor positions (for future enhancement)
-      remoteCursors[data.userId] = {
+      if (!data || !data.userId) return;
+      const uid = data.userId;
+      const color = data.color || getCursorColor(uid);
+      userCursorColors[uid] = color;
+
+      remoteCursors[uid] = {
         position: data.position,
-        userName: data.userName,
+        userName: data.userName || 'User',
+        color,
         timestamp: Date.now()
       };
-      
-      // Clean up old cursors (older than 30 seconds)
+
+      // Render colored cursor decoration in Monaco
+      if (data.position && data.position.lineNumber) {
+        renderRemoteCursorDecoration(
+          uid,
+          data.position.lineNumber,
+          data.position.column || 1,
+          data.userName || 'User',
+          color
+        );
+      }
+
+      // Clean up stale cursors (> 30 s without update)
       const now = Date.now();
-      Object.keys(remoteCursors).forEach(userId => {
-        if (now - remoteCursors[userId].timestamp > 30000) {
-          delete remoteCursors[userId];
+      Object.keys(remoteCursors).forEach(id => {
+        if (now - remoteCursors[id].timestamp > 30000) {
+          clearRemoteCursorDecoration(id);
+          delete remoteCursors[id];
         }
       });
     }
 
     function emitEditorChange(changes) {
       emitEditorChangeViaFirebase(changes);
-      if (!socket || !socket.connected || isRemoteUpdate || !changes) return;
-      try {
-        const currentUserId = userId || (currentGuest && currentGuest.id);
-        if (!currentUserId) return;
-        changes.forEach(change => {
-          if (change && change.range && change.text !== undefined) {
-            socket.emit('editorContentUpdate', {
-              userId: currentUserId,
-              range: change.range,
-              text: change.text,
-              projectId: currentProjectId
-            });
-          }
-        });
-      } catch (error) {
-        console.error('Error emitting editor change:', error);
-      }
     }
 
     function emitCursorPosition() {
       emitCursorPositionViaFirebase();
-      if (!socket || !socket.connected || !editorInstance) return;
-      try {
-        const currentUserId = userId || (currentGuest && currentGuest.id);
-        if (!currentUserId) return;
-        const position = editorInstance.getPosition();
-        socket.emit('cursorPositionUpdate', {
-          userId: currentUserId,
-          position: position,
-          userName: getChatSenderName(),
-          projectId: currentProjectId
-        });
-      } catch (error) {
-        console.error('Error emitting cursor position:', error);
-      }
     }
 
     function scheduleSave() {
       if (!autoSaveEnabled) return;
       if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
       autoSaveTimeout = setTimeout(() => {
+        // Local save only — cloud sync is handled by emitEditorChangeViaFirebase (5s debounce)
         saveCurrentTabContent();
         saveProjectStateToLocal();
-        if (currentProjectId && currentUser) {
-          saveProject();
-        }
       }, 1000);
     }
 
@@ -1167,6 +1989,38 @@
     function restoreProjectState() {
       const projectId = getProjectIdFromUrl() || loadLastProjectId();
       if (!projectId) return;
+      currentProjectId = projectId; // always use the URL/stored project
+
+      // If this is a shared project (has project ID in URL), try to load from Firestore first
+      const isSharedProject = !!getProjectIdFromUrl();
+
+      if (isSharedProject) {
+        loadProjectStructureFromFirebase(projectId).then(sharedStructure => {
+          if (sharedStructure) {
+            // Load shared project structure
+            currentProjectId = projectId;
+            openTabs = sharedStructure.openTabs.map(t => ({ ...t, content: t.content || '' }));
+            currentTabId = sharedStructure.currentTabId || openTabs[0].id;
+            const title = sharedStructure.title || 'Shared Project';
+            const projectTitle = document.getElementById('project-title');
+            if (projectTitle) projectTitle.textContent = title;
+            initializeProjectTabs();
+            updateChatHeader();
+            saveProjectStateToLocal();
+          } else {
+            // No shared structure exists, fall back to local or create new
+            loadLocalOrCreateNewProject(projectId);
+          }
+        }).catch(err => {
+          console.warn('Failed to load shared project structure:', err);
+          loadLocalOrCreateNewProject(projectId);
+        });
+      } else {
+        loadLocalOrCreateNewProject(projectId);
+      }
+    }
+
+    function loadLocalOrCreateNewProject(projectId) {
       const savedState = loadProjectStateFromLocal(projectId);
       currentProjectId = projectId;
       if (savedState && Array.isArray(savedState.openTabs) && savedState.openTabs.length > 0) {
@@ -1176,10 +2030,24 @@
         const projectTitle = document.getElementById('project-title');
         if (projectTitle) projectTitle.textContent = title;
       }
+      // If no local state and this is a shared project, sync current structure to Firebase
+      if (!savedState && getProjectIdFromUrl() && db) {
+        syncProjectStructureToFirebase(projectId);
+      }
     }
 
     function initializeProjectTabs() {
       if (openTabs.length === 0) {
+        // In collab mode, Firestore hasn't returned yet — don't create a local stub
+        // with a different ID than the owner's files. Just wait; restoreProjectState
+        // will call initializeProjectTabs() again once the remote structure arrives.
+        if (isCollaborationMode()) {
+          if (editorInstance) {
+            isRemoteUpdate = true;
+            try { editorInstance.setValue(''); } finally { isRemoteUpdate = false; }
+          }
+          return;
+        }
         createNewFile('main.js', 'javascript');
         return;
       }
@@ -1217,16 +2085,22 @@
 
     function getUserDisplayName(user) {
       if (!user) return 'Guest';
-      return user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+      if (user.displayName) return user.displayName;
+      if (user.email) return user.email.split('@')[0];
+      if (user.isAnonymous) return 'Visitor-' + (user.uid || '').slice(0, 6);
+      return 'User-' + (user.uid || '').slice(0, 6);
     }
 
     function getUserName(user) {
       if (!user) return 'guest';
-      return user.email ? user.email.split('@')[0] : ('user_' + (user.uid || '').slice(0, 6));
+      if (user.email) return user.email.split('@')[0];
+      if (user.isAnonymous) return 'visitor_' + (user.uid || '').slice(0, 8);
+      return 'user_' + (user.uid || '').slice(0, 8);
     }
 
     function getUserRole(user) {
       if (!user) return 'Guest';
+      if (user.isAnonymous) return 'Visitor';
       const email = (user.email || '').toLowerCase();
       if (email.includes('admin')) return 'Admin';
       if (email.includes('teacher')) return 'Teacher';
@@ -1243,10 +2117,12 @@
     }
 
     function renderUserProfile() {
-      const profileDiv = document.getElementById('user-profile');
-      if (!profileDiv) return;
+      const profileDiv = document.getElementById('user-profile'); // may be null — that's fine
       let initials = 'GU';
       let label = 'Not signed in';
+      const uid = currentUser ? currentUser.uid : (currentGuest && currentGuest.id);
+      if (!localCursorColor && uid) localCursorColor = getCursorColor(uid);
+
       if (currentUser) {
         const username = getUserDisplayName(currentUser);
         initials = getInitials(username);
@@ -1255,23 +2131,63 @@
         initials = getInitials(currentGuest.name || 'Guest');
         label = `${currentGuest.name} (Guest)`;
       }
-      profileDiv.innerHTML = `
-        <div class="profile-avatar">${initials}</div>
-        <div class="profile-name">
-          <span class="name">${label}</span>
-        </div>
-        <button class="logout-btn" id="header-logout-btn">Logout</button>
-      `;
+      if (profileDiv) {
+        profileDiv.innerHTML = '';
+      }
+
       const logoutBtn = document.getElementById('header-logout-btn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', logout);
+      if (logoutBtn) logoutBtn.addEventListener('click', logout);
+
+      // Sync to JDoodle-style profile avatar button + dropdown
+      const avatarBtn      = document.getElementById('profile-avatar-btn');
+      const pdAvatarLetter = document.getElementById('pd-avatar-letter');
+      const pdName         = document.getElementById('pd-display-name');
+      const pdEmail        = document.getElementById('pd-display-email');
+      const emailText      = currentUser ? (currentUser.email || '') : '';
+      if (avatarBtn)      { avatarBtn.textContent = initials; avatarBtn.style.background = `linear-gradient(135deg, ${localCursorColor || '#3b82f6'}, #06b6d4)`; }
+      if (pdAvatarLetter) { pdAvatarLetter.textContent = initials; pdAvatarLetter.style.background = `linear-gradient(135deg, ${localCursorColor || '#3b82f6'}, #06b6d4)`; }
+      if (pdName)         pdName.textContent  = label;
+      if (pdEmail)        pdEmail.textContent = emailText;
+
+      // Attach Switch Guest handler
+      const switchGuestBtn = document.getElementById('switch-guest-btn');
+      if (switchGuestBtn) {
+        switchGuestBtn.onclick = async function() {
+          // Remove old guest presence from Firebase
+          if (db && currentProjectId && currentGuest && currentGuest.id) {
+            try {
+              await db.ref('projectPresence/' + currentProjectId + '/' + currentGuest.id).remove();
+            } catch (e) { console.warn('Failed to remove old guest presence', e); }
+          }
+          localStorage.removeItem(guestInfoKey);
+          currentGuest = getGuestInfo();
+          userId = currentGuest.id;
+          currentUser = null;
+          currentUserRole = 'Guest';
+          renderUserProfile();
+          // Update presence and chat
+          if (typeof setCurrentUserPresence === 'function') setCurrentUserPresence(true);
+          if (typeof initChat === 'function') initChat();
+        };
       }
     }
 
-    function logout() {
+    async function logout() {
       localStorage.removeItem('currentUser');
+      const liveUser = (auth && auth.currentUser) || currentUser;
+      const uid = liveUser ? liveUser.uid : userId;
+      if (db && uid) {
+        try {
+          // Remove presence nodes synchronously before the page closes
+          const removes = [db.ref('presence/' + uid).remove()];
+          if (currentProjectId) {
+            removes.push(db.ref('projectPresence/' + currentProjectId + '/' + uid).remove());
+          }
+          await Promise.all(removes);
+        } catch (_) {}
+      }
       if (auth && typeof auth.signOut === 'function') {
-        auth.signOut().catch(() => {});
+        await auth.signOut().catch(() => {});
       }
       window.location.href = 'index.html';
     }
@@ -1350,22 +2266,56 @@
     }
 
     function setCurrentUserPresence(online) {
-      if (!db || !auth || !currentUser || !currentProjectId) return;
+      if (!currentProjectId || !db) return;
+
+      // Always prefer the live Firebase auth user over any cached variable
+      const liveUser = (auth && auth.currentUser) || currentUser;
+      const uid = liveUser ? liveUser.uid : (currentGuest && currentGuest.id);
+      if (!uid) return;
+
+      if (!localCursorColor) localCursorColor = getCursorColor(uid);
+
       const localUser = getLocalUser();
       const activeSeconds = localUser ? Math.max(0, localUser.activeSeconds || 0) : 0;
-      currentUserPresenceRef = db.ref('projectPresence/' + currentProjectId + '/' + currentUser.uid);
-      currentUserPresenceRef.onDisconnect().remove();
+      const displayName = liveUser ? getUserDisplayName(liveUser) : (currentGuest && currentGuest.name) || 'Guest';
+      const userName = liveUser ? getUserName(liveUser) : (currentGuest && currentGuest.username) || ('user_' + uid.slice(0, 6));
+      const email = liveUser ? (liveUser.email || '') : '';
+
       const presenceData = {
-        name: getUserDisplayName(currentUser),
-        username: getUserName(currentUser),
+        name: displayName,
+        username: userName,
+        email,
         online: !!online,
+        color: localCursorColor,
         activeSeconds,
         startedAt: online ? Date.now() : (localUser && localUser.startedAt) || Date.now(),
         lastSeen: Date.now()
       };
-      currentUserPresenceRef.set(presenceData).catch(err => {
-        console.warn('Presence update failed:', err);
+
+      // Project-scoped presence (editor sidebar)
+      currentUserPresenceRef = db.ref('projectPresence/' + currentProjectId + '/' + uid);
+      currentUserPresenceRef.onDisconnect().remove();
+      currentUserPresenceRef.set(presenceData).catch(err => console.warn('Presence update failed:', err));
+
+      // Global presence (dashboards / teacher view)
+      const globalRef = db.ref('presence/' + uid);
+      globalRef.onDisconnect().set({
+        email,
+        displayName: displayName,
+        status: 'offline',
+        online: false,
+        lastActive: Date.now()
       });
+      globalRef.set({
+        username: userName,
+        email,
+        status: online ? 'online' : 'offline',
+        online: !!online,
+        lastActive: Date.now(),
+        color: localCursorColor,
+        projectId: currentProjectId,
+        cursor: {}
+      }).catch(() => {});
     }
 
     function setupPresenceListener(projectId) {
@@ -1379,44 +2329,129 @@
         const raw = snapshot.val() || {};
         const users = Object.keys(raw).map(uid => {
           const item = raw[uid] || {};
+          const isCurrentUser = (currentUser && uid === currentUser.uid) || (currentGuest && uid === currentGuest.id);
+          const color = item.color || getCursorColor(uid);
+          userCursorColors[uid] = color; // keep color map in sync
+          // Prefer email for display; fall back to name then uid prefix
+          const email = item.email || '';
+          const displayName = item.name || (email ? email.split('@')[0] : 'Guest');
           return {
             id: uid,
-            name: item.name || 'Guest',
-            username: item.username || ('user_' + uid.slice(0, 6)),
-            role: uid === (currentUser && currentUser.uid) ? 'You' : 'Participant',
-            avatar: (item.name || 'G').charAt(0).toUpperCase(),
-            status: item.online ? 'Online' : 'Away',
-            online: !!item.online,
+            name: displayName,
+            email,
+            username: email || item.username || ('user_' + uid.slice(0, 6)),
+            role: isCurrentUser ? 'You' : (item.role || 'Participant'),
+            avatar: displayName.charAt(0).toUpperCase(),
+            color,
+            status: item.status || (item.online ? 'online' : 'offline'),
+            online: item.status === 'online' || !!item.online,
             activeSeconds: item.activeSeconds || 0,
             startedAt: item.startedAt || Date.now(),
             lastSeen: item.lastSeen || Date.now(),
-            isLocal: uid === (currentUser && currentUser.uid)
+            isLocal: isCurrentUser
           };
         });
-
-        if (currentUser && !users.some(u => u.id === currentUser.uid)) {
-          users.unshift({
-            id: currentUser.uid,
-            name: getUserDisplayName(currentUser),
-            username: getUserName(currentUser),
-            role: 'You',
-            avatar: getUserDisplayName(currentUser).charAt(0).toUpperCase(),
-            status: 'Offline',
-            online: false,
-            activeSeconds: 0,
-            startedAt: Date.now(),
-            lastSeen: Date.now(),
-            isLocal: true
-          });
-        }
 
         activeUsersData = users;
         renderActiveUsers();
         renderDashboardMetrics();
+        updateCollaborationStatus();
+        updateOnlineCountBadge();
       });
 
-      if (currentUser) {
+      if (currentUser || currentGuest) {
         setCurrentUserPresence(true);
+      }
+    }
+
+    function setupMembersListener(projectId) {
+      if (!fsdb || !projectId) return;
+      if (membersUnsub) { membersUnsub(); membersUnsub = null; }
+
+      membersUnsub = fsdb.collection('projects').doc(projectId)
+        .collection('members')
+        .onSnapshot(snapshot => {
+          membersData = [];
+          snapshot.forEach(doc => { membersData.push({ docId: doc.id, ...doc.data() }); });
+          renderActiveUsers();
+          updateOnlineCountBadge();
+        }, err => console.warn('Members listener error:', err));
+
+      fsdb.collection('projects').doc(projectId).get().then(doc => {
+        if (doc.exists) {
+          const d = doc.data();
+          window._projectMaxUsers = d.maxUsers || null;
+          window._projectOwnerId  = d.createdBy   || null;
+          updateOnlineCountBadge();
+          const title = document.getElementById('project-title');
+          if (title && d.name) title.textContent = d.name;
+        }
+      }).catch(() => {});
+    }
+
+    function updateOnlineCountBadge() {
+      const badge = document.getElementById('online-count-badge');
+      if (!badge) return;
+      const onlineCount = activeUsersData.filter(u => u.online).length || (activeUsersData.length > 0 ? 1 : 0);
+      const maxUsers = window._projectMaxUsers || membersData.length || activeUsersData.length;
+      badge.textContent = `${onlineCount} / ${maxUsers} online`;
+    }
+
+    async function validateAndJoinViaInviteToken() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('invite');
+      const projectId = params.get('project') || getProjectIdFromUrl();
+      if (!token || !projectId || !fsdb) return;
+
+      const user = (auth && auth.currentUser) || currentUser;
+      if (!user || !user.uid) return;
+
+      try {
+        const projectDoc = await fsdb.collection('projects').doc(projectId).get();
+        if (!projectDoc.exists) return;
+        const data = projectDoc.data();
+        if (data.inviteToken !== token) { console.warn('Invalid invite token'); return; }
+
+        // Upsert this user in the members subcollection
+        const memberRef = fsdb.collection('projects').doc(projectId).collection('members').doc(user.uid);
+        const memberDoc = await memberRef.get();
+        if (!memberDoc.exists || memberDoc.data().status !== 'active') {
+          await memberRef.set({
+            email: user.email || '',
+            uid: user.uid,
+            role: memberDoc.exists ? (memberDoc.data().role || 'editor') : 'editor',
+            status: 'active',
+            joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+        }
+        // Clean up invite token from URL without reload
+        const cleanUrl = window.location.pathname + '?project=' + encodeURIComponent(projectId) + '&collab=true';
+        window.history.replaceState({}, '', cleanUrl);
+      } catch (err) {
+        console.warn('Invite token validation failed:', err);
+      }
+    }
+
+    async function autoJoinCollaborator() {
+      // Auto-add authenticated non-anonymous users to members when they open a shared collab link
+      if (!isCollaborationMode() || !currentProjectId || !fsdb) return;
+      const user = (auth && auth.currentUser) || currentUser;
+      if (!user || !user.uid || user.isAnonymous) return;
+
+      try {
+        const memberRef = fsdb.collection('projects').doc(currentProjectId).collection('members').doc(user.uid);
+        const memberSnap = await memberRef.get();
+        if (!memberSnap.exists || memberSnap.data().status !== 'active') {
+          await memberRef.set({
+            email: user.email || '',
+            uid: user.uid,
+            role: memberSnap.exists ? (memberSnap.data().role || 'editor') : 'editor',
+            status: 'active',
+            joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+        }
+      } catch (err) {
+        console.warn('Auto-join collaborator failed:', err);
       }
     }
 
@@ -1425,136 +2460,45 @@
       if (!localUser) return;
       localUser.online = isVisible;
       localUser.status = isVisible ? 'Online' : 'Away';
-      if (currentUser) {
+      if (currentUser || currentGuest) {
         setCurrentUserPresence(isVisible);
       }
       renderActiveUsers();
       renderDashboardMetrics();
     }
 
-    function initChat() {
+    let _lastInitChatProject = null;
+
+    async function initChat() {
+      // If we're already listening on this exact project, skip full re-init.
+      // (presence/chat/editor listeners will recover on their own via onSnapshot)
+      if (_lastInitChatProject && _lastInitChatProject === currentProjectId) {
+        setCurrentUserPresence(true); // refresh heartbeat only
+        return;
+      }
+      _lastInitChatProject = currentProjectId;
+
       currentGuest = currentGuest || getGuestInfo();
       currentUserRole = getChatUserRole();
       updateChatHeader();
-      console.debug('initChat', { currentProjectId, hasWindowIo: !!window.io, hasIo: typeof io !== 'undefined' });
-
-      const socketFactory = window.io || (typeof io !== 'undefined' ? io : null);
-      if (socketFactory) {
-        try {
-          socket = socketFactory();
-          socket.on('connect', () => {
-            console.debug('Socket connected', socket.id);
-            if (currentProjectId) {
-              socket.emit('joinProject', {
-                projectId: currentProjectId,
-                user: {
-                  id: userId || currentGuest.id,
-                  name: getChatSenderName(),
-                  username: getChatSenderUsername(),
-                  role: currentUserRole
-                }
-              });
-              socket.emit('openProject', {
-                projectId: currentProjectId
-              });
-
-              // Show collaboration welcome message
-              if (isCollaborationMode()) {
-                setTimeout(() => {
-                  addSystemChat('🎉 Welcome to collaborative coding! You can now code together with others in real-time.');
-                }, 1000);
-              }
-            }
-          });
-
-          socket.on('connect_error', (err) => {
-            console.error('Socket connect error', err);
-          });
-
-          socket.on('disconnect', (reason) => {
-            console.debug('Socket disconnected', reason);
-          });
-        } catch (error) {
-          console.error('Error initializing Socket.io:', error);
-          socket = null;
-        }
-
-        socket.on('newMessage', message => {
-          console.debug('received newMessage', message);
-          addChatMessage(message);
-        });
-
-        socket.on('activeUsersUpdate', users => {
-          console.debug('activeUsersUpdate', users);
-          const localId = userId || (currentGuest && currentGuest.id);
-          activeUsersData = users.map(user => ({
-            ...user,
-            isLocal: user.id === localId,
-            activeSeconds: user.activeSeconds || 0
-          }));
-          renderActiveUsers();
-          renderDashboardMetrics();
-          updateCollaborationStatus();
-        });
-
-        socket.on('participantJoined', data => {
-          if (data?.user) {
-            addSystemChat(`${data.user.name} joined the collaboration.`);
-          }
-          updateCollaborationStatus();
-        });
-
-        socket.on('participantLeft', data => {
-          if (data?.user) {
-            addSystemChat(`${data.user.name} left the collaboration.`);
-          }
-          updateCollaborationStatus();
-        });
-
-        socket.on('projectDetails', data => {
-          console.debug('projectDetails received', data);
-          if (!data || !data.projectId) return;
-          applyProjectDetails(data);
-        });
-
-        // Collaborative editor events
-        socket.on('editorContentUpdate', data => {
-          try {
-            const currentUserId = userId || (currentGuest && currentGuest.id);
-            if (data && data.userId && currentUserId && data.userId !== currentUserId) {
-              applyRemoteEditorChange(data);
-            }
-          } catch (error) {
-            console.error('Error handling editor content update:', error);
-          }
-        });
-
-        socket.on('cursorPositionUpdate', data => {
-          try {
-            const currentUserId = userId || (currentGuest && currentGuest.id);
-            if (data && data.userId && currentUserId && data.userId !== currentUserId) {
-              updateRemoteCursor(data);
-            }
-          } catch (error) {
-            console.error('Error handling cursor position update:', error);
-          }
-        });
-
-        socket.on('projectShared', data => {
-          try {
-            if (data && data.sharedBy) {
-              addSystemChat(`${data.sharedBy} shared the project! Others can now join.`);
-            }
-          } catch (error) {
-            console.error('Error handling project shared event:', error);
-          }
-        });
-      }
 
       if (currentProjectId) {
-        loadChatHistory(currentProjectId);
         setupChatListeners(currentProjectId);
+        // Ensure this user is in the project members BEFORE opening Firestore
+        // listeners. If rules require membership, onSnapshot calls made before
+        // the member doc exists fail silently and never retry.
+        await autoJoinCollaborator();
         setupEditorSync(currentProjectId);
+        setupPresenceListener(currentProjectId); // writes presence immediately
+        setupMembersListener(currentProjectId);
+        validateAndJoinViaInviteToken();
+      }
+
+      if (isCollaborationMode()) {
+        setTimeout(() => {
+          const name = currentUser ? getUserDisplayName(currentUser) : (currentGuest && currentGuest.name) || 'A user';
+          addSystemChat(name + ' joined the collaboration.');
+        }, 1200);
       }
     }
 
@@ -1564,6 +2508,33 @@
       if (projectTitle && data.title) {
         projectTitle.textContent = data.title;
       }
+
+      const isSharedProject = !!getProjectIdFromUrl();
+      if (isSharedProject) {
+        loadProjectStructureFromFirebase(currentProjectId).then(sharedStructure => {
+          if (sharedStructure) {
+            openTabs = sharedStructure.openTabs;
+            currentTabId = sharedStructure.currentTabId || sharedStructure.openTabs[0].id;
+            const title = sharedStructure.title || 'Shared Project';
+            if (projectTitle) projectTitle.textContent = title;
+            initializeProjectTabs();
+          } else {
+            // Fall back to server data or local data
+            loadProjectFromDataOrLocal(data);
+          }
+        }).catch(err => {
+          console.warn('Failed to load shared project structure in applyProjectDetails:', err);
+          loadProjectFromDataOrLocal(data);
+        });
+      } else {
+        loadProjectFromDataOrLocal(data);
+      }
+
+      updateChatHeader();
+      saveProjectStateToLocal();
+    }
+
+    function loadProjectFromDataOrLocal(data) {
       const savedState = loadProjectStateFromLocal(currentProjectId);
       if (savedState && Array.isArray(savedState.openTabs) && savedState.openTabs.length > 0) {
         openTabs = savedState.openTabs;
@@ -1579,8 +2550,6 @@
           initializeProjectTabs();
         }
       }
-      updateChatHeader();
-      saveProjectStateToLocal();
     }
 
     function ensureChatMessageData(message) {
@@ -1603,36 +2572,46 @@
     }
 
     function setupChatListeners(projectId) {
-      if (!db || !projectId) return;
+      if (!fsdb || !projectId) return;
       if (chatHistoryRef) {
-        chatHistoryRef.off();
+        chatHistoryRef(); // Firestore unsubscribe
         chatHistoryRef = null;
       }
-      chatHistoryRef = db.ref('projectChats/' + projectId);
-      chatHistoryRef.orderByChild('timestamp').limitToLast(200).on('child_added', snapshot => {
-        const message = ensureChatMessageData(snapshot.val());
-        if (message) addChatMessage(message);
-      });
-      chatHistoryRef.on('child_changed', snapshot => {
-        const message = ensureChatMessageData(snapshot.val());
-        if (!message || !message.id) return;
-        const index = chatMessages.findIndex(msg => msg.id === message.id);
-        if (index !== -1) {
-          chatMessages[index] = message;
+      chatMessages = [];
+
+      chatHistoryRef = fsdb.collection('projects').doc(projectId)
+        .collection('chat')
+        .orderBy('timestamp', 'asc')
+        .limitToLast(200)
+        .onSnapshot(snapshot => {
+          snapshot.docChanges().forEach(change => {
+            const raw = { id: change.doc.id, ...change.doc.data() };
+            // Convert Firestore Timestamp to ms number if needed
+            if (raw.timestamp && typeof raw.timestamp.toMillis === 'function') {
+              raw.timestamp = raw.timestamp.toMillis();
+            }
+            const message = ensureChatMessageData(raw);
+            if (!message) return;
+
+            if (change.type === 'added') {
+              if (!chatMessages.some(m => m.id === message.id)) {
+                chatMessages.push(message);
+              }
+            } else if (change.type === 'modified') {
+              const idx = chatMessages.findIndex(m => m.id === message.id);
+              if (idx !== -1) chatMessages[idx] = message; else chatMessages.push(message);
+            } else if (change.type === 'removed') {
+              chatMessages = chatMessages.filter(m => m.id !== message.id);
+            }
+          });
+          chatMessages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
           renderChatMessages();
           scrollChatToBottom();
-        }
-      });
+        }, err => console.warn('Chat listener error:', err));
     }
 
     function loadChatHistory(projectId) {
-      if (!db || !projectId) return;
-      db.ref('projectChats/' + projectId).orderByChild('timestamp').limitToLast(200).once('value', snapshot => {
-        const raw = snapshot.val() || {};
-        chatMessages = Object.keys(raw).sort((a, b) => raw[a].timestamp - raw[b].timestamp).map(key => ensureChatMessageData(raw[key])).filter(Boolean);
-        renderChatMessages();
-        scrollChatToBottom();
-      });
+      // setupChatListeners handles both initial load and real-time updates via onSnapshot
     }
 
     function addChatMessage(message) {
@@ -1773,23 +2752,11 @@
       renderChatMessages();
       scrollChatToBottom();
 
-      if (db) {
-        db.ref('projectChats/' + currentProjectId + '/' + messageId).update({ likedBy: message.likedBy }).catch(err => {
-          console.warn('Failed to update message like count:', err);
-        });
-      }
-
-      if (socket) {
-        try {
-          socket.emit('messageLiked', {
-            projectId: currentProjectId,
-            messageId,
-            userId: currentUserId,
-            action: alreadyLiked ? 'unlike' : 'like'
-          });
-        } catch (err) {
-          console.warn('messageLiked socket emit failed', err);
-        }
+      if (fsdb) {
+        fsdb.collection('projects').doc(currentProjectId)
+          .collection('chat').doc(messageId)
+          .update({ likedBy: message.likedBy, likes: message.likes })
+          .catch(err => console.warn('Failed to update like:', err));
       }
     }
 
@@ -1816,27 +2783,15 @@
       renderChatMessages();
       scrollChatToBottom();
 
-      if (db) {
-        db.ref('projectChats/' + currentProjectId + '/' + messageId).update({
-          pinnedAt: message.pinnedAt || null,
-          pinnedBy: message.pinnedBy || null,
-          pinnedByName: message.pinnedByName || null
-        }).catch(err => {
-          console.warn('Failed to update pinned message:', err);
-        });
-      }
-
-      if (socket) {
-        try {
-          socket.emit('messagePinned', {
-            projectId: currentProjectId,
-            messageId,
-            userId: currentUserId,
-            action: currentlyPinned && message.pinnedBy === null ? 'unpin' : 'pin'
-          });
-        } catch (err) {
-          console.warn('messagePinned socket emit failed', err);
-        }
+      if (fsdb) {
+        fsdb.collection('projects').doc(currentProjectId)
+          .collection('chat').doc(messageId)
+          .update({
+            pinnedAt: message.pinnedAt || null,
+            pinnedBy: message.pinnedBy || null,
+            pinnedByName: message.pinnedByName || null
+          })
+          .catch(err => console.warn('Failed to update pin:', err));
       }
     }
 
@@ -1884,13 +2839,11 @@
         likedBy: []
       };
 
-      if (socket) {
-        socket.emit('sendMessage', message);
-      }
-      if (db) {
-        db.ref('projectChats/' + currentProjectId + '/' + message.id).set(message).catch(err => {
-          console.warn('Chat save failed:', err);
-        });
+      if (fsdb) {
+        fsdb.collection('projects').doc(currentProjectId)
+          .collection('chat').doc(message.id)
+          .set({ ...message, timestamp: firebase.firestore.FieldValue.serverTimestamp() })
+          .catch(err => console.warn('Chat save failed:', err));
       }
       addChatMessage(message);
     }
@@ -1925,22 +2878,12 @@
         likedBy: []
       };
 
-      if (!socket) {
-        initChat();
+      if (fsdb) {
+        fsdb.collection('projects').doc(currentProjectId)
+          .collection('chat').doc(message.id)
+          .set({ ...message, timestamp: firebase.firestore.FieldValue.serverTimestamp() })
+          .catch(err => console.warn('Chat save failed:', err));
       }
-      if (socket) {
-        try {
-          socket.emit('sendMessage', message);
-        } catch (err) {
-          console.warn('sendMessage socket emit failed', err);
-        }
-      }
-      if (db) {
-        db.ref('projectChats/' + currentProjectId + '/' + message.id).set(message).catch(err => {
-          console.warn('Chat save failed:', err);
-        });
-      }
-      console.debug('sendChatMessage', message, { socketConnected: !!socket });
       addChatMessage(message);
       scrollChatToBottom();
       input.value = '';
@@ -2011,20 +2954,11 @@
       if (!textarea) return;
       fallbackEditor = textarea;
       textarea.addEventListener('input', () => {
+        lastLocalTypedAt = Date.now();
         isSaved = false;
         scheduleSave();
         updatePreview();
-        
-        // Emit collaborative changes for fallback editor
-        if (socket && socket.connected) {
-          socket.emit('editorContentUpdate', {
-            userId: userId || (currentGuest && currentGuest.id),
-            range: { startLineNumber: 1, startColumn: 1, endLineNumber: 1, endColumn: 1 },
-            text: textarea.value,
-            projectId: currentProjectId,
-            isFullContent: true
-          });
-        }
+        emitEditorChangeViaFirebase([{ isFullContent: true }]);
       });
     }
 
@@ -2032,34 +2966,74 @@
     function setupAuthStateListener() {
       if (auth && typeof auth.onAuthStateChanged === 'function') {
         auth.onAuthStateChanged(user => {
-          if (user) {
+          if (user && !user.isAnonymous) {
+            // Authenticated real user — welcome them
+            const isFirstLogin = !window._welcomeShown;
+            window._welcomeShown = true;
             currentUser = user;
             userId = user.uid;
             document.getElementById('login-modal').classList.add('hidden');
             document.getElementById('app-container').style.display = 'flex';
             currentUserRole = getUserRole(user);
             renderUserProfile();
+            if (isFirstLogin) {
+              const name = getUserDisplayName(user).split(' ')[0] || 'there';
+              setTimeout(() => showToast('👋 Welcome back, ' + name + '!'), 800);
+            }
+            // currentProjectId already set at start of initialize(); only fall back if missing
             if (!currentProjectId) {
               currentProjectId = getProjectIdFromUrl() || loadLastProjectId() || 'project-' + Date.now();
             }
+
+            // Set global presence immediately on auth (not waiting for initChat)
+            if (db) {
+              const userPresenceRef = db.ref('presence/' + user.uid);
+              userPresenceRef.set({
+                email: user.email || '',
+                displayName: user.displayName || user.email || '',
+                status: 'online',
+                online: true,
+                lastActive: Date.now()
+              });
+              userPresenceRef.onDisconnect().set({
+                email: user.email || '',
+                displayName: user.displayName || user.email || '',
+                status: 'offline',
+                online: false,
+                lastActive: Date.now()
+              });
+            }
+
             initChat();
             ensureEditorLayout();
           } else {
-            const storedUser = loadStoredCurrentUser();
-            if (storedUser) {
-              currentUser = storedUser;
-              userId = storedUser.uid || null;
-              document.getElementById('login-modal').classList.add('hidden');
-              document.getElementById('app-container').style.display = 'flex';
-              currentUserRole = getUserRole(storedUser);
-              renderUserProfile();
-              if (!currentProjectId) {
-                currentProjectId = getProjectIdFromUrl() || loadLastProjectId() || 'project-' + Date.now();
+            // Firebase explicitly says no authenticated user — clean up stale presence
+            if (db) {
+              // Remove old project-scoped presence
+              if (currentProjectId) {
+                const staleUser = loadStoredCurrentUser();
+                if (staleUser && staleUser.uid) {
+                  db.ref('projectPresence/' + currentProjectId + '/' + staleUser.uid).remove().catch(() => {});
+                  // Remove global presence node for this uid
+                  db.ref('presence/' + staleUser.uid).remove().catch(() => {});
+                }
               }
-              initChat();
-              ensureEditorLayout();
+              // Also remove presence for any previously tracked userId
+              if (userId) {
+                db.ref('presence/' + userId).remove().catch(() => {});
+              }
+            }
+            currentUser = null;
+            userId = null;
+
+            if (getProjectIdFromUrl()) {
+              // Shared collab link — require real login, show branded popup
+              const loginModal = document.getElementById('login-modal');
+              const subtitle   = document.getElementById('login-modal-subtitle');
+              if (subtitle) subtitle.textContent = 'Sign in to join this project';
+              if (loginModal) loginModal.classList.remove('hidden');
             } else {
-              // User is not authenticated - redirect to login page
+              // No project in URL — redirect to login page
               const currentUrl = window.location.href;
               sessionStorage.setItem('redirectAfterLogin', currentUrl);
               window.location.href = 'login.html';
@@ -2081,7 +3055,6 @@
           initChat();
           ensureEditorLayout();
         } else {
-          // Firebase auth unavailable - use guest mode
           setupGuestMode();
         }
       }
@@ -2106,7 +3079,36 @@
     // Initialize editor
     function initialize() {
       try {
+        // Pin the project ID from URL FIRST so auth callbacks always see the right one
+        currentProjectId = getProjectIdFromUrl() || loadLastProjectId() || ('project-' + Date.now());
+
         restoreStoredUserSession();
+
+        // Bridge the offline gap during page navigation:
+        // Write presence the moment the RTDB socket connects — before auth resolves.
+        // RTDB rules allow writes when the auth token is already embedded in the connection.
+        if (db && currentUser && currentUser.uid) {
+          db.ref('.info/connected').on('value', snap => {
+            if (!snap.val()) return;
+            const uid = (auth && auth.currentUser && auth.currentUser.uid) || currentUser.uid;
+            const earlyRef = db.ref('presence/' + uid);
+            earlyRef.onDisconnect().set({
+              email: currentUser.email || '',
+              displayName: currentUser.displayName || currentUser.email || '',
+              status: 'offline',
+              online: false,
+              lastActive: Date.now()
+            });
+            earlyRef.set({
+              email: currentUser.email || '',
+              displayName: currentUser.displayName || currentUser.email || '',
+              status: 'online',
+              online: true,
+              lastActive: Date.now()
+            }).catch(() => {});
+          });
+        }
+
         setupAuthStateListener();
 
         restoreProjectState();
@@ -2116,7 +3118,41 @@
         setupPreviewResizer();
         const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
         if (sidebarToggleBtn) sidebarToggleBtn.addEventListener('click', toggleSidebarCollapse);
-        currentProjectId = currentProjectId || getProjectIdFromUrl() || loadLastProjectId() || 'project-' + Date.now();
+
+        // Sidebar maximize / restore
+        const sidebarMaxBtn = document.getElementById('sidebar-maximize-btn');
+        if (sidebarMaxBtn) {
+          let sidebarMaximized = false;
+          sidebarMaxBtn.addEventListener('click', () => {
+            const sb = document.getElementById('sidebar');
+            if (!sb) return;
+            sidebarMaximized = !sidebarMaximized;
+            if (sidebarMaximized) {
+              lastSidebarWidth = sb.offsetWidth;
+              sb.style.width = '440px';
+              sidebarMaxBtn.textContent = '⤡';
+              sidebarMaxBtn.title = 'Restore sidebar';
+            } else {
+              sb.style.width = (lastSidebarWidth || 260) + 'px';
+              sidebarMaxBtn.textContent = '⤢';
+              sidebarMaxBtn.title = 'Maximize sidebar';
+            }
+            if (editorInstance) setTimeout(() => editorInstance.layout(), 250);
+          });
+        }
+
+        // File list collapse/expand
+        const collapseFilesBtn = document.getElementById('collapse-files-btn');
+        const fileList = document.getElementById('file-list');
+        if (collapseFilesBtn && fileList) {
+          let fileListCollapsed = false;
+          collapseFilesBtn.addEventListener('click', () => {
+            fileListCollapsed = !fileListCollapsed;
+            fileList.style.display = fileListCollapsed ? 'none' : '';
+            collapseFilesBtn.textContent = fileListCollapsed ? '＋' : '−';
+            collapseFilesBtn.title = fileListCollapsed ? 'Expand file list' : 'Collapse file list';
+          });
+        }
 
         const monacoContainer = document.getElementById('monaco-editor');
         if (!monacoContainer) return;
@@ -2147,7 +3183,10 @@
               theme: 'vs-dark',
               automaticLayout: true,
               fontSize: 16,
-              minimap: { enabled: false }
+              minimap: { enabled: false },
+              padding: { top: 24 },        // room for cursor name labels on line 1
+              scrollBeyondLastLine: false,
+              lineNumbersMinChars: 3
             });
 
             window.editor = editorInstance;
@@ -2155,6 +3194,22 @@
 
             editorInstance.onDidChangeModelContent((e) => {
               try {
+                if (!isRemoteUpdate) {
+                  lastLocalTypedAt = Date.now();
+                  const localUid = userId || (currentGuest && currentGuest.id);
+                  if (localUid) {
+                    const st = getOrCreateUserStats(localUid);
+                    e.changes.forEach(c => {
+                      st.charsTyped += c.text.length;
+                      st.linesAdded += (c.text.match(/\n/g) || []).length;
+                      st.editCount++;
+                    });
+                    st.lastEditAt = Date.now();
+                    const content = editorInstance.getValue();
+                    st.codeLines = content.split('\n').length;
+                    st.codeChars = content.length;
+                  }
+                }
                 isSaved = false;
                 scheduleSave();
                 updatePreview();
@@ -2185,6 +3240,7 @@
 
           initializeProjectTabs();
           setupEventListeners();
+          // setupEditorSync is called by initChat() after auth resolves — no duplicate needed here
         }, function(err) {
           console.error('Monaco failed to load:', err);
           monacoContainer.innerHTML = '<textarea id="fallback-editor" style="width:100%;height:100%;background:#1e1e1e;color:#d4d4d4;border:none;padding:16px;font-family: Consolas, monospace; font-size:14px; box-sizing:border-box;"></textarea>';
@@ -2193,7 +3249,6 @@
             ta.value = starterCodeMap['javascript'];
             setupFallbackEditor();
           }
-
           initializeProjectTabs();
           setupEventListeners();
         });
@@ -2299,14 +3354,22 @@
       if (editorInstance) {
         const monacoLang = languageMap[tab.language] || 'plaintext';
         monaco.editor.setModelLanguage(editorInstance.getModel(), monacoLang);
-        editorInstance.setValue(tab.content);
+        isRemoteUpdate = true;
+        try {
+          editorInstance.setValue(tab.content || '');
+        } finally {
+          isRemoteUpdate = false;
+        }
       } else {
         const textarea = document.getElementById('fallback-editor');
         if (textarea) {
-          textarea.value = tab.content;
+          textarea.value = tab.content || '';
         }
       }
-      
+
+      // Start watching this file's Firestore doc for remote changes
+      if (window._watchFileContent) window._watchFileContent(tabId);
+
       renderTabs();
       document.getElementById('project-title').textContent = tab.name;
       showToast('Switched to: ' + tab.name);
@@ -2352,6 +3415,11 @@
       renderTabs();
       switchTab(newTab.id);
       showToast('Created: ' + finalName);
+
+      // Sync project structure to Firebase for collaboration
+      if (currentProjectId) {
+        syncProjectStructureToFirebase(currentProjectId);
+      }
     }
 
     function deleteFile(tabId) {
@@ -2374,6 +3442,11 @@
       
       renderTabs();
       showToast('Deleted: ' + fileName);
+
+      // Sync project structure to Firebase for collaboration
+      if (currentProjectId) {
+        syncProjectStructureToFirebase(currentProjectId);
+      }
     }
 
     function renameFile(tabId, newName) {
@@ -2389,6 +3462,11 @@
       
       renderTabs();
       showToast('Renamed to: ' + newName);
+
+      // Sync project structure to Firebase for collaboration
+      if (currentProjectId) {
+        syncProjectStructureToFirebase(currentProjectId);
+      }
     }
 
     function showNewFileModal() {
@@ -2558,33 +3636,131 @@
 
     // Firebase project functions removed (New Project feature disabled)
 
-    function saveProject() {
+    async function saveProject() {
       saveCurrentTabContent();
       saveProjectStateToLocal();
 
       const code = getEditorContent();
-      if (!code) {
+      if (!code && openTabs.length === 0) {
         showToast('Nothing to save yet.');
         return;
       }
 
-      if (!userId || !currentProjectId) {
-        showToast('Saved locally. Sign in to sync to cloud.');
+      const liveUser = (auth && auth.currentUser) || currentUser;
+      const liveUid = liveUser ? liveUser.uid : userId;
+
+      if (!liveUid || !currentProjectId) {
+        showToast('Saved locally. Sign in to enable cloud save.');
         return;
       }
 
-      if (!db || typeof db.ref !== 'function') {
-        showToast('Saved locally. Cloud save unavailable.');
+      // Lazy-init Firestore if it wasn't ready during page load
+      if (!fsdb) {
+        try { fsdb = firebase.firestore(); }
+        catch (e) { console.error('[EchoPoly] Firestore lazy-init failed:', e); }
+      }
+
+      if (!fsdb) {
+        showToast('Cloud save failed — Firestore not initialized. Open browser console (F12) to see the error.');
         return;
       }
 
-      db.ref('projects/' + userId + '/' + currentProjectId + '/code').set(code).then(() => {
+      // Guard: if this client hasn't saved yet and the editor is empty, pull the
+      // latest Firestore content first so we don't accidentally wipe another user's work.
+      const _saveFileId = currentTabId || 'main';
+      if (!getEditorContent().trim() && (lastLocalFileWriteAt[_saveFileId] || 0) === 0) {
+        try {
+          const _snap = await fsdb.collection('projects').doc(currentProjectId)
+            .collection('files').doc(_saveFileId).get();
+          if (_snap.exists) {
+            const _remote = _snap.data();
+            if (_remote && _remote.content && _remote.updatedBy !== liveUid) {
+              isRemoteUpdate = true;
+              try { setEditorContent(_remote.content); } finally { isRemoteUpdate = false; }
+              const _tab = openTabs.find(t => t.id === _saveFileId);
+              if (_tab) _tab.content = _remote.content;
+              // Mark slightly behind server timestamp so the next save is allowed through
+              lastLocalFileWriteAt[_saveFileId] = (_remote.writtenAt || Date.now()) - 1;
+              showToast('Loaded latest code from cloud — click Save again to confirm.');
+              return;
+            }
+          }
+        } catch (_) {}
+      }
+
+      showToast('Saving to cloud…');
+
+      try {
+        // Ensure the project doc exists in Firestore before writing files
+        const projectRef = fsdb.collection('projects').doc(currentProjectId);
+        const projectSnap = await projectRef.get();
+
+        if (!projectSnap.exists) {
+          await projectRef.set({
+            id: currentProjectId,
+            name: document.getElementById('project-title')?.textContent || 'Untitled Project',
+            createdBy: liveUid,
+            createdByEmail: liveUser.email || '',
+            memberEmails: [liveUser.email || ''],
+            status: 'active',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+
+        // Ensure the owner is always in the members subcollection
+        await fsdb.collection('projects').doc(currentProjectId)
+          .collection('members').doc(liveUid)
+          .set({
+            email: liveUser.email || '',
+            uid: liveUid,
+            role: 'owner',
+            status: 'active',
+            joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+
+        await Promise.all([
+          syncLocalEditorContentToFirebaseAsync(currentProjectId, liveUid),
+          syncProjectStructureToFirebase(currentProjectId)
+        ]);
+
         isSaved = true;
-        showToast('Saved!');
-      }).catch(err => {
-        console.error('Save error:', err);
-        showToast('Saved locally, cloud save failed');
-      });
+        showToast('Saved to cloud!');
+      } catch (err) {
+        console.error('Cloud save failed:', err);
+        showToast('Cloud save failed: ' + (err.code || err.message));
+      }
+    }
+
+    async function syncLocalEditorContentToFirebaseAsync(projectId, currentUserId) {
+      if (!fsdb || !projectId) return;
+      // Manual save supersedes the typing debounce — cancel it to avoid a stale re-write
+      if (editorSyncDebounceTimer) { clearTimeout(editorSyncDebounceTimer); editorSyncDebounceTimer = null; }
+      const activeContent = getEditorContent();
+
+      // Keep in-memory tab content in sync with the editor
+      const activeTab = openTabs.find(t => t.id === currentTabId);
+      if (activeTab && activeContent !== undefined && activeContent !== null) {
+        activeTab.content = activeContent;
+      }
+
+      if (openTabs.length === 0) return;
+
+      // Sync every open tab so collaborators can see all files, not just the active one
+      await Promise.all(openTabs.map(tab => {
+        const content = tab.id === currentTabId ? (activeContent || '') : (tab.content || '');
+        const writeTime = Date.now();
+        lastLocalFileWriteAt[tab.id] = writeTime;
+        return fsdb.collection('projects').doc(projectId)
+          .collection('files').doc(tab.id)
+          .set({
+            content,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            writtenAt: writeTime,
+            updatedBy: currentUserId,
+            name: tab.name || 'file',
+            language: tab.language || 'plaintext'
+          }, { merge: true });
+      }));
     }
 
     
@@ -2636,6 +3812,9 @@
     function updateUserStatus(userId, status, online) {
       const user = activeUsersData.find(u => u.id === userId);
       if (!user) return;
+      if (user.online && !online) {
+        getOrCreateUserStats(user.id || userId).lastOfflineAt = Date.now();
+      }
       user.status = status;
       user.online = online;
       renderActiveUsers();
@@ -2680,71 +3859,103 @@
       if (!usersContainer) return;
       usersContainer.innerHTML = '';
 
-      // Ensure we have at least the current user
       ensureCurrentUserInActiveUsers();
+      updateOnlineCountBadge();
 
-      if (activeUsersData.length === 0) {
-        usersContainer.innerHTML = '<div style="color:#8a8fbc;font-size:12px;padding:12px;">No users online</div>';
+      // Build merged display list: online users first, then offline members from Firestore
+      const onlineIds = new Set(activeUsersData.map(u => u.id));
+      const offlineMembers = membersData
+        .filter(m => m.uid && !onlineIds.has(m.uid) && m.status !== 'invited')
+        .map(m => ({
+          id: m.uid,
+          name: m.email ? m.email.split('@')[0] : (m.uid.slice(0, 8)),
+          username: m.email || m.uid.slice(0, 8),
+          role: m.role === 'owner' ? 'Owner' : 'Collaborator',
+          avatar: (m.email || m.uid).charAt(0).toUpperCase(),
+          color: getCursorColor(m.uid),
+          online: false,
+          status: 'Offline',
+          activeSeconds: 0,
+          isLocal: false,
+          isMemberOnly: true
+        }));
+
+      const invitedMembers = membersData
+        .filter(m => m.status === 'invited')
+        .map(m => ({
+          id: m.docId || m.email,
+          name: m.email,
+          username: m.email,
+          role: 'Invited',
+          avatar: (m.email || '?').charAt(0).toUpperCase(),
+          color: '#475569',
+          online: false,
+          status: 'Invited',
+          isLocal: false,
+          isMemberOnly: true,
+          isInvited: true
+        }));
+
+      const allUsers = [...activeUsersData, ...offlineMembers, ...invitedMembers];
+
+      if (allUsers.length === 0) {
+        usersContainer.innerHTML = '<div style="color:#8a8fbc;font-size:12px;padding:12px;">No users yet</div>';
         return;
       }
 
-      activeUsersData.forEach(user => {
-        const userRow = document.createElement('div');
-        userRow.style.display = 'flex';
-        userRow.style.alignItems = 'center';
-        userRow.style.justifyContent = 'space-between';
-        userRow.style.padding = '10px 8px';
-        userRow.style.marginBottom = '8px';
-        userRow.style.border = '1px solid #2f3243';
-        userRow.style.borderRadius = '8px';
-        userRow.style.background = '#1c1d28';
+      allUsers.forEach(user => {
+        const card = document.createElement('div');
+        card.className = 'user-card';
+        if (!user.online) card.style.opacity = '0.6';
 
-        const left = document.createElement('div');
-        left.style.display = 'flex';
-        left.style.alignItems = 'center';
-        left.style.gap = '10px';
+        const cursorColor = user.isInvited ? '#475569' : (user.color || getCursorColor(user.id));
 
         const avatar = document.createElement('div');
+        avatar.className = 'uc-avatar';
         avatar.textContent = user.avatar;
-        avatar.style.width = '32px';
-        avatar.style.height = '32px';
-        avatar.style.borderRadius = '50%';
-        avatar.style.display = 'flex';
-        avatar.style.alignItems = 'center';
-        avatar.style.justifyContent = 'center';
-        avatar.style.background = user.role === 'Host' ? '#0e639c' : '#3e3e42';
-        avatar.style.color = '#ffffff';
-        avatar.style.fontWeight = '700';
+        avatar.style.background = cursorColor;
+        avatar.title = user.name + (user.isInvited ? ' (pending invite)' : '');
 
-        const meta = document.createElement('div');
-        const name = document.createElement('div');
-        name.textContent = user.name + (user.isLocal ? ' (You)' : '');
-        name.style.color = '#ffffff';
-        name.style.fontSize = '13px';
-        const details = document.createElement('div');
-        details.textContent = user.role + ' · ' + user.username;
-        details.style.color = '#8a8fbc';
-        details.style.fontSize = '11px';
-        const activeTime = document.createElement('div');
-        activeTime.textContent = 'Active: ' + formatActiveTime(getComputedActiveSeconds(user));
-        activeTime.style.color = '#9aa0c7';
-        activeTime.style.fontSize = '11px';
+        const info = document.createElement('div');
+        info.className = 'uc-info';
 
-        meta.appendChild(name);
-        meta.appendChild(details);
-        meta.appendChild(activeTime);
-        left.appendChild(avatar);
-        left.appendChild(meta);
+        const nameLine = document.createElement('div');
+        nameLine.style.cssText = 'display:flex;align-items:center;gap:6px;';
 
-        const status = document.createElement('div');
-        status.textContent = user.status;
-        status.style.color = user.online ? '#4ec9b0' : '#f0ad4e';
-        status.style.fontSize = '11px';
-        status.style.fontWeight = '600';
+        const nameEl = document.createElement('span');
+        nameEl.className = 'uc-name';
+        nameEl.textContent = user.name + (user.isLocal ? ' (You)' : '');
 
-        userRow.appendChild(left);
-        userRow.appendChild(status);
-        usersContainer.appendChild(userRow);
+        const dot = document.createElement('span');
+        dot.className = 'presence-dot ' + (user.online ? 'online' : 'offline');
+        dot.title = user.online ? 'Online' : (user.isInvited ? 'Invite pending' : 'Offline');
+
+        nameLine.appendChild(nameEl);
+        nameLine.appendChild(dot);
+
+        const roleEl = document.createElement('div');
+        roleEl.className = 'uc-role';
+        const emailLine = user.email && user.email !== user.name ? user.email : '';
+        roleEl.textContent = user.role + (emailLine ? ' · ' + emailLine : '');
+
+        info.appendChild(nameLine);
+        info.appendChild(roleEl);
+
+        if (!user.isInvited && !user.isMemberOnly) {
+          const timeEl = document.createElement('div');
+          timeEl.className = 'uc-role';
+          timeEl.textContent = 'Active ' + formatActiveTime(getComputedActiveSeconds(user));
+          info.appendChild(timeEl);
+        }
+
+        const statusEl = document.createElement('div');
+        statusEl.className = 'uc-status ' + (user.online ? 'online' : 'offline');
+        statusEl.textContent = user.isInvited ? 'Pending' : (user.online ? 'Online' : 'Away');
+
+        card.appendChild(avatar);
+        card.appendChild(info);
+        card.appendChild(statusEl);
+        usersContainer.appendChild(card);
       });
     }
 
@@ -2752,130 +3963,142 @@
       const dashboardContainer = document.getElementById('dashboard-content');
       if (!dashboardContainer) return;
       dashboardContainer.innerHTML = '';
-
-      // Ensure we have at least the current user
       ensureCurrentUserInActiveUsers();
 
-      const activeUsers = activeUsersData.filter(user => user.online).length;
-      const totalUsers = activeUsersData.length;
-      const localUser = activeUsersData.find(user => user.isLocal) || activeUsersData[0] || { online: false, activeSeconds: 0 };
+      const activeUsers = activeUsersData.filter(u => u.online).length;
+      const totalUsers  = window._projectMaxUsers || membersData.length || activeUsersData.length;
+      const localUser   = activeUsersData.find(u => u.isLocal) || activeUsersData[0] || {};
 
-      const summaryRows = [
-        { label: 'Users Online', value: `${activeUsers} / ${totalUsers}` },
-        { label: 'Your Active Time', value: formatActiveTime(getComputedActiveSeconds(localUser)) },
-        { label: 'Current Tab Status', value: localUser.online ? 'Active' : 'Away' }
-      ];
-
-      summaryRows.forEach(row => {
-        const statRow = document.createElement('div');
-        statRow.style.marginBottom = '14px';
-
-        const label = document.createElement('div');
-        label.textContent = row.label;
-        label.style.color = '#8a8fbc';
-        label.style.fontSize = '11px';
-        label.style.marginBottom = '4px';
-
-        const value = document.createElement('div');
-        value.textContent = row.value;
-        value.style.color = '#ffffff';
-        value.style.fontSize = '18px';
-        value.style.fontWeight = '700';
-
-        statRow.appendChild(label);
-        statRow.appendChild(value);
-        dashboardContainer.appendChild(statRow);
+      // ── Summary strip ────────────────────────────────────────
+      const strip = document.createElement('div');
+      strip.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;';
+      [
+        { label: 'Online',      value: `${activeUsers}/${totalUsers}` },
+        { label: 'Your Time',   value: formatActiveTime(getComputedActiveSeconds(localUser)) },
+        { label: 'Status',      value: localUser.online ? 'Active' : 'Away',
+          color: localUser.online ? '#4ec9b0' : '#f0ad4e' }
+      ].forEach(item => {
+        const cell = document.createElement('div');
+        cell.style.cssText = 'background:#131520;border:1px solid #2a2d3e;border-radius:8px;padding:8px 10px;text-align:center;';
+        cell.innerHTML = `<div style="color:${item.color||'#ffffff'};font-size:15px;font-weight:700;">${item.value}</div>`
+                       + `<div style="color:#6b7099;font-size:10px;margin-top:2px;">${item.label}</div>`;
+        strip.appendChild(cell);
       });
+      dashboardContainer.appendChild(strip);
 
-      const header = document.createElement('div');
-      header.textContent = 'User Activity Cards';
-      header.style.color = '#9aa0c7';
-      header.style.fontSize = '12px';
-      header.style.margin = '16px 0 10px';
-      dashboardContainer.appendChild(header);
+      // ── Section header ───────────────────────────────────────
+      const hdr = document.createElement('div');
+      hdr.textContent = 'User Activity';
+      hdr.style.cssText = 'color:#9aa0c7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;';
+      dashboardContainer.appendChild(hdr);
 
-      const cardsContainer = document.createElement('div');
-      cardsContainer.style.display = 'grid';
-      cardsContainer.style.gridTemplateColumns = '1fr';
-      cardsContainer.style.gap = '10px';
+      // Compute max codeLines for relative progress bars
+      const maxLines = Math.max(1, ...activeUsersData.map(u => {
+        const st = userActivityStats[u.id];
+        return (st && st.codeLines) || 0;
+      }));
 
+      // ── Per-user activity cards ──────────────────────────────
       activeUsersData.forEach(user => {
+        const uid  = user.id;
+        const st   = uid ? getOrCreateUserStats(uid) : {};
+        const isLocal = !!user.isLocal;
+
+        // Use live editor content for local user's code stats
+        if (isLocal && editorInstance) {
+          const live = editorInstance.getValue();
+          st.codeLines = live.split('\n').length;
+          st.codeChars = live.length;
+        }
+
         const card = document.createElement('div');
-        card.style.padding = '12px';
-        card.style.border = '1px solid #2f3243';
-        card.style.borderRadius = '10px';
-        card.style.background = '#1a1b26';
+        card.style.cssText = 'background:#131520;border:1px solid #2a2d3e;border-radius:12px;padding:14px;margin-bottom:8px;';
 
-        const top = document.createElement('div');
-        top.style.display = 'flex';
-        top.style.alignItems = 'center';
-        top.style.justifyContent = 'space-between';
-        top.style.marginBottom = '10px';
+        // ·· Card header: avatar + name + status dot ··
+        const cardHdr = document.createElement('div');
+        cardHdr.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:12px;';
 
-        const title = document.createElement('div');
-        title.style.display = 'flex';
-        title.style.alignItems = 'center';
-        title.style.gap = '10px';
+        const av = document.createElement('div');
+        const avColor = user.role === 'Host' || user.role === 'owner' ? 'linear-gradient(135deg,#7c3aed,#3b82f6)' : 'linear-gradient(135deg,#374151,#4b5563)';
+        av.textContent = user.avatar || (user.name || '?').charAt(0).toUpperCase();
+        av.style.cssText = `width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:${avColor};color:#fff;font-weight:700;font-size:14px;flex-shrink:0;`;
 
-        const avatar = document.createElement('div');
-        avatar.textContent = user.avatar;
-        avatar.style.width = '32px';
-        avatar.style.height = '32px';
-        avatar.style.borderRadius = '50%';
-        avatar.style.display = 'flex';
-        avatar.style.alignItems = 'center';
-        avatar.style.justifyContent = 'center';
-        avatar.style.background = user.role === 'Host' ? '#0e639c' : '#3e3e42';
-        avatar.style.color = '#ffffff';
-        avatar.style.fontWeight = '700';
+        const nameWrap = document.createElement('div');
+        nameWrap.style.cssText = 'flex:1;min-width:0;';
+        nameWrap.innerHTML = `<div style="color:#fff;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${user.name || 'Unknown'}${isLocal ? ' <span style="color:#7c3aed;font-size:10px;">(You)</span>' : ''}</div>`
+                           + `<div style="color:#6b7099;font-size:10px;margin-top:1px;">${user.role || 'Participant'} · ${(user.username || '').slice(0,24)}</div>`;
 
-        const name = document.createElement('div');
-        name.innerHTML = `<strong style="color:#ffffff;">${user.name}${user.isLocal ? ' (You)' : ''}</strong><br><span style="color:#8a8fbc;font-size:11px;">${user.role} · ${user.username}</span>`;
+        const dot = document.createElement('div');
+        dot.style.cssText = `width:8px;height:8px;border-radius:50%;background:${user.online ? '#4ec9b0' : '#64748b'};flex-shrink:0;margin-top:2px;box-shadow:${user.online ? '0 0 6px #4ec9b0' : 'none'};`;
 
-        title.appendChild(avatar);
-        title.appendChild(name);
-        top.appendChild(title);
+        cardHdr.appendChild(av);
+        cardHdr.appendChild(nameWrap);
+        cardHdr.appendChild(dot);
+        card.appendChild(cardHdr);
 
-        const status = document.createElement('div');
-        status.textContent = user.online ? 'Online' : 'Away';
-        status.style.color = user.online ? '#4ec9b0' : '#f0ad4e';
-        status.style.fontSize = '12px';
-        status.style.fontWeight = '700';
-        top.appendChild(status);
+        // helper: stat row
+        function statRow(icon, label, value, sub) {
+          const row = document.createElement('div');
+          row.style.cssText = 'display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;';
+          row.innerHTML = `<span style="color:#6b7099;font-size:11px;">${icon} ${label}</span>`
+                        + `<span style="color:#e2e8f0;font-size:12px;font-weight:600;">${value}${sub ? `<span style="color:#6b7099;font-weight:400;font-size:10px;"> ${sub}</span>` : ''}</span>`;
+          return row;
+        }
 
-        card.appendChild(top);
+        // helper: divider label
+        function sectionLabel(text) {
+          const d = document.createElement('div');
+          d.style.cssText = 'color:#4a5170;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:10px 0 6px;border-top:1px solid #1e2235;padding-top:8px;';
+          d.textContent = text;
+          return d;
+        }
 
-        const timeRow = document.createElement('div');
-        timeRow.style.display = 'flex';
-        timeRow.style.justifyContent = 'space-between';
-        timeRow.style.gap = '10px';
+        // ·· Code progress section ··
+        card.appendChild(sectionLabel('Code Progress'));
 
-        const timeLabel = document.createElement('div');
-        timeLabel.textContent = 'Active Time';
-        timeLabel.style.color = '#8a8fbc';
-        timeLabel.style.fontSize = '11px';
+        const lines = st.codeLines || 0;
+        const pct   = Math.round((lines / maxLines) * 100);
 
-        const timeValue = document.createElement('div');
-        timeValue.textContent = formatActiveTime(getComputedActiveSeconds(user));
-        timeValue.style.color = '#ffffff';
-        timeValue.style.fontSize = '13px';
-        timeValue.style.fontWeight = '700';
+        // Lines with progress bar
+        const linesRow = document.createElement('div');
+        linesRow.style.cssText = 'margin-bottom:8px;';
+        linesRow.innerHTML = `<div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+          <span style="color:#6b7099;font-size:11px;">📄 Lines of Code</span>
+          <span style="color:#e2e8f0;font-size:12px;font-weight:600;">${fmtNum(lines)} line${lines !== 1 ? 's' : ''}</span>
+        </div>
+        <div style="height:5px;background:#1e2235;border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#7c3aed,#3b82f6);border-radius:3px;transition:width .4s;"></div>
+        </div>`;
+        card.appendChild(linesRow);
 
-        timeRow.appendChild(timeLabel);
-        timeRow.appendChild(timeValue);
-        card.appendChild(timeRow);
+        card.appendChild(statRow('🔤', 'File Size', fmtNum(st.codeChars || 0), 'chars'));
 
-        const note = document.createElement('div');
-        note.textContent = user.isLocal ? 'Tab focus tracking enabled for anti-cheat' : 'Session activity monitored';
-        note.style.color = '#8a8fbc';
-        note.style.fontSize = '11px';
-        note.style.marginTop = '10px';
-        card.appendChild(note);
+        if (isLocal) {
+          card.appendChild(statRow('⌨️', 'Typed This Session', fmtNum(st.charsTyped || 0), 'chars'));
+          card.appendChild(statRow('✏️', 'Edit Strokes',       fmtNum(st.editCount  || 0), 'changes'));
+          card.appendChild(statRow('➕', 'Lines Added',        fmtNum(st.linesAdded || 0)));
+        }
 
-        cardsContainer.appendChild(card);
+        const lastEdit = st.lastEditAt;
+        card.appendChild(statRow('🕐', 'Last Edit', lastEdit ? timeAgo(lastEdit) : '—'));
+
+        // ·· Session section ··
+        card.appendChild(sectionLabel('Session'));
+
+        card.appendChild(statRow('⏱', 'Active Time', formatActiveTime(getComputedActiveSeconds(user))));
+
+        if (user.online) {
+          card.appendChild(statRow('🟢', 'Status', 'Online now'));
+        } else {
+          const offlineTs = st.lastOfflineAt || user.lastSeen;
+          card.appendChild(statRow('⚫', 'Last Online', offlineTs ? timeAgo(offlineTs) : '—'));
+        }
+
+        const sessionStart = user.startedAt;
+        card.appendChild(statRow('📅', 'Session Start', sessionStart ? timeAgo(sessionStart) : '—'));
+
+        dashboardContainer.appendChild(card);
       });
-
-      dashboardContainer.appendChild(cardsContainer);
     }
 
     function getLocalUser() {
@@ -2909,11 +4132,22 @@
         updateLocalUserVisibility(true);
       });
 
+      window.addEventListener('beforeunload', () => {
+        if (currentProjectId) setCurrentUserPresence(false);
+      });
+
       setInterval(() => {
         if (document.visibilityState === 'visible') {
           tickUserTimers();
         }
       }, 1000);
+
+      // Heartbeat every 30 s — keeps lastActive fresh without flooding RTDB
+      setInterval(() => {
+        if (document.visibilityState === 'visible' && currentProjectId && (currentUser || currentGuest)) {
+          setCurrentUserPresence(true);
+        }
+      }, 30000);
 
       updateLocalUserVisibility(document.visibilityState === 'visible');
     }
@@ -2932,16 +4166,32 @@
 
     function toggleSidebarCollapse() {
       const sidebar = document.getElementById('sidebar');
+      const btn     = document.getElementById('sidebar-toggle-btn');
+      const resizer = document.getElementById('sidebar-resizer');
       if (!sidebar) return;
       sidebarCollapsed = !sidebarCollapsed;
       if (sidebarCollapsed) {
+        lastSidebarWidth = sidebar.offsetWidth || lastSidebarWidth;
         sidebar.classList.add('collapsed');
-        sidebar.style.width = '60px';
+        sidebar.style.width = '0';
+        if (resizer) resizer.style.display = 'none';
+        if (btn) { btn.textContent = '▶'; btn.title = 'Show Sidebar (Ctrl+B)'; btn.classList.add('sidebar-hidden'); }
       } else {
         sidebar.classList.remove('collapsed');
         sidebar.style.width = (lastSidebarWidth || 260) + 'px';
+        if (resizer) resizer.style.display = '';
+        if (btn) { btn.textContent = '◀'; btn.title = 'Hide Sidebar (Ctrl+B)'; btn.classList.remove('sidebar-hidden'); }
       }
+      if (editorInstance) setTimeout(() => editorInstance.layout(), 250);
     }
+
+    // Ctrl+B toggles sidebar (VS Code muscle memory)
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        e.preventDefault();
+        toggleSidebarCollapse();
+      }
+    });
 
     function setupSidebarResizer() {
       const resizer = document.getElementById('sidebar-resizer');
@@ -2977,7 +4227,7 @@
       const previewResizer = document.getElementById('preview-resizer');
       if (!previewPanel) return;
       if (show) {
-        previewPanel.style.display = 'block';
+        previewPanel.style.display = 'flex';
         previewPanel.style.width = previewPanelWidth + 'px';
         if (previewResizer) previewResizer.style.display = 'block';
       } else {
@@ -3038,7 +4288,43 @@
       }
     }
 
+    function showLoginModalError(msg) {
+      const el = document.getElementById('login-modal-error');
+      if (!el) return;
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    function hideLoginModalError() {
+      const el = document.getElementById('login-modal-error');
+      if (el) el.style.display = 'none';
+    }
+
+    function redirectToLogin() {
+      // Save the full current URL (including ?project=&collab=true) so login.html
+      // can redirect the user back here after successful authentication.
+      sessionStorage.setItem('redirectAfterLogin', window.location.href);
+      window.location.href = 'login.html';
+    }
+
+    function setupLoginModalHandlers() {
+      const submitBtn  = document.getElementById('login-submit');
+      const googleBtn  = document.getElementById('google-login-btn');
+      const emailInput = document.getElementById('login-email');
+      const passInput  = document.getElementById('login-password');
+
+      // Both paths hand off to login.html which already handles OAuth & email auth
+      // correctly. Doing auth inline here fails because the compat SDK forms an
+      // invalid OAuth redirect URI from the collab URL query string.
+      if (submitBtn)  submitBtn.addEventListener('click',  redirectToLogin);
+      if (googleBtn)  googleBtn.addEventListener('click',  redirectToLogin);
+      if (emailInput) emailInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') redirectToLogin(); });
+      if (passInput)  passInput.addEventListener('keydown',  (e) => { if (e.key === 'Enter') redirectToLogin(); });
+    }
+
     function setupEventListeners() {
+      setupLoginModalHandlers();
+
       const explorerBtn = document.getElementById('explorer-btn');
       if (explorerBtn) explorerBtn.addEventListener('click', () => switchPanel('explorer'));
       const usersBtn = document.getElementById('users-btn');
@@ -3096,11 +4382,30 @@
           return;
         }
 
-        const shareLink = window.location.href.split('?')[0] + '?project=' + encodeURIComponent(currentProjectId) + '&collab=true';
-        navigator.clipboard.writeText(shareLink).then(() => {
-          showToast('Collaborative share link copied!');
+        // Sync to Firestore before sharing
+        if (fsdb) {
+          syncProjectStructureToFirebase(currentProjectId);
+          syncLocalEditorContentToFirebase(currentProjectId);
+        }
+
+        const shareUrl = window.location.origin + '/editor.html?project=' + encodeURIComponent(currentProjectId) + '&collab=true';
+
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          showToast('Share link copied! Send it to collaborators.');
+          // Show the URL so the user can also copy it manually
+          const existing = document.getElementById('share-url-bar');
+          if (!existing) {
+            const bar = document.createElement('div');
+            bar.id = 'share-url-bar';
+            bar.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1c1d28;border:1px solid #0e639c;border-radius:10px;padding:10px 16px;z-index:5000;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,0.4);';
+            bar.innerHTML = `<span style="color:#9aa0c7;font-size:12px;">Share link:</span>
+              <input readonly value="${shareUrl}" style="background:#111;color:#4ec9b0;border:1px solid #333;border-radius:6px;padding:5px 10px;font-size:12px;width:320px;outline:none;" onclick="this.select()">
+              <button onclick="document.getElementById('share-url-bar').remove()" style="background:none;border:none;color:#8a8fbc;cursor:pointer;font-size:18px;">✕</button>`;
+            document.body.appendChild(bar);
+            setTimeout(() => { if (bar.parentNode) bar.remove(); }, 15000);
+          }
         }).catch(() => {
-          showToast('Failed to copy link');
+          prompt('Copy this link to share:', shareUrl);
         });
       });
 
@@ -3184,24 +4489,170 @@
         if (emojiPicker.contains(e.target) || chatEmojiBtn === e.target) return;
         hideEmojiPicker();
       });
+
+      // Profile dropdown toggle
+      const profileAvatarBtn = document.getElementById('profile-avatar-btn');
+      const profileDropdown  = document.getElementById('profile-dropdown');
+      if (profileAvatarBtn && profileDropdown) {
+        profileAvatarBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          profileDropdown.classList.toggle('hidden');
+        });
+        document.addEventListener('click', (e) => {
+          if (!profileDropdown.contains(e.target) && e.target !== profileAvatarBtn) {
+            profileDropdown.classList.add('hidden');
+          }
+        });
+      }
+
+      // Profile dropdown actions
+      const closeDropdown = () => profileDropdown && profileDropdown.classList.add('hidden');
+
+      const pdHomeBtn = document.getElementById('pd-home-btn');
+      if (pdHomeBtn) pdHomeBtn.addEventListener('click', () => {
+        closeDropdown();
+        window.location.href = 'index2.html';
+      });
+
+      const pdProjectsBtn = document.getElementById('pd-projects-btn');
+      if (pdProjectsBtn) pdProjectsBtn.addEventListener('click', () => {
+        closeDropdown();
+        window.location.href = 'projects.html';
+      });
+
+      const pdSettingsBtn = document.getElementById('pd-settings-btn');
+      if (pdSettingsBtn) pdSettingsBtn.addEventListener('click', () => {
+        closeDropdown();
+        const modal = document.getElementById('settings-modal');
+        if (modal) modal.classList.remove('hidden');
+      });
+
+      const pdLogoutBtn = document.getElementById('pd-logout-btn');
+      if (pdLogoutBtn) pdLogoutBtn.addEventListener('click', () => {
+        closeDropdown();
+        logout();
+      });
+
+      // Right panel tab buttons
+      const rpTabBrowser = document.getElementById('rp-tab-browser');
+      const rpTabOutput  = document.getElementById('rp-tab-output');
+      if (rpTabBrowser) rpTabBrowser.addEventListener('click', () => {
+        openRightPanel('browser');
+      });
+      if (rpTabOutput) rpTabOutput.addEventListener('click', () => {
+        openRightPanel('output');
+      });
+
+      // Close right panel
+      const closeRightPanelBtn = document.getElementById('close-right-panel-btn');
+      if (closeRightPanelBtn) closeRightPanelBtn.addEventListener('click', () => {
+        previewEnabled = false;
+        setPreviewPanelVisible(false);
+        if (editorInstance) setTimeout(() => editorInstance.layout(), 100);
+      });
+
+      // Clear right output
+      const clearRightOutputBtn = document.getElementById('clear-right-output-btn');
+      if (clearRightOutputBtn) clearRightOutputBtn.addEventListener('click', clearOutput);
+
+      // Copy output button
+      const copyOutputBtn = document.getElementById('copy-output-btn');
+      if (copyOutputBtn) copyOutputBtn.addEventListener('click', () => {
+        const el = document.getElementById('right-output-console');
+        if (!el) return;
+        navigator.clipboard.writeText(el.innerText || el.textContent || '').then(() => showToast('Output copied!')).catch(() => {});
+      });
+
+      // Copy code to clipboard
+      const copyCodeBtn = document.getElementById('copy-code-btn');
+      if (copyCodeBtn) copyCodeBtn.addEventListener('click', () => {
+        const code = editorInstance ? editorInstance.getValue() : '';
+        if (!code) { showToast('Nothing to copy'); return; }
+        navigator.clipboard.writeText(code).then(() => showToast('Code copied to clipboard!')).catch(() => showToast('Copy failed — try Ctrl+A, Ctrl+C'));
+      });
+
+      // Export current file
+      const exportBtn = document.getElementById('export-btn');
+      if (exportBtn) exportBtn.addEventListener('click', () => {
+        const code = editorInstance ? editorInstance.getValue() : '';
+        const tab = openTabs.find(t => t.id === currentTabId);
+        const filename = (tab && tab.name) ? tab.name : 'export.txt';
+        const blob = new Blob([code], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast(`Exported as ${filename}`);
+      });
+
+      // Import file from computer
+      const importBtn       = document.getElementById('import-btn');
+      const importFileInput = document.getElementById('import-file-input');
+      if (importBtn && importFileInput) {
+        importBtn.addEventListener('click', () => importFileInput.click());
+        importFileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const content = ev.target.result;
+            const name = file.name;
+            const ext = name.split('.').pop().toLowerCase();
+            const langMap = { js:'javascript', ts:'typescript', jsx:'javascript', tsx:'typescript', py:'python', html:'html', css:'css', java:'java', cpp:'cpp', c:'cpp', cs:'csharp', json:'json', md:'markdown', sql:'sql', sh:'shell', xml:'xml', yaml:'yaml', yml:'yaml', txt:'plaintext' };
+            const language = langMap[ext] || 'plaintext';
+            const id = 'tab_' + Date.now();
+            openTabs.push({ id, name, content, language });
+            switchTab(id);
+            showToast(`Imported ${name}`);
+          };
+          reader.readAsText(file);
+          importFileInput.value = '';
+        });
+      }
+    }
+
+    // Right panel: open on a specific tab ('browser' or 'output')
+    function openRightPanel(tab) {
+      previewEnabled = true;
+      setPreviewPanelVisible(true);
+      switchRightPanelTab(tab || 'browser');
+      if (tab === 'browser') updatePreview();
+      if (editorInstance) setTimeout(() => editorInstance.layout(), 100);
+    }
+
+    function switchRightPanelTab(tab) {
+      const browserContent = document.getElementById('rp-browser-content');
+      const outputContent  = document.getElementById('rp-output-content');
+      const tabBrowser     = document.getElementById('rp-tab-browser');
+      const tabOutput      = document.getElementById('rp-tab-output');
+      if (!browserContent || !outputContent) return;
+
+      if (tab === 'output') {
+        browserContent.style.display = 'none';
+        outputContent.style.display  = 'flex';
+        tabBrowser && tabBrowser.classList.remove('active');
+        tabOutput  && tabOutput.classList.add('active');
+      } else {
+        browserContent.style.display = 'flex';
+        outputContent.style.display  = 'none';
+        tabBrowser && tabBrowser.classList.add('active');
+        tabOutput  && tabOutput.classList.remove('active');
+      }
     }
 
     // Preview functionality
     function togglePreview() {
-      previewEnabled = !previewEnabled;
-      setPreviewPanelVisible(previewEnabled);
-      
       if (previewEnabled) {
-        updatePreview();
-        showToast('Preview enabled');
+        previewEnabled = false;
+        setPreviewPanelVisible(false);
+        showToast('Preview closed');
       } else {
-        showToast('Preview disabled');
+        openRightPanel('browser');
+        showToast('Browser preview enabled');
       }
-      
-      // Resize Monaco editor
-      if (editorInstance) {
-        setTimeout(() => editorInstance.layout(), 100);
-      }
+      if (editorInstance) setTimeout(() => editorInstance.layout(), 100);
     }
 
     function updatePreview() {
@@ -3389,5 +4840,6 @@
 
     // Load project from URL (projects feature removed)
   </script>
+
 </body>
 </html>
