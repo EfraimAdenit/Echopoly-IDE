@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz/Test Creator | EchoPoly IDE</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1a1f35 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── TEACHER DASHBOARD HEADER ── */
+    header.app-header {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      padding: 0.85rem 2rem;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 56px;
+    }
+
+    .app-logo {
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+      text-decoration: none;
+    }
+
+    .header-user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .header-user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .header-user-name {
+      color: #cbd5e1;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .header-logout-btn {
+      padding: 6px 12px;
+      background: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .header-logout-btn:hover { background: rgba(239, 68, 68, 0.2); }
+
+    /* ── SCREENS ── */
+    .screen { display: none; }
+    .screen.active { display: flex; flex-direction: column; min-height: calc(100vh - 56px); }
+
+    /* ── SHARED LAYOUT ── */
+    .page-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 84px 20px 60px;
+      width: 100%;
+    }
+
+    .page-title {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+    }
+    .page-subtitle {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #c4b5fd;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 18px;
+    }
+
+    /* ── FORM ELEMENTS ── */
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(30, 41, 59, 0.55);
+      color: #f1f5f9;
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: rgba(124, 58, 237, 0.6);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+    }
+    .form-select option { background: #1e293b; }
+    .form-textarea { resize: vertical; min-height: 68px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+    /* ── TOGGLE ── */
+    .toggle-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .toggle-option {
+      padding: 7px 18px;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(30, 41, 59, 0.5);
+      color: #94a3b8;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .toggle-option.selected {
+      background: rgba(124, 58, 237, 0.25);
+      border-color: rgba(124, 58, 237, 0.6);
+      color: #c4b5fd;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 20px;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      color: #fff;
+    }
+    .btn-primary:hover { box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4); transform: translateY(-1px); }
+
+    .btn-success {
+      background: linear-gradient(135deg, #059669, #047857);
+      color: #fff;
+    }
+    .btn-success:hover { box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4); transform: translateY(-1px); }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      color: #fff;
+    }
+    .btn-danger:hover { box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4); transform: translateY(-1px); }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #fff;
+    }
+    .btn-warning:hover { box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4); transform: translateY(-1px); }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      color: #94a3b8;
+    }
+    .btn-outline:hover { border-color: rgba(148, 163, 184, 0.5); color: #e2e8f0; background: rgba(148, 163, 184, 0.06); }
+
+    .btn-sm { padding: 5px 12px; font-size: 0.78rem; border-radius: 7px; }
+    .btn-icon { padding: 7px; border-radius: 8px; }
+    .btn-full { width: 100%; justify-content: center; }
+
+    /* ── QUESTION BUILDER ── */
+    .question-list { display: flex; flex-direction: column; gap: 14px; }
+
+    .question-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .question-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: rgba(15, 23, 42, 0.4);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.07);
+      cursor: pointer;
+      user-select: none;
+    }
+    .question-num {
+      min-width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: rgba(124, 58, 237, 0.22);
+      color: #a78bfa;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .question-type-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 5px;
+      background: rgba(148, 163, 184, 0.1);
+      color: #94a3b8;
+    }
+    .question-preview-text {
+      flex: 1;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .question-body { padding: 16px; display: none; }
+    .question-body.open { display: block; }
+
+    .mcq-options { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .mcq-option-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .option-label {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: rgba(124, 58, 237, 0.15);
+      color: #a78bfa;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .correct-radio {
+      width: 18px;
+      height: 18px;
+      accent-color: #7c3aed;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .add-question-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    /* ── SESSION CODE DISPLAY ── */
+    .session-code-display {
+      text-align: center;
+      padding: 32px 24px;
+    }
+    .code-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #64748b;
+      margin-bottom: 10px;
+    }
+    .code-value {
+      font-size: 3.8rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: #c4b5fd;
+      font-family: 'Courier New', monospace;
+      text-shadow: 0 0 30px rgba(196, 181, 253, 0.3);
+      cursor: pointer;
+      transition: text-shadow 0.2s;
+    }
+    .code-value:hover { text-shadow: 0 0 40px rgba(196, 181, 253, 0.55); }
+    .code-copy-hint {
+      font-size: 0.78rem;
+      color: #475569;
+      margin-top: 8px;
+    }
+
+    /* ── LOBBY PARTICIPANTS ── */
+    .lobby-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    .lobby-participant {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: rgba(30, 41, 59, 0.5);
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.07);
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .participant-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .participant-name { font-size: 0.9rem; font-weight: 600; color: #e2e8f0; flex: 1; }
+    .participant-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 6px;
+    }
+    .status-waiting  { background: rgba(100, 116, 139, 0.2); color: #94a3b8; }
+    .status-active   { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .status-done     { background: rgba(124, 58, 237, 0.18); color: #a78bfa; }
+    .status-flagged  { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+    .empty-lobby {
+      text-align: center;
+      padding: 40px 20px;
+      color: #475569;
+    }
+    .empty-lobby .icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+    /* ── LIVE SUPERVISION ── */
+    .supervision-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 14px;
+    }
+    .student-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      transition: border-color 0.3s;
+    }
+    .student-card.flagged {
+      border-color: rgba(239, 68, 68, 0.45);
+      box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.15) inset;
+    }
+    .student-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .student-info { flex: 1; min-width: 0; }
+    .student-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .student-meta {
+      font-size: 0.73rem;
+      color: #64748b;
+      margin-top: 1px;
+    }
+
+    .progress-bar-wrap {
+      height: 6px;
+      background: rgba(148, 163, 184, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #7c3aed, #a78bfa);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    .student-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    .flag-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .flag-chip {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── SESSION CONTROLS BAR ── */
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px 20px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+      position: sticky;
+      top: 56px;
+      z-index: 100;
+    }
+    .controls-bar .session-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .controls-bar .session-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .controls-bar .session-code-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 20px;
+      background: rgba(124, 58, 237, 0.18);
+      color: #a78bfa;
+      font-family: monospace;
+      margin-top: 3px;
+      cursor: pointer;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    .status-pill.waiting  { background: rgba(100, 116, 139, 0.2); color: #94a3b8; }
+    .status-pill.active   { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .status-pill.paused   { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .status-pill.ended    { background: rgba(148, 163, 184, 0.1); color: #64748b; }
+
+    .timer-display {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #a78bfa;
+      font-family: monospace;
+      min-width: 52px;
+      text-align: center;
+    }
+    .timer-display.warning { color: #fbbf24; }
+    .timer-display.danger  { color: #f87171; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: #c4b5fd;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.73rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-top: 6px;
+    }
+
+    /* ── RESULTS VIEW ── */
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .results-table th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #64748b;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+    }
+    .results-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.05);
+      color: #cbd5e1;
+      vertical-align: middle;
+    }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table tr:hover td { background: rgba(148, 163, 184, 0.04); }
+
+    .score-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 7px;
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+    .score-high { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .score-mid  { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .score-low  { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+    /* ── TABS ── */
+    .tab-nav {
+      display: flex;
+      gap: 2px;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #64748b;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .tab-btn.active {
+      background: rgba(124, 58, 237, 0.22);
+      color: #c4b5fd;
+    }
+
+    /* ── DASHBOARD CARDS (list of sessions) ── */
+    .sessions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .session-item {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 14px;
+      padding: 18px 18px 14px;
+      cursor: default;
+      transition: box-shadow 0.25s, border-color 0.25s;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .session-item:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      border-color: rgba(148, 163, 184, 0.2);
+    }
+    .session-item-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .session-item-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.78rem;
+      color: #64748b;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .session-item-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    /* badges row: type + status side by side */
+    .session-item-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    /* action buttons row: each button grows equally */
+    .session-item-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .session-item-actions .btn {
+      flex: 1;
+      justify-content: center;
+      font-size: 0.82rem;
+      padding: 8px 10px;
+      border-radius: 9px;
+    }
+    /* slim danger ghost for delete */
+    .btn-ghost-danger {
+      background: transparent;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+    .btn-ghost-danger:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+    .type-pill {
+      font-size: 0.71rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    .type-quiz { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .type-exam { background: rgba(239, 68, 68, 0.13); color: #f87171; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #0f172a;
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 20px;
+      padding: 32px;
+      width: 100%;
+      max-width: 440px;
+      animation: modalIn 0.25s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.94); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .modal-title { font-size: 1.1rem; font-weight: 700; color: #f1f5f9; margin-bottom: 8px; }
+    .modal-body  { color: #94a3b8; font-size: 0.88rem; line-height: 1.6; margin-bottom: 24px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── TOAST ── */
+    #toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    .toast {
+      padding: 11px 18px;
+      border-radius: 10px;
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      backdrop-filter: blur(12px);
+      color: #e2e8f0;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      animation: toastIn 0.3s ease forwards;
+      max-width: 320px;
+    }
+    .toast.out { animation: toastOut 0.3s ease forwards; }
+    @keyframes toastIn  { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateX(0); }    to { opacity: 0; transform: translateX(30px); } }
+
+    /* ── SCROLLBARS ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.15); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.28); }
+
+    /* ── MISC ── */
+    .divider { height: 1px; background: rgba(148, 163, 184, 0.08); margin: 20px 0; }
+    .text-muted { color: #64748b; font-size: 0.82rem; }
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 14px; }
+    .d-flex { display: flex; align-items: center; gap: 10px; }
+    .flex-wrap { flex-wrap: wrap; }
+    .justify-between { justify-content: space-between; }
+    .ml-auto { margin-left: auto; }
+
+    @media (max-width: 600px) {
+      .form-row, .form-row-3 { grid-template-columns: 1fr; }
+      .code-value { font-size: 2.6rem; }
+      .supervision-grid { grid-template-columns: 1fr; }
+      .sessions-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <a href="dashboard_teacher.html" class="app-logo">👨‍🏫 EchoPoly</a>
+    <div class="header-user-info">
+      <div class="header-user-avatar" id="user-avatar">T</div>
+      <span class="header-user-name" id="user-name">Teacher</span>
+      <button class="header-logout-btn" id="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- ════════════════════════════════════
+       SCREEN 1 — DASHBOARD
+  ════════════════════════════════════ -->
+  <div id="screen-dashboard" class="screen active">
+    <div class="page-container">
+      <div class="d-flex justify-between flex-wrap" style="margin-bottom:28px;">
+        <div>
+          <a href="dashboard_teacher.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#64748b;text-decoration:none;margin-bottom:10px;transition:color .2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#64748b'">← Back to Dashboard</a>
+          <h1 class="page-title">Quiz & Test Dashboard</h1>
+          <p class="page-subtitle">Create, manage, and supervise quizzes and exams.</p>
+        </div>
+        <button class="btn btn-primary" onclick="goToCreate()">+ New Session</button>
+      </div>
+
+      <div id="sessions-grid" class="sessions-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#475569;">
+          <div style="font-size:2.5rem;margin-bottom:12px;">📋</div>
+          <div>No sessions yet. Create your first one!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       SCREEN 2 — CREATE SESSION
+  ════════════════════════════════════ -->
+  <div id="screen-create" class="screen">
+    <div class="page-container">
+      <div class="d-flex" style="margin-bottom:24px;gap:14px;">
+        <button class="btn btn-outline btn-sm" onclick="showScreen('dashboard')">← Back</button>
+        <div>
+          <h1 class="page-title">Create Session</h1>
+          <p class="page-subtitle">Build questions, configure settings, and launch.</p>
+        </div>
+      </div>
+
+      <!-- Basic Info -->
+      <div class="card">
+        <div class="card-title">Session Info</div>
+        <div class="form-group">
+          <label class="form-label">Session Title</label>
+          <input id="inp-title" class="form-input" type="text" placeholder="e.g. Chapter 5 — Variables & Loops">
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Mode</label>
+            <div class="toggle-group" id="mode-toggle">
+              <div class="toggle-option selected" data-val="quiz" onclick="selectMode('quiz')">📝 Quiz</div>
+              <div class="toggle-option" data-val="exam" onclick="selectMode('exam')">📋 Exam</div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0;" id="timelimit-group">
+            <label class="form-label">Time Limit (minutes, 0 = none)</label>
+            <input id="inp-timelimit" class="form-input" type="number" min="0" max="300" value="0" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Questions -->
+      <div class="card">
+        <div class="d-flex justify-between" style="margin-bottom:18px;">
+          <div class="card-title" style="margin-bottom:0;">Questions <span id="q-count-badge" style="background:rgba(124,58,237,0.18);color:#a78bfa;font-size:0.75rem;padding:2px 9px;border-radius:20px;margin-left:8px;">0</span></div>
+          <div style="font-size:0.8rem;color:#64748b;align-self:center;">Click a question to expand it</div>
+        </div>
+        <div id="question-list" class="question-list"></div>
+        <div class="add-question-bar">
+          <button class="btn btn-outline btn-sm" onclick="addQuestion('mcq')">+ MCQ</button>
+          <button class="btn btn-outline btn-sm" onclick="addQuestion('truefalse')">+ True / False</button>
+          <button class="btn btn-outline btn-sm" onclick="addQuestion('shortanswer')">+ Short Answer</button>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div class="card">
+        <div class="card-title">Settings</div>
+        <div class="form-row-3">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Max Participants</label>
+            <input id="inp-maxpart" class="form-input" type="number" min="1" max="500" value="30">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Idle Threshold (sec)</label>
+            <input id="inp-idle" class="form-input" type="number" min="30" max="600" value="120">
+          </div>
+          <div class="form-group" style="margin-bottom:0;" id="feedback-group">
+            <label class="form-label">Feedback Mode</label>
+            <select id="inp-feedback" class="form-select">
+              <option value="immediate">Immediate</option>
+              <option value="end">At End</option>
+              <option value="none">None</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row mt-3">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.88rem;color:#94a3b8;user-select:none;">
+            <input type="checkbox" id="chk-retry" style="accent-color:#7c3aed;width:16px;height:16px;">
+            Allow students to retry
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.88rem;color:#94a3b8;user-select:none;">
+            <input type="checkbox" id="chk-randomize" style="accent-color:#7c3aed;width:16px;height:16px;">
+            Randomize question order
+          </label>
+        </div>
+      </div>
+
+      <div class="d-flex justify-between flex-wrap" style="gap:10px;">
+        <button class="btn btn-outline" onclick="showScreen('dashboard')">Cancel</button>
+        <button class="btn btn-success" onclick="createSession()">🚀 Create &amp; Get Code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       SCREEN 3 — LOBBY
+  ════════════════════════════════════ -->
+  <div id="screen-lobby" class="screen">
+    <!-- sticky controls bar -->
+    <div class="controls-bar">
+      <div class="session-info">
+        <div class="session-title" id="lobby-title">Untitled Session</div>
+        <div class="session-code-pill" id="lobby-code-pill" onclick="copyCode()" title="Click to copy">📋 <span id="lobby-code-text">——</span></div>
+      </div>
+      <span class="status-pill waiting" id="lobby-status-pill">⏳ Waiting</span>
+      <button class="btn btn-success" id="lobby-start-btn" onclick="startSession()">▶ Start Session</button>
+      <button class="btn btn-danger btn-sm" onclick="cancelSession()">✕ Cancel</button>
+    </div>
+
+    <div class="page-container">
+      <div class="form-row" style="align-items:flex-start;">
+        <!-- Code block -->
+        <div class="card" style="text-align:center;">
+          <div class="card-title">Session Code</div>
+          <div class="session-code-display">
+            <div class="code-label">Share this code with students</div>
+            <div class="code-value" id="lobby-big-code" onclick="copyCode()">——</div>
+            <div class="code-copy-hint">Click to copy</div>
+          </div>
+          <div class="divider"></div>
+          <div class="d-flex justify-between">
+            <span class="text-muted" id="lobby-participant-count">0 joined</span>
+            <span class="text-muted" id="lobby-session-type"></span>
+          </div>
+        </div>
+
+        <!-- Waiting participants -->
+        <div class="card" style="flex:1.3;min-width:0;">
+          <div class="card-title">Waiting Room</div>
+          <div id="lobby-list" class="lobby-list">
+            <div class="empty-lobby">
+              <div class="icon">👥</div>
+              <div>Waiting for students to join…</div>
+              <div class="text-muted mt-2">Share the code above</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       SCREEN 4 — LIVE SUPERVISION
+  ════════════════════════════════════ -->
+  <div id="screen-supervision" class="screen">
+    <!-- sticky controls bar -->
+    <div class="controls-bar">
+      <div class="session-info">
+        <div class="session-title" id="sup-title">Untitled Session</div>
+        <div class="session-code-pill" id="sup-code-pill" onclick="copyCode()" title="Click to copy">📋 <span id="sup-code-text">——</span></div>
+      </div>
+      <span class="status-pill active" id="sup-status-pill">● Active</span>
+      <div class="timer-display" id="sup-timer" style="display:none;"></div>
+      <button class="btn btn-warning btn-sm" id="sup-pause-btn" onclick="togglePause()">⏸ Pause</button>
+      <button class="btn btn-outline btn-sm" onclick="forceSubmitAll()">⚡ Force Submit All</button>
+      <button class="btn btn-danger btn-sm" onclick="endSession()">■ End Session</button>
+    </div>
+
+    <div class="page-container">
+      <div class="stats-row" id="sup-stats-row">
+        <div class="stat-card"><div class="stat-value" id="stat-total">0</div><div class="stat-label">Total</div></div>
+        <div class="stat-card"><div class="stat-value" id="stat-active">0</div><div class="stat-label">Active</div></div>
+        <div class="stat-card"><div class="stat-value" id="stat-done">0</div><div class="stat-label">Done</div></div>
+        <div class="stat-card"><div class="stat-value" id="stat-flagged">0</div><div class="stat-label">Flagged</div></div>
+      </div>
+
+      <!-- Tab: Grid / Table -->
+      <div class="tab-nav">
+        <button class="tab-btn active" id="tab-grid-btn" onclick="setSupTab('grid')">Grid View</button>
+        <button class="tab-btn" id="tab-table-btn" onclick="setSupTab('table')">Table View</button>
+      </div>
+
+      <div id="sup-grid-view" class="supervision-grid"></div>
+      <div id="sup-table-view" style="display:none;">
+        <div class="card" style="padding:0;overflow:hidden;">
+          <table class="results-table" id="sup-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Status</th>
+                <th>Progress</th>
+                <th>Score</th>
+                <th>Flags</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="sup-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       SCREEN 5 — RESULTS
+  ════════════════════════════════════ -->
+  <div id="screen-results" class="screen">
+    <div class="page-container">
+      <div class="d-flex justify-between flex-wrap" style="margin-bottom:24px;gap:10px;">
+        <div>
+          <h1 class="page-title" id="results-title">Session Results</h1>
+          <p class="page-subtitle" id="results-meta"></p>
+        </div>
+        <div class="d-flex flex-wrap" style="gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="exportCSV()">⬇ Export CSV</button>
+          <button class="btn btn-outline btn-sm" onclick="showScreen('dashboard')">← Dashboard</button>
+        </div>
+      </div>
+
+      <div class="stats-row" id="results-stats"></div>
+
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="results-table" id="results-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student</th>
+              <th>Score</th>
+              <th>Correct</th>
+              <th>Time</th>
+              <th>Flags</th>
+            </tr>
+          </thead>
+          <tbody id="results-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       CONFIRM MODAL
+  ════════════════════════════════════ -->
+  <div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-box">
+      <div class="modal-title" id="modal-title">Confirm</div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-danger" id="modal-confirm-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container"></div>
+
+  <script type="module">
+    import { initializeApp }         from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+    import {
+      getFirestore, doc, collection, addDoc, setDoc, getDoc,
+      updateDoc, deleteDoc, onSnapshot, getDocs, serverTimestamp, query, orderBy
+    } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+    // ── Auth guard ───────────────────────────────────────────────────────────
+    const storedUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    const resolvedRole = localStorage.getItem('role') || (storedUser && storedUser.role);
+    if (!storedUser || resolvedRole !== 'teacher') {
+      window.location.href = 'index.html';
+    }
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBCcyLy_rNx-riDjmK4SUu-gZbKtDPqEYQ",
+      authDomain: "echopoly-ide.firebaseapp.com",
+      databaseURL: "https://echopoly-ide-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "echopoly-ide",
+      storageBucket: "echopoly-ide.firebasestorage.app",
+      messagingSenderId: "290647098484",
+      appId: "1:290647098484:web:61a9a5503c43d465bdbd21",
+      measurementId: "G-LYBESX64E5"
+    };
+
+    const fbApp = initializeApp(firebaseConfig);
+    const auth  = getAuth(fbApp);
+    const db    = getFirestore(fbApp);
+
+    // ── State ────────────────────────────────────────────────────────────────
+    let currentUser  = storedUser;
+    let sessionMode  = 'quiz';          // 'quiz' | 'exam'
+    let questions    = [];              // question objects being built
+    let currentCode  = null;            // active session code
+    let currentDocId = null;            // Firestore doc id
+    let sessionData  = null;            // full session snapshot data
+    let participantsUnsub = null;       // onSnapshot unsubscriber for participants
+    let sessionUnsub      = null;       // onSnapshot unsubscriber for session doc
+    let timerInterval     = null;
+    let timerSeconds      = 0;
+    let sessionPaused     = false;
+    let supTabMode        = 'grid';
+    let participantsCache = {};         // uid → participant data
+
+    // ── Expose callbacks for HTML onclick ────────────────────────────────────
+    window.goToCreate       = goToCreate;
+    window.showScreen       = showScreen;
+    window.selectMode       = selectMode;
+    window.addQuestion      = addQuestion;
+    window.removeQuestion   = removeQuestion;
+    window.toggleQuestion   = toggleQuestion;
+    window.createSession    = createSession;
+    window.startSession     = startSession;
+    window.cancelSession    = cancelSession;
+    window.togglePause      = togglePause;
+    window.forceSubmitAll   = forceSubmitAll;
+    window.endSession       = endSession;
+    window.setSupTab        = setSupTab;
+    window.copyCode         = copyCode;
+    window.exportCSV        = exportCSV;
+    window.closeModal       = closeModal;
+    window.openResultsFor   = openResultsFor;
+
+    // ── Profile ──────────────────────────────────────────────────────────────
+    (function renderProfile() {
+      if (!currentUser) return;
+      const initials = (currentUser.displayName || 'T').charAt(0).toUpperCase();
+      const avatarEl = document.getElementById('user-avatar');
+      const nameEl   = document.getElementById('user-name');
+      if (avatarEl) avatarEl.textContent = initials;
+      if (nameEl)   nameEl.textContent   = currentUser.displayName || 'Teacher';
+    })();
+
+    window.doLogout = function() {
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('role');
+      window.location.href = 'index.html';
+    };
+
+    // ── Screen management ────────────────────────────────────────────────────
+    function showScreen(name) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const el = document.getElementById('screen-' + name);
+      if (el) el.classList.add('active');
+    }
+
+    function goToCreate() {
+      questions = [];
+      sessionMode = 'quiz';
+      document.getElementById('inp-title').value = '';
+      document.getElementById('inp-timelimit').value = '0';
+      document.getElementById('inp-maxpart').value = '30';
+      document.getElementById('inp-idle').value = '120';
+      document.getElementById('inp-feedback').value = 'immediate';
+      document.getElementById('chk-retry').checked = false;
+      document.getElementById('chk-randomize').checked = false;
+      document.getElementById('question-list').innerHTML = '';
+      document.getElementById('q-count-badge').textContent = '0';
+      selectMode('quiz');
+      showScreen('create');
+    }
+
+    // ── Mode toggle ──────────────────────────────────────────────────────────
+    function selectMode(val) {
+      sessionMode = val;
+      document.querySelectorAll('#mode-toggle .toggle-option').forEach(opt => {
+        opt.classList.toggle('selected', opt.dataset.val === val);
+      });
+      // exam hides per-question feedback (has its own end-of-exam reveal)
+      const fbGroup = document.getElementById('feedback-group');
+      if (val === 'exam') {
+        fbGroup.style.opacity = '0.4';
+        fbGroup.style.pointerEvents = 'none';
+        document.getElementById('inp-feedback').value = 'end';
+      } else {
+        fbGroup.style.opacity = '';
+        fbGroup.style.pointerEvents = '';
+      }
+    }
+
+    // ── Question builder ─────────────────────────────────────────────────────
+    let qidCounter = 0;
+
+    function addQuestion(type) {
+      qidCounter++;
+      const q = { id: 'q' + qidCounter, type, text: '', correct: '', points: 1 };
+      if (type === 'mcq') q.options = ['', '', '', ''];
+      if (type === 'shortanswer') q.keywords = '';
+      questions.push(q);
+      renderQuestion(q, true);
+      updateQCount();
+    }
+
+    function renderQuestion(q, expanded = false) {
+      const list = document.getElementById('question-list');
+      const idx  = questions.indexOf(q) + 1;
+      const typeLabel = { mcq: 'MCQ', truefalse: 'True / False', shortanswer: 'Short Answer' }[q.type] || q.type;
+
+      const div = document.createElement('div');
+      div.className = 'question-card';
+      div.id = 'qcard-' + q.id;
+
+      let bodyHtml = '';
+
+      if (q.type === 'mcq') {
+        const opts = ['A', 'B', 'C', 'D'];
+        const optRows = opts.map((ltr, i) => `
+          <div class="mcq-option-row">
+            <span class="option-label">${ltr}</span>
+            <input class="form-input" style="flex:1;" type="text" placeholder="Option ${ltr}" id="opt-${q.id}-${i}"
+              oninput="updateQOption('${q.id}', ${i}, this.value)" value="${escHtml(q.options[i] || '')}">
+            <input type="radio" class="correct-radio" name="correct-${q.id}" id="radio-${q.id}-${i}"
+              title="Mark as correct" onclick="updateQCorrect('${q.id}', '${ltr}')"
+              ${q.correct === ltr ? 'checked' : ''}>
+          </div>`).join('');
+        bodyHtml = `
+          <div class="form-group">
+            <label class="form-label">Question Text</label>
+            <input class="form-input" type="text" placeholder="Enter your question…" id="qtext-${q.id}"
+              oninput="updateQText('${q.id}', this.value)" value="${escHtml(q.text)}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Options — select the correct one (●)</label>
+            <div class="mcq-options">${optRows}</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Points</label>
+              <input class="form-input" type="number" min="1" max="100" value="${q.points}"
+                oninput="updateQPoints('${q.id}', this.value)">
+            </div>
+          </div>`;
+      } else if (q.type === 'truefalse') {
+        bodyHtml = `
+          <div class="form-group">
+            <label class="form-label">Question Text</label>
+            <input class="form-input" type="text" placeholder="Enter your question…" id="qtext-${q.id}"
+              oninput="updateQText('${q.id}', this.value)" value="${escHtml(q.text)}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Correct Answer</label>
+            <div class="toggle-group" id="tf-toggle-${q.id}">
+              <div class="toggle-option ${q.correct === 'True' ? 'selected' : ''}" onclick="updateQCorrect('${q.id}', 'True'); setTfToggle('${q.id}', 'True')">✅ True</div>
+              <div class="toggle-option ${q.correct === 'False' ? 'selected' : ''}" onclick="updateQCorrect('${q.id}', 'False'); setTfToggle('${q.id}', 'False')">❌ False</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Points</label>
+              <input class="form-input" type="number" min="1" max="100" value="${q.points}"
+                oninput="updateQPoints('${q.id}', this.value)">
+            </div>
+          </div>`;
+      } else if (q.type === 'shortanswer') {
+        bodyHtml = `
+          <div class="form-group">
+            <label class="form-label">Question Text</label>
+            <input class="form-input" type="text" placeholder="Enter your question…" id="qtext-${q.id}"
+              oninput="updateQText('${q.id}', this.value)" value="${escHtml(q.text)}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Expected Answer (exact)</label>
+            <input class="form-input" type="text" placeholder="Exact answer or keywords…" id="qcorrect-${q.id}"
+              oninput="updateQCorrect('${q.id}', this.value)" value="${escHtml(q.correct)}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Accepted Keywords (comma-separated, for partial credit)</label>
+            <input class="form-input" type="text" placeholder="e.g. variable, declare, let" id="qkw-${q.id}"
+              oninput="updateQKeywords('${q.id}', this.value)" value="${escHtml(q.keywords || '')}">
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Points</label>
+              <input class="form-input" type="number" min="1" max="100" value="${q.points}"
+                oninput="updateQPoints('${q.id}', this.value)">
+            </div>
+          </div>`;
+      }
+
+      div.innerHTML = `
+        <div class="question-header" onclick="toggleQuestion('${q.id}')">
+          <div class="question-num">${idx}</div>
+          <span class="question-type-badge">${typeLabel}</span>
+          <span class="question-preview-text" id="qpreview-${q.id}">${q.text || 'No question text yet…'}</span>
+          <button class="btn btn-outline btn-sm btn-icon" title="Remove" onclick="removeQuestion(event, '${q.id}')">✕</button>
+        </div>
+        <div class="question-body ${expanded ? 'open' : ''}" id="qbody-${q.id}">
+          ${bodyHtml}
+        </div>
+      `;
+
+      list.appendChild(div);
+    }
+
+    function toggleQuestion(qid) {
+      const body = document.getElementById('qbody-' + qid);
+      if (body) body.classList.toggle('open');
+    }
+
+    function removeQuestion(event, qid) {
+      event.stopPropagation();
+      questions = questions.filter(q => q.id !== qid);
+      const card = document.getElementById('qcard-' + qid);
+      if (card) card.remove();
+      renumberQuestions();
+      updateQCount();
+    }
+
+    function renumberQuestions() {
+      questions.forEach((q, i) => {
+        const card = document.getElementById('qcard-' + q.id);
+        if (!card) return;
+        const numEl = card.querySelector('.question-num');
+        if (numEl) numEl.textContent = i + 1;
+      });
+    }
+
+    function updateQCount() {
+      document.getElementById('q-count-badge').textContent = questions.length;
+    }
+
+    // These are called from inline oninput / onclick handlers
+    window.updateQText     = (id, v) => { const q = questions.find(x => x.id === id); if (q) { q.text = v; const p = document.getElementById('qpreview-' + id); if (p) p.textContent = v || 'No question text yet…'; } };
+    window.updateQCorrect  = (id, v) => { const q = questions.find(x => x.id === id); if (q) q.correct = v; };
+    window.updateQOption   = (id, i, v) => { const q = questions.find(x => x.id === id); if (q && q.options) q.options[i] = v; };
+    window.updateQKeywords = (id, v) => { const q = questions.find(x => x.id === id); if (q) q.keywords = v; };
+    window.updateQPoints   = (id, v) => { const q = questions.find(x => x.id === id); if (q) q.points = parseInt(v) || 1; };
+    window.setTfToggle     = (id, val) => {
+      const wrap = document.getElementById('tf-toggle-' + id);
+      if (!wrap) return;
+      wrap.querySelectorAll('.toggle-option').forEach(o => o.classList.toggle('selected', o.textContent.includes(val)));
+    };
+
+    function escHtml(s) {
+      return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ── Create session ───────────────────────────────────────────────────────
+    async function createSession() {
+      const title = document.getElementById('inp-title').value.trim();
+      if (!title) { toast('Please enter a session title.', '#f87171'); return; }
+      if (questions.length === 0) { toast('Add at least one question.', '#f87171'); return; }
+
+      const invalidQ = questions.find(q => !q.text.trim() || (q.type !== 'shortanswer' && !q.correct));
+      if (invalidQ) {
+        toast('All questions need text and a correct answer.', '#f87171');
+        const card = document.getElementById('qcard-' + invalidQ.id);
+        if (card) { const body = document.getElementById('qbody-' + invalidQ.id); if (body) body.classList.add('open'); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+        return;
+      }
+
+      const code = generateCode();
+      const settings = {
+        timeLimit:      parseInt(document.getElementById('inp-timelimit').value) || 0,
+        maxParticipants: parseInt(document.getElementById('inp-maxpart').value) || 30,
+        idleThreshold:  parseInt(document.getElementById('inp-idle').value) || 120,
+        showFeedback:   document.getElementById('inp-feedback').value,
+        allowRetry:     document.getElementById('chk-retry').checked,
+        randomize:      document.getElementById('chk-randomize').checked,
+      };
+
+      const sessionObj = {
+        title,
+        type:      sessionMode,
+        code,
+        teacherId: currentUser.uid || currentUser.id || 'unknown',
+        status:    'waiting',
+        questions: questions.map(q => ({ ...q })),
+        settings,
+        createdAt: serverTimestamp(),
+      };
+
+      try {
+        const docRef = await addDoc(collection(db, 'quizSessions'), sessionObj);
+        currentDocId = docRef.id;
+        currentCode  = code;
+        sessionData  = sessionObj;
+        openLobby();
+        toast('Session created!', '#34d399');
+      } catch (e) {
+        console.error(e);
+        toast('Error creating session: ' + e.message, '#f87171');
+      }
+    }
+
+    function generateCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let c = '';
+      for (let i = 0; i < 6; i++) c += chars[Math.floor(Math.random() * chars.length)];
+      return c;
+    }
+
+    // ── Lobby ────────────────────────────────────────────────────────────────
+    function openLobby() {
+      document.getElementById('lobby-title').textContent    = sessionData.title;
+      document.getElementById('lobby-code-text').textContent = currentCode;
+      document.getElementById('lobby-big-code').textContent  = currentCode;
+      document.getElementById('lobby-session-type').textContent = sessionData.type === 'exam' ? '📋 Exam' : '📝 Quiz';
+      document.getElementById('lobby-status-pill').textContent = '⏳ Waiting';
+      document.getElementById('lobby-list').innerHTML = `
+        <div class="empty-lobby">
+          <div class="icon">👥</div>
+          <div>Waiting for students to join…</div>
+          <div class="text-muted mt-2">Share the code above</div>
+        </div>`;
+      document.getElementById('lobby-participant-count').textContent = '0 joined';
+      showScreen('lobby');
+      subscribeParticipants();
+    }
+
+    function subscribeParticipants() {
+      if (participantsUnsub) participantsUnsub();
+      const partRef = collection(db, 'quizSessions', currentDocId, 'participants');
+      participantsUnsub = onSnapshot(partRef, snap => {
+        participantsCache = {};
+        snap.forEach(d => { participantsCache[d.id] = { ...d.data(), _docId: d.id }; });
+        refreshLobbyList();
+        refreshSupervisionView();
+        refreshStats();
+      });
+    }
+
+    function refreshLobbyList() {
+      const list = document.getElementById('lobby-list');
+      if (!list) return;
+      const parts = Object.values(participantsCache);
+      document.getElementById('lobby-participant-count').textContent = parts.length + ' joined';
+      if (parts.length === 0) {
+        list.innerHTML = `<div class="empty-lobby"><div class="icon">👥</div><div>Waiting for students to join…</div><div class="text-muted mt-2">Share the code above</div></div>`;
+        return;
+      }
+      list.innerHTML = '';
+      parts.forEach(p => {
+        const initials = (p.name || '?').charAt(0).toUpperCase();
+        const div = document.createElement('div');
+        div.className = 'lobby-participant';
+        div.innerHTML = `
+          <div class="participant-avatar">${initials}</div>
+          <div class="participant-name">${escHtml(p.name || 'Student')}</div>
+          <span class="participant-status status-waiting">Ready</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // ── Start session ─────────────────────────────────────────────────────────
+    async function startSession() {
+      const parts = Object.keys(participantsCache);
+      if (parts.length === 0 && !await confirmDialog('No students have joined yet. Start anyway?', 'Start')) return;
+      try {
+        await updateDoc(doc(db, 'quizSessions', currentDocId), { status: 'active', startedAt: serverTimestamp() });
+        openSupervision();
+        toast('Session started!', '#34d399');
+      } catch (e) {
+        toast('Error: ' + e.message, '#f87171');
+      }
+    }
+
+    async function cancelSession() {
+      if (!await confirmDialog('Cancel this session? Students will be disconnected.', 'Cancel Session', true)) return;
+      try {
+        await updateDoc(doc(db, 'quizSessions', currentDocId), { status: 'cancelled' });
+        cleanup();
+        showScreen('dashboard');
+        loadDashboard();
+        toast('Session cancelled.', '#94a3b8');
+      } catch (e) { toast('Error: ' + e.message, '#f87171'); }
+    }
+
+    // ── Supervision ────────────────────────────────────────────────────────────
+    function openSupervision() {
+      document.getElementById('sup-title').textContent    = sessionData.title;
+      document.getElementById('sup-code-text').textContent = currentCode;
+      const supPill = document.getElementById('sup-code-pill');
+      if (supPill) { const span = supPill.querySelector('span'); if (span) span.textContent = currentCode; }
+      document.getElementById('sup-status-pill').textContent = '● Active';
+      document.getElementById('sup-status-pill').className  = 'status-pill active';
+      document.getElementById('sup-pause-btn').textContent   = '⏸ Pause';
+      sessionPaused = false;
+      showScreen('supervision');
+      setSupTab('grid');
+
+      const tl = sessionData.settings && sessionData.settings.timeLimit;
+      if (tl && tl > 0) {
+        timerSeconds = tl * 60;
+        startTimer();
+      } else {
+        const timerEl = document.getElementById('sup-timer');
+        if (timerEl) timerEl.style.display = 'none';
+      }
+    }
+
+    function startTimer() {
+      const el = document.getElementById('sup-timer');
+      if (!el) return;
+      el.style.display = '';
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (sessionPaused) return;
+        timerSeconds--;
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          el.textContent = '0:00';
+          el.className = 'timer-display danger';
+          forceSubmitAll(true);
+          return;
+        }
+        const m = Math.floor(timerSeconds / 60);
+        const s = timerSeconds % 60;
+        el.textContent = m + ':' + String(s).padStart(2, '0');
+        el.className = 'timer-display' + (timerSeconds <= 60 ? ' danger' : timerSeconds <= 300 ? ' warning' : '');
+      }, 1000);
+    }
+
+    function setSupTab(tab) {
+      supTabMode = tab;
+      document.getElementById('tab-grid-btn').classList.toggle('active', tab === 'grid');
+      document.getElementById('tab-table-btn').classList.toggle('active', tab === 'table');
+      document.getElementById('sup-grid-view').style.display  = tab === 'grid'  ? 'grid' : 'none';
+      document.getElementById('sup-table-view').style.display = tab === 'table' ? 'block' : 'none';
+    }
+
+    function refreshStats() {
+      const parts  = Object.values(participantsCache);
+      const total   = parts.length;
+      const active  = parts.filter(p => p.status === 'active').length;
+      const done    = parts.filter(p => p.status === 'submitted' || p.status === 'done').length;
+      const flagged = parts.filter(p => p.flags && Object.values(p.flags).some(v => v > 0)).length;
+
+      ['total', 'active', 'done', 'flagged'].forEach(key => {
+        const el = document.getElementById('stat-' + key);
+        if (el) el.textContent = { total, active, done, flagged }[key];
+      });
+    }
+
+    function refreshSupervisionView() {
+      refreshGridView();
+      refreshTableView();
+    }
+
+    function refreshGridView() {
+      const grid = document.getElementById('sup-grid-view');
+      if (!grid) return;
+      const parts = Object.values(participantsCache);
+      if (parts.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#475569;">No students have joined yet.</div>';
+        return;
+      }
+      grid.innerHTML = '';
+      const totalQ = sessionData && sessionData.questions ? sessionData.questions.length : 1;
+      parts.forEach(p => {
+        const initials = (p.name || '?').charAt(0).toUpperCase();
+        const progress  = p.currentQuestion != null ? Math.round((p.currentQuestion / totalQ) * 100) : 0;
+        const isDone    = p.status === 'submitted' || p.status === 'done';
+        const isFlagged = p.flags && Object.values(p.flags).some(v => v > 0);
+        const flagChips = p.flags ? Object.entries(p.flags).filter(([,v]) => v > 0).map(([k, v]) => `<span class="flag-chip">${k.replace(/_/g,' ')} ×${v}</span>`).join('') : '';
+        const statusClass = isDone ? 'status-done' : isFlagged ? 'status-flagged' : 'status-active';
+        const statusLabel = isDone ? '✓ Done' : isFlagged ? '⚠ Flagged' : '● Active';
+        const scoreText   = p.score != null && p.totalPoints ? `${p.score}/${p.totalPoints}` : '—';
+
+        const card = document.createElement('div');
+        card.className = 'student-card' + (isFlagged && !isDone ? ' flagged' : '');
+        card.innerHTML = `
+          <div class="student-card-header">
+            <div class="participant-avatar" style="width:30px;height:30px;font-size:0.78rem;">${initials}</div>
+            <div class="student-info">
+              <div class="student-name">${escHtml(p.name || 'Student')}</div>
+              <div class="student-meta">Q${(p.currentQuestion || 0) + 1} of ${totalQ}</div>
+            </div>
+            <span class="participant-status ${statusClass}">${statusLabel}</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" style="width:${isDone ? 100 : progress}%;${isDone ? 'background:linear-gradient(90deg,#059669,#34d399);' : ''}"></div>
+          </div>
+          <div class="student-stats">
+            <span>Progress: ${isDone ? 100 : progress}%</span>
+            <span>Score: ${scoreText}</span>
+          </div>
+          ${flagChips ? `<div class="flag-chips">${flagChips}</div>` : ''}
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function refreshTableView() {
+      const tbody = document.getElementById('sup-table-body');
+      if (!tbody) return;
+      const parts  = Object.values(participantsCache);
+      const totalQ = sessionData && sessionData.questions ? sessionData.questions.length : 1;
+      tbody.innerHTML = '';
+      if (parts.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#475569;">No students yet.</td></tr>';
+        return;
+      }
+      parts.forEach(p => {
+        const isDone    = p.status === 'submitted' || p.status === 'done';
+        const isFlagged = p.flags && Object.values(p.flags).some(v => v > 0);
+        const progress  = isDone ? 100 : (p.currentQuestion != null ? Math.round((p.currentQuestion / totalQ) * 100) : 0);
+        const scoreText = p.score != null && p.totalPoints ? `${p.score}/${p.totalPoints}` : '—';
+        const statusLabel = isDone ? '<span class="participant-status status-done">Done</span>' : isFlagged ? '<span class="participant-status status-flagged">Flagged</span>' : '<span class="participant-status status-active">Active</span>';
+        const flagText  = p.flags ? Object.entries(p.flags).filter(([,v]) => v > 0).map(([k, v]) => `${k.replace(/_/g,' ')}×${v}`).join(', ') : '—';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escHtml(p.name || 'Student')}</td>
+          <td>${statusLabel}</td>
+          <td>
+            <div class="progress-bar-wrap" style="width:120px;margin:0;">
+              <div class="progress-bar-fill" style="width:${progress}%;${isDone ? 'background:linear-gradient(90deg,#059669,#34d399);' : ''}"></div>
+            </div>
+            <div style="font-size:0.72rem;color:#64748b;margin-top:3px;">${progress}%</div>
+          </td>
+          <td>${scoreText}</td>
+          <td style="color:${isFlagged ? '#f87171' : '#64748b'};font-size:0.78rem;">${flagText}</td>
+          <td>
+            <button class="btn btn-outline btn-sm" onclick="forceSubmitStudent('${p._docId}', '${escHtml(p.name || 'Student')}')">Submit</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ── Session controls ─────────────────────────────────────────────────────
+    async function togglePause() {
+      const newStatus = sessionPaused ? 'active' : 'paused';
+      try {
+        await updateDoc(doc(db, 'quizSessions', currentDocId), { status: newStatus });
+        sessionPaused = !sessionPaused;
+        const pill = document.getElementById('sup-status-pill');
+        const btn  = document.getElementById('sup-pause-btn');
+        if (sessionPaused) {
+          if (pill) { pill.textContent = '⏸ Paused'; pill.className = 'status-pill paused'; }
+          if (btn) btn.textContent = '▶ Resume';
+          toast('Session paused.', '#fbbf24');
+        } else {
+          if (pill) { pill.textContent = '● Active'; pill.className = 'status-pill active'; }
+          if (btn) btn.textContent = '⏸ Pause';
+          toast('Session resumed.', '#34d399');
+        }
+      } catch (e) { toast('Error: ' + e.message, '#f87171'); }
+    }
+
+    async function forceSubmitAll(auto = false) {
+      if (!auto && !await confirmDialog('Force submit all students who haven\'t finished?', 'Force Submit')) return;
+      try {
+        const batch = [];
+        Object.entries(participantsCache).forEach(([uid, p]) => {
+          if (p.status !== 'submitted' && p.status !== 'done') {
+            batch.push(updateDoc(doc(db, 'quizSessions', currentDocId, 'participants', uid), {
+              status: 'submitted', submittedAt: serverTimestamp(), forcedSubmit: true
+            }));
+          }
+        });
+        await Promise.all(batch);
+        toast('All students submitted.', '#a78bfa');
+      } catch (e) { toast('Error: ' + e.message, '#f87171'); }
+    }
+
+    window.forceSubmitStudent = async function(docId, name) {
+      if (!await confirmDialog(`Force submit ${name}?`, 'Submit')) return;
+      try {
+        await updateDoc(doc(db, 'quizSessions', currentDocId, 'participants', docId), {
+          status: 'submitted', submittedAt: serverTimestamp(), forcedSubmit: true
+        });
+        toast(`${name} submitted.`, '#a78bfa');
+      } catch (e) { toast('Error: ' + e.message, '#f87171'); }
+    };
+
+    async function endSession() {
+      if (!await confirmDialog('End this session? Students will see their results.', 'End Session', true)) return;
+      clearInterval(timerInterval);
+      try {
+        await updateDoc(doc(db, 'quizSessions', currentDocId), { status: 'ended', endedAt: serverTimestamp() });
+        await forceSubmitAll(true);
+        toast('Session ended.', '#94a3b8');
+        openResultsFor(currentDocId);
+      } catch (e) { toast('Error: ' + e.message, '#f87171'); }
+    }
+
+    // ── Results ───────────────────────────────────────────────────────────────
+    async function openResultsFor(docId) {
+      try {
+        const snap = await getDoc(doc(db, 'quizSessions', docId));
+        if (!snap.exists()) return;
+        sessionData  = snap.data();
+        currentDocId = docId;
+
+        document.getElementById('results-title').textContent = sessionData.title;
+        document.getElementById('results-meta').textContent  = `${sessionData.type === 'exam' ? '📋 Exam' : '📝 Quiz'} · Code: ${sessionData.code} · Ended`;
+
+        const partsSnap = await getDocs(collection(db, 'quizSessions', docId, 'participants'));
+        const parts = [];
+        partsSnap.forEach(d => parts.push(d.data()));
+
+        const total   = parts.length;
+        const avgScore = total ? Math.round(parts.reduce((a, p) => a + (p.score || 0), 0) / total) : 0;
+        const avgPct   = total && sessionData.questions
+          ? Math.round(parts.reduce((a, p) => a + ((p.score || 0) / (sessionData.questions.reduce((s, q) => s + (q.points || 1), 0) || 1) * 100), 0) / total)
+          : 0;
+        const submitted = parts.filter(p => p.status === 'submitted' || p.status === 'done').length;
+
+        const statsEl = document.getElementById('results-stats');
+        statsEl.innerHTML = `
+          <div class="stat-card"><div class="stat-value">${total}</div><div class="stat-label">Students</div></div>
+          <div class="stat-card"><div class="stat-value">${submitted}</div><div class="stat-label">Submitted</div></div>
+          <div class="stat-card"><div class="stat-value">${avgPct}%</div><div class="stat-label">Avg Score</div></div>
+          <div class="stat-card"><div class="stat-value">${sessionData.questions ? sessionData.questions.length : 0}</div><div class="stat-label">Questions</div></div>
+        `;
+
+        const maxPts = sessionData.questions ? sessionData.questions.reduce((s, q) => s + (q.points || 1), 0) : 1;
+        const tbody  = document.getElementById('results-tbody');
+        tbody.innerHTML = '';
+
+        parts.sort((a, b) => (b.score || 0) - (a.score || 0)).forEach((p, i) => {
+          const pct = maxPts ? Math.round(((p.score || 0) / maxPts) * 100) : 0;
+          const scoreClass = pct >= 75 ? 'score-high' : pct >= 50 ? 'score-mid' : 'score-low';
+          const flagCount   = p.flags ? Object.values(p.flags).reduce((a, v) => a + v, 0) : 0;
+          const timeSec     = p.submittedAt && p.joinedAt ? Math.round((p.submittedAt.seconds - p.joinedAt.seconds)) : null;
+          const timeStr     = timeSec != null ? (Math.floor(timeSec / 60) + ':' + String(timeSec % 60).padStart(2, '0')) : '—';
+          const correct     = p.answers && sessionData.questions
+            ? sessionData.questions.filter(q => p.answers[q.id] && p.answers[q.id].correct).length
+            : '—';
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="color:#94a3b8;font-size:0.78rem;">${i + 1}</td>
+            <td>${escHtml(p.name || 'Student')}</td>
+            <td><span class="score-badge ${scoreClass}">${p.score || 0}/${maxPts} (${pct}%)</span></td>
+            <td>${correct}</td>
+            <td>${timeStr}</td>
+            <td style="color:${flagCount > 0 ? '#f87171' : '#64748b'};font-size:0.78rem;">${flagCount > 0 ? '⚠ ' + flagCount + ' flag(s)' : '—'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        cleanup();
+        showScreen('results');
+      } catch (e) {
+        console.error(e);
+        toast('Error loading results: ' + e.message, '#f87171');
+      }
+    }
+
+    function exportCSV() {
+      if (!sessionData) return;
+      const rows = [['Rank', 'Student', 'Score', 'Correct', 'Time', 'Flags']];
+      const tbody = document.getElementById('results-tbody');
+      if (!tbody) return;
+      tbody.querySelectorAll('tr').forEach(tr => {
+        const cells = [...tr.querySelectorAll('td')].map(td => td.textContent.trim().replace(/\s+/g, ' '));
+        rows.push(cells);
+      });
+      const csv   = rows.map(r => r.map(c => `"${c.replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob  = new Blob([csv], { type: 'text/csv' });
+      const url   = URL.createObjectURL(blob);
+      const a     = document.createElement('a');
+      a.href      = url;
+      a.download  = (sessionData.title || 'session').replace(/[^a-z0-9]/gi, '_') + '_results.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ── Dashboard: load sessions ───────────────────────────────────────────────
+    async function loadDashboard() {
+      try {
+        const tid   = currentUser.uid || currentUser.id || 'unknown';
+        const snaps = await getDocs(collection(db, 'quizSessions'));
+        const grid  = document.getElementById('sessions-grid');
+        const items = [];
+        snaps.forEach(d => { const data = d.data(); if (data.teacherId === tid) items.push({ id: d.id, ...data }); });
+        items.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+        if (items.length === 0) {
+          grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#475569;"><div style="font-size:2.5rem;margin-bottom:12px;">📋</div><div>No sessions yet. Create your first one!</div></div>`;
+          return;
+        }
+        grid.innerHTML = '';
+        items.forEach(item => {
+          const typeClass = item.type === 'exam' ? 'type-exam' : 'type-quiz';
+          const typeLabel = item.type === 'exam' ? '📋 Exam' : '📝 Quiz';
+          const statusClass = item.status === 'active' ? 'status-active' : item.status === 'ended' ? 'status-ended' : 'status-waiting';
+          const statusLabel = item.status === 'active' ? '● Active' : item.status === 'ended' ? '✓ Ended' : item.status === 'paused' ? '⏸ Paused' : '⏳ Waiting';
+          const qCount = item.questions ? item.questions.length : 0;
+          const card = document.createElement('div');
+          card.className = 'session-item';
+          const actions = item.status === 'ended'
+            ? `<button class="btn btn-outline" onclick="event.stopPropagation();openResultsFor('${item.id}')">📊 View Results</button>`
+            : item.status === 'active' || item.status === 'paused'
+              ? `<button class="btn btn-primary" onclick="event.stopPropagation();resumeSession('${item.id}')">▶ Supervise</button>
+                 <button class="btn btn-ghost-danger" onclick="event.stopPropagation();deleteSession('${item.id}')" title="Delete session">🗑</button>`
+              : item.status === 'waiting'
+                ? `<button class="btn btn-success" onclick="event.stopPropagation();resumeSession('${item.id}')">🚪 Open Lobby</button>
+                   <button class="btn btn-ghost-danger" onclick="event.stopPropagation();deleteSession('${item.id}')" title="Delete session">🗑</button>`
+                : `<button class="btn btn-ghost-danger" onclick="event.stopPropagation();deleteSession('${item.id}')">🗑 Delete</button>`;
+
+          card.innerHTML = `
+            <div class="session-item-title">${escHtml(item.title || 'Untitled')}</div>
+            <div class="session-item-meta">
+              <span>📌 <strong style="color:#a78bfa;font-family:monospace;">${escHtml(item.code || '——')}</strong></span>
+              <span>❓ ${qCount} question${qCount !== 1 ? 's' : ''}</span>
+            </div>
+            <div class="session-item-badges">
+              <span class="type-pill ${typeClass}">${typeLabel}</span>
+              <span class="participant-status ${statusClass}">${statusLabel}</span>
+            </div>
+            <div class="session-item-actions">${actions}</div>
+          `;
+          grid.appendChild(card);
+        });
+      } catch (e) {
+        console.error(e);
+        toast('Error loading sessions: ' + e.message, '#f87171');
+      }
+    }
+
+    window.deleteSession = async function(docId) {
+      if (!await confirmDialog('Delete this session permanently?', 'Delete', true)) return;
+      try {
+        await deleteDoc(doc(db, 'quizSessions', docId));
+        toast('Session deleted.', '#94a3b8');
+        loadDashboard();
+      } catch (e) { toast('Error: ' + e.message, '#f87171'); }
+    };
+
+    window.resumeSession = async function(docId) {
+      try {
+        const snap = await getDoc(doc(db, 'quizSessions', docId));
+        if (!snap.exists()) { toast('Session not found.', '#f87171'); return; }
+        sessionData  = snap.data();
+        currentDocId = docId;
+        currentCode  = sessionData.code;
+        subscribeParticipants();
+        if (sessionData.status === 'waiting') {
+          openLobby();
+        } else {
+          openSupervision();
+        }
+      } catch (e) { toast('Error: ' + e.message, '#f87171'); }
+    };
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function cleanup() {
+      if (participantsUnsub) { participantsUnsub(); participantsUnsub = null; }
+      if (sessionUnsub)      { sessionUnsub();      sessionUnsub = null; }
+      clearInterval(timerInterval);
+    }
+
+    function copyCode() {
+      if (!currentCode) return;
+      navigator.clipboard.writeText(currentCode).then(() => toast('Code copied!', '#34d399'));
+    }
+
+    // Modal
+    let modalResolve = null;
+    function confirmDialog(message, confirmLabel = 'Confirm', isDanger = false) {
+      return new Promise(resolve => {
+        modalResolve = resolve;
+        document.getElementById('modal-body').textContent = message;
+        const btn = document.getElementById('modal-confirm-btn');
+        btn.textContent = confirmLabel;
+        btn.className   = 'btn ' + (isDanger ? 'btn-danger' : 'btn-primary');
+        btn.onclick     = () => { closeModal(); resolve(true); };
+        document.getElementById('modal-overlay').classList.add('open');
+      });
+    }
+
+    function closeModal(e) {
+      if (e && e.target !== document.getElementById('modal-overlay')) return;
+      document.getElementById('modal-overlay').classList.remove('open');
+      if (modalResolve) { modalResolve(false); modalResolve = null; }
+    }
+
+    // Toast
+    function toast(msg, color = '#a78bfa') {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.textContent = msg;
+      el.style.borderLeftColor = color;
+      el.style.borderLeftWidth = '3px';
+      container.appendChild(el);
+      setTimeout(() => {
+        el.classList.add('out');
+        setTimeout(() => el.remove(), 300);
+      }, 3200);
+    }
+
+    // ── Boot — wait for Firebase Auth before querying Firestore ─────────────
+    onAuthStateChanged(auth, async (firebaseUser) => {
+      await loadDashboard();
+
+      // Handle URL params from dashboard links
+      const params = new URLSearchParams(location.search);
+      const create = params.get('create'); // 'quiz' | 'exam'
+      const resume = params.get('resume'); // Firestore doc id
+
+      if (create === 'quiz' || create === 'exam') {
+        goToCreate();
+        selectMode(create);
+      } else if (resume) {
+        await resumeSession(resume);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -594,6 +594,7 @@
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         showMessage('Login successful! Redirecting...', 'success');
         setTimeout(() => {
+          localStorage.setItem('role', 'user');
           localStorage.setItem('currentUser', JSON.stringify({
             uid: userCredential.user.uid,
             email: userCredential.user.email,
@@ -627,6 +628,7 @@
 
         showMessage('Account created successfully! Redirecting...', 'success');
         setTimeout(() => {
+          localStorage.setItem('role', 'user');
           localStorage.setItem('currentUser', JSON.stringify({
             uid: userCredential.user.uid,
             email: userCredential.user.email,
@@ -655,6 +657,7 @@
 
         showMessage('Google Sign-In successful! Redirecting...', 'success');
         setTimeout(() => {
+          localStorage.setItem('role', 'user');
           localStorage.setItem('currentUser', JSON.stringify({
             uid: user.uid,
             email: user.email,

@@ -22,13 +22,10 @@
       overflow: hidden;
     }
 
-    /* Animated background */
     .bg-gradient {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: linear-gradient(-45deg, #1e3c72, #2a5298, #0f172a, #1e293b);
       background-size: 400% 400%;
       animation: gradient 15s ease infinite;
@@ -36,49 +33,26 @@
     }
 
     @keyframes gradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
     .glow-blob {
-      position: absolute;
+      position: fixed;
       border-radius: 50%;
       filter: blur(40px);
       opacity: 0.15;
       z-index: 0;
+      pointer-events: none;
     }
-
-    .glow-blob-1 {
-      width: 300px;
-      height: 300px;
-      background: #7c3aed;
-      top: -100px;
-      right: -50px;
-      animation: float 20s ease-in-out infinite;
-    }
-
-    .glow-blob-2 {
-      width: 200px;
-      height: 200px;
-      background: #3b82f6;
-      bottom: -50px;
-      left: -50px;
-      animation: float 15s ease-in-out infinite reverse;
-    }
-
-    .glow-blob-3 {
-      width: 250px;
-      height: 250px;
-      background: #06b6d4;
-      top: 50%;
-      left: 10%;
-      animation: float 25s ease-in-out infinite;
-    }
+    .glow-blob-1 { width:300px; height:300px; background:#7c3aed; top:-100px; right:-50px; animation: float 20s ease-in-out infinite; }
+    .glow-blob-2 { width:200px; height:200px; background:#3b82f6; bottom:-50px; left:-50px; animation: float 15s ease-in-out infinite reverse; }
+    .glow-blob-3 { width:250px; height:250px; background:#06b6d4; top:50%; left:10%; animation: float 25s ease-in-out infinite; }
 
     @keyframes float {
       0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(30px); }
+      50%       { transform: translateY(30px); }
     }
 
     .container-wrapper {
@@ -90,215 +64,174 @@
     }
 
     .card {
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(148, 163, 184, 0.1);
       border-radius: 20px;
-      padding: 40px 30px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 
-                  0 0 1px rgba(255, 255, 255, 0.1) inset;
-      animation: slideIn 0.6s ease-out;
-      max-height: 90vh;
+      padding: 40px 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 1px rgba(255,255,255,0.08) inset;
+      animation: slideIn 0.5s ease-out;
+      max-height: 94vh;
       overflow-y: auto;
     }
 
-    .card::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .card::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .card::-webkit-scrollbar-thumb {
-      background: rgba(148, 163, 184, 0.2);
-      border-radius: 3px;
-    }
-
-    .card::-webkit-scrollbar-thumb:hover {
-      background: rgba(148, 163, 184, 0.3);
-    }
+    .card::-webkit-scrollbar { width: 5px; }
+    .card::-webkit-scrollbar-track { background: transparent; }
+    .card::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.2); border-radius: 3px; }
 
     @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 28px;
     }
 
     .logo {
-      font-size: 32px;
+      font-size: 30px;
       font-weight: 800;
       background: linear-gradient(135deg, #7c3aed, #3b82f6);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       margin-bottom: 10px;
-      letter-spacing: -1px;
+      letter-spacing: -0.5px;
     }
 
     .title {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 700;
       color: #f1f5f9;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .subtitle {
       font-size: 14px;
       color: #94a3b8;
-      font-weight: 400;
     }
 
     form {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
     }
 
     .form-group label {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: #cbd5e1;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
 
-    .form-group input,
-    .form-group input[type="email"],
-    .form-group input[type="password"],
-    .form-group input[type="text"] {
-      padding: 12px 14px;
-      border: 1px solid rgba(148, 163, 184, 0.2);
+    .form-group input {
+      padding: 11px 14px;
+      border: 1px solid rgba(148,163,184,0.2);
       border-radius: 10px;
-      background: rgba(30, 41, 59, 0.5);
+      background: rgba(30,41,59,0.5);
       color: #f1f5f9;
       font-size: 14px;
-      transition: all 0.3s ease;
+      font-family: inherit;
       outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
 
-    .form-group input::placeholder {
-      color: #64748b;
-    }
+    .form-group input::placeholder { color: #64748b; }
 
     .form-group input:focus {
       border-color: #7c3aed;
-      background: rgba(30, 41, 59, 0.8);
-      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+      background: rgba(30,41,59,0.8);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
     }
 
-    .form-group input:hover {
-      border-color: rgba(148, 163, 184, 0.3);
+    .form-group input:hover { border-color: rgba(148,163,184,0.32); }
+
+    .password-strength {
+      display: flex;
+      gap: 4px;
+      margin-top: 5px;
     }
+
+    .strength-bar {
+      height: 3px;
+      flex: 1;
+      background: rgba(148,163,184,0.15);
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+    .strength-bar.weak   { background: #ef4444; }
+    .strength-bar.medium { background: #eab308; }
+    .strength-bar.strong { background: #22c55e; }
 
     .btn-primary {
       padding: 12px 16px;
       background: linear-gradient(135deg, #7c3aed, #6d28d9);
-      color: white;
+      color: #fff;
       border: none;
       border-radius: 10px;
       font-size: 15px;
       font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
-      transition: all 0.3s ease;
-      margin-top: 8px;
+      margin-top: 6px;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
       position: relative;
       overflow: hidden;
     }
 
-    .btn-primary::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-
-    .btn-primary:hover::before {
-      width: 500px;
-      height: 500px;
-    }
-
-    .btn-primary:hover {
+    .btn-primary:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+      box-shadow: 0 10px 22px rgba(124,58,237,0.35);
     }
 
-    .btn-primary:active {
-      transform: translateY(0);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
+    .btn-primary:active:not(:disabled) { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
 
     .btn-secondary {
-      padding: 12px 16px;
-      background: rgba(148, 163, 184, 0.1);
+      width: 100%;
+      padding: 11px 16px;
+      background: rgba(148,163,184,0.08);
       color: #f1f5f9;
-      border: 1px solid rgba(148, 163, 184, 0.2);
+      border: 1px solid rgba(148,163,184,0.18);
       border-radius: 10px;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
-      transition: all 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
     }
 
-    .btn-secondary:hover {
-      background: rgba(148, 163, 184, 0.15);
-      border-color: rgba(148, 163, 184, 0.3);
-      transform: translateY(-2px);
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(148,163,184,0.14);
+      border-color: rgba(148,163,184,0.28);
+      transform: translateY(-1px);
     }
 
-    .btn-secondary:active {
-      transform: translateY(0);
-    }
+    .btn-secondary:disabled { opacity: 0.55; cursor: not-allowed; }
 
     .divider {
       display: flex;
       align-items: center;
-      margin: 20px 0;
-      gap: 12px;
+      margin: 18px 0;
+      gap: 10px;
     }
 
-    .divider::before,
-    .divider::after {
+    .divider::before, .divider::after {
       content: '';
       flex: 1;
       height: 1px;
-      background: linear-gradient(to right, rgba(148, 163, 184, 0.1), transparent);
-    }
-
-    .divider::after {
-      background: linear-gradient(to left, rgba(148, 163, 184, 0.1), transparent);
+      background: rgba(148,163,184,0.12);
     }
 
     .divider span {
@@ -309,105 +242,62 @@
 
     .toggle-auth {
       text-align: center;
-      margin-top: 24px;
+      margin-top: 22px;
       font-size: 14px;
       color: #94a3b8;
     }
 
     .toggle-auth a {
-      background: none;
-      border: none;
-      color: #7c3aed;
-      cursor: pointer;
+      color: #a78bfa;
       font-weight: 600;
       text-decoration: none;
-      transition: all 0.2s ease;
+      transition: color 0.2s;
     }
 
-    .toggle-auth a:hover {
-      color: #a78bfa;
-      text-decoration: underline;
-    }
+    .toggle-auth a:hover { color: #c4b5fd; text-decoration: underline; }
 
-    .error {
-      padding: 12px;
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
+    #message {
+      display: none;
+      padding: 11px 14px;
       border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      line-height: 1.45;
+    }
+
+    #message.error {
+      display: block;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
       color: #fca5a5;
-      font-size: 13px;
-      margin-bottom: 16px;
-      animation: slideIn 0.3s ease-out;
     }
 
-    .success {
-      padding: 12px;
-      background: rgba(34, 197, 94, 0.1);
-      border: 1px solid rgba(34, 197, 94, 0.3);
-      border-radius: 8px;
+    #message.success {
+      display: block;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.3);
       color: #86efac;
-      font-size: 13px;
-      margin-bottom: 16px;
-      animation: slideIn 0.3s ease-out;
     }
 
     .loading {
       display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
+      width: 13px; height: 13px;
+      border: 2px solid rgba(255,255,255,0.3);
       border-radius: 50%;
       border-top-color: #fff;
       animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .google-icon {
-      width: 18px;
-      height: 18px;
-    }
-
-    .password-strength {
-      display: flex;
-      gap: 4px;
-      margin-top: 4px;
-    }
-
-    .strength-bar {
-      height: 3px;
-      flex: 1;
-      background: rgba(148, 163, 184, 0.2);
-      border-radius: 2px;
-      transition: all 0.3s ease;
-    }
-
-    .strength-bar.weak {
-      background: #ef4444;
-    }
-
-    .strength-bar.medium {
-      background: #eab308;
-    }
-
-    .strength-bar.strong {
-      background: #22c55e;
-    }
+    .google-icon { width: 18px; height: 18px; }
 
     @media (max-width: 480px) {
-      .card {
-        padding: 30px 20px;
-      }
-
-      .title {
-        font-size: 24px;
-      }
-
-      .container-wrapper {
-        padding: 15px;
-      }
+      .card { padding: 28px 18px; }
+      .title { font-size: 22px; }
+      .container-wrapper { padding: 12px; }
     }
   </style>
 </head>
@@ -420,28 +310,27 @@
   <div class="container-wrapper">
     <div class="card">
       <div class="header">
-        <div class="logo">✨ EchoPoly</div>
+        <div class="logo">✦ EchoPoly</div>
         <div class="title">Create Account</div>
-        <div class="subtitle">Join EchoPoly IDE today</div>
+        <div class="subtitle">Join EchoPoly IDE and start coding</div>
       </div>
 
       <div id="message"></div>
 
-      <!-- SIGNUP FORM -->
       <form id="signup-form">
         <div class="form-group">
           <label for="signup-name">Full Name</label>
-          <input type="text" id="signup-name" placeholder="John Doe" required />
+          <input type="text" id="signup-name" placeholder="John Doe" required autocomplete="name" />
         </div>
 
         <div class="form-group">
           <label for="signup-email">Email Address</label>
-          <input type="email" id="signup-email" placeholder="you@example.com" required />
+          <input type="email" id="signup-email" placeholder="you@example.com" required autocomplete="email" />
         </div>
 
         <div class="form-group">
           <label for="signup-password">Password</label>
-          <input type="password" id="signup-password" placeholder="••••••••" required />
+          <input type="password" id="signup-password" placeholder="••••••••" required autocomplete="new-password" />
           <div class="password-strength">
             <div class="strength-bar" id="strength1"></div>
             <div class="strength-bar" id="strength2"></div>
@@ -451,36 +340,34 @@
 
         <div class="form-group">
           <label for="signup-confirm">Confirm Password</label>
-          <input type="password" id="signup-confirm" placeholder="••••••••" required />
+          <input type="password" id="signup-confirm" placeholder="••••••••" required autocomplete="new-password" />
         </div>
 
-        <button type="submit" class="btn-primary">Create Account</button>
+        <button type="submit" class="btn-primary" id="signup-btn">Create Account</button>
       </form>
 
-      <div class="divider">
-        <span>OR</span>
-      </div>
+      <div class="divider"><span>OR</span></div>
 
       <button type="button" class="btn-secondary" onclick="handleGoogleSignUp()" id="google-btn">
-        <svg class="google-icon" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="google-icon" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
           <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
           <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
         </svg>
-        Sign Up with Google
+        Continue with Google
       </button>
 
       <div class="toggle-auth">
-        Already have an account? <a href="login.html">Sign In</a>
+        Already have an account? <a href="login.html" id="login-link">Sign In</a>
       </div>
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-    import { 
-      getAuth, 
+    import {
+      getAuth,
       createUserWithEmailAndPassword,
       signInWithPopup,
       GoogleAuthProvider,
@@ -498,103 +385,86 @@
       measurementId: "G-LYBESX64E5"
     };
 
-    const app = initializeApp(firebaseConfig);
+    const app  = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const googleProvider = new GoogleAuthProvider();
 
+    // Read the return URL passed from the editor's shared link
+    const params    = new URLSearchParams(window.location.search);
+    const returnUrl = params.get('returnUrl') || 'editor.html';
+
+    // Also update the "Sign In" link to carry the same returnUrl
+    const loginLink = document.getElementById('login-link');
+    if (loginLink && params.get('returnUrl')) {
+      loginLink.href = 'login.html?returnUrl=' + encodeURIComponent(returnUrl);
+    }
+
     // Password strength indicator
-    const passwordInput = document.getElementById('signup-password');
-    passwordInput.addEventListener('input', (e) => {
-      const password = e.target.value;
-      const strength = getPasswordStrength(password);
-      
-      document.getElementById('strength1').className = `strength-bar ${strength}`;
-      document.getElementById('strength2').className = `strength-bar ${strength !== 'weak' ? strength : ''}`;
-      document.getElementById('strength3').className = `strength-bar ${strength === 'strong' ? strength : ''}`;
+    document.getElementById('signup-password').addEventListener('input', e => {
+      const s = getPasswordStrength(e.target.value);
+      document.getElementById('strength1').className = 'strength-bar ' + s;
+      document.getElementById('strength2').className = 'strength-bar ' + (s !== 'weak' ? s : '');
+      document.getElementById('strength3').className = 'strength-bar ' + (s === 'strong' ? s : '');
     });
 
-    function getPasswordStrength(password) {
-      if (password.length < 6) return 'weak';
-      if (password.length < 10) return 'medium';
-      if (/[A-Z]/.test(password) && /[0-9]/.test(password) && /[!@#$%^&*]/.test(password)) return 'strong';
+    function getPasswordStrength(pw) {
+      if (pw.length < 6) return 'weak';
+      if (pw.length >= 10 && /[A-Z]/.test(pw) && /[0-9]/.test(pw) && /[!@#$%^&*]/.test(pw)) return 'strong';
       return 'medium';
     }
 
-    // Signup Form Handler
-    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+    document.getElementById('signup-form').addEventListener('submit', async e => {
       e.preventDefault();
-      const name = document.getElementById('signup-name').value;
-      const email = document.getElementById('signup-email').value;
+      const name     = document.getElementById('signup-name').value.trim();
+      const email    = document.getElementById('signup-email').value.trim();
       const password = document.getElementById('signup-password').value;
-      const confirm = document.getElementById('signup-confirm').value;
+      const confirm  = document.getElementById('signup-confirm').value;
 
-      if (!name.trim()) {
-        showMessage('Please enter your full name', 'error');
-        return;
-      }
-
-      if (password !== confirm) {
-        showMessage('Passwords do not match', 'error');
-        return;
-      }
-
-      if (password.length < 6) {
-        showMessage('Password must be at least 6 characters', 'error');
-        return;
-      }
+      if (!name) { showMessage('Please enter your full name.', 'error'); return; }
+      if (password !== confirm) { showMessage('Passwords do not match.', 'error'); return; }
+      if (password.length < 6) { showMessage('Password must be at least 6 characters.', 'error'); return; }
 
       await signUp(name, email, password);
     });
 
     async function signUp(name, email, password) {
+      setLoading(true);
       try {
-        setLoading(true);
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        
-        // Update user profile
-        await updateProfile(userCredential.user, {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(cred.user, { displayName: name });
+        localStorage.setItem('currentUser', JSON.stringify({
+          uid: cred.user.uid,
+          email: cred.user.email,
           displayName: name
-        });
-
-        showMessage('Account created successfully! Redirecting...', 'success');
-        setTimeout(() => {
-          localStorage.setItem('currentUser', JSON.stringify({
-            uid: userCredential.user.uid,
-            email: userCredential.user.email,
-            displayName: name
-          }));
-          window.location.href = 'editor.html';
-        }, 1500);
-      } catch (error) {
-        if (error.code === 'auth/email-already-in-use') {
-          showMessage('This email is already registered. Try logging in instead.', 'error');
-        } else {
-          showMessage('Error: ' + error.message, 'error');
-        }
+        }));
+        showMessage('Account created! Redirecting…', 'success');
+        setTimeout(() => window.location.href = returnUrl, 1400);
+      } catch (err) {
+        const msg = err.code === 'auth/email-already-in-use'
+          ? 'This email is already registered — try signing in instead.'
+          : err.message;
+        showMessage(msg, 'error');
       } finally {
         setLoading(false);
       }
     }
 
-    window.handleGoogleSignUp = async function() {
+    window.handleGoogleSignUp = async function () {
+      setLoading(true);
       try {
-        setLoading(true);
         const result = await signInWithPopup(auth, googleProvider);
-        const user = result.user;
-        
-        showMessage('Google Sign-Up successful! Redirecting...', 'success');
-        setTimeout(() => {
-          localStorage.setItem('currentUser', JSON.stringify({
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL
-          }));
-          window.location.href = 'editor.html';
-        }, 1500);
-      } catch (error) {
-        if (error.code !== 'auth/popup-closed-by-user') {
-          showMessage('Error: ' + error.message, 'error');
+        const user   = result.user;
+        localStorage.setItem('currentUser', JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL
+        }));
+        showMessage('Google sign-up successful! Redirecting…', 'success');
+        setTimeout(() => window.location.href = returnUrl, 1400);
+      } catch (err) {
+        if (err.code !== 'auth/popup-closed-by-user') {
+          showMessage('Error: ' + err.message, 'error');
         }
       } finally {
         setLoading(false);
@@ -602,32 +472,23 @@
     };
 
     function showMessage(text, type) {
-      const messageDiv = document.getElementById('message');
-      messageDiv.className = type;
-      messageDiv.textContent = text;
-      messageDiv.style.display = 'block';
+      const el = document.getElementById('message');
+      el.className = type;
+      el.textContent = text;
     }
 
-    function setLoading(loading) {
-      const btn = document.querySelector('#signup-form button[type="submit"]');
+    function setLoading(on) {
+      const btn       = document.getElementById('signup-btn');
       const googleBtn = document.getElementById('google-btn');
-      
       if (btn) {
-        btn.disabled = loading;
-        if (loading) {
-          btn.innerHTML = '<span class="loading"></span> Creating Account...';
-        } else {
-          btn.innerHTML = 'Create Account';
-        }
+        btn.disabled   = on;
+        btn.innerHTML  = on ? '<span class="loading"></span>Creating Account…' : 'Create Account';
       }
-
-      if (googleBtn) {
-        googleBtn.disabled = loading;
-      }
+      if (googleBtn) googleBtn.disabled = on;
     }
 
-    // Check if user is already logged in
-    auth.onAuthStateChanged((user) => {
+    // If already logged in, go straight to the return URL
+    auth.onAuthStateChanged(user => {
       if (user) {
         localStorage.setItem('currentUser', JSON.stringify({
           uid: user.uid,
@@ -635,155 +496,7 @@
           displayName: user.displayName,
           photoURL: user.photoURL
         }));
-        window.location.href = 'editor.html';
-      }
-    });
-  </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Register | EchoPoly IDE</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f5f7fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    .container {
-      background: #ffffff;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 400px;
-    }
-
-    h2 {
-      margin-bottom: 1.5rem;
-      text-align: center;
-      color: #333;
-    }
-
-    input {
-      width: 100%;
-      padding: 0.75rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-
-    button {
-      width: 100%;
-      padding: 0.75rem;
-      background-color: #4f46e5;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #4338ca;
-    }
-
-    .message {
-      margin-top: 1rem;
-      text-align: center;
-      font-size: 0.9rem;
-      color: #e11d48;
-    }
-
-    .link {
-      margin-top: 1rem;
-      text-align: center;
-      font-size: 0.9rem;
-    }
-
-    .link a {
-      color: #4f46e5;
-      text-decoration: none;
-    }
-
-    .link a:hover {
-      text-decoration: underline;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>Create Your Account</h2>
-    <form id="registerForm">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">Register</button>
-    </form>
-    <div class="message" id="message"></div>
-    <div class="link">
-      <p>Already have an account? <a href="login.html">Login here</a></p>
-    </div>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBCcyLy_rNx-riDjmK4SUu-gZbKtDPqEYQ",
-  authDomain: "echopoly-ide.firebaseapp.com",
-  databaseURL: "https://echopoly-ide-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "echopoly-ide",
-  storageBucket: "echopoly-ide.firebasestorage.app",
-  messagingSenderId: "290647098484",
-  appId: "1:290647098484:web:61a9a5503c43d465bdbd21",
-  measurementId: "G-LYBESX64E5"
-};
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const form = document.getElementById("registerForm");
-    const message = document.getElementById("message");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        message.style.color = "green";
-        message.textContent = "Registration successful! Redirecting to projects...";
-        form.reset();
-        setTimeout(() => {
-          window.location.href = "projects.html";
-        }, 1500);
-      } catch (error) {
-        message.style.color = "#e11d48";
-        switch (error.code) {
-          case "auth/email-already-in-use":
-            message.textContent = "This email is already registered. Try logging in.";
-            break;
-          case "auth/invalid-email":
-            message.textContent = "Please enter a valid email address.";
-            break;
-          case "auth/weak-password":
-            message.textContent = "Password should be at least 6 characters.";
-            break;
-          default:
-            message.textContent = error.message;
-        }
+        window.location.href = returnUrl;
       }
     });
   </script>

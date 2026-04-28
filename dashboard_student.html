@@ -334,6 +334,135 @@
       color: #94a3b8;
     }
 
+    /* Quiz / Exam / Flashcard card accent colors */
+    .dashboard-card.quiz-card:hover { border-color: rgba(124, 58, 237, 0.4); }
+    .dashboard-card.quiz-card .card-icon { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+    .dashboard-card.exam-card:hover { border-color: rgba(239, 68, 68, 0.4); }
+    .dashboard-card.exam-card .card-icon { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+    .dashboard-card.flashcard-card:hover { border-color: rgba(6, 182, 212, 0.4); }
+    .dashboard-card.flashcard-card .card-icon { background: linear-gradient(135deg, #06b6d4, #0284c7); }
+
+    /* Code-entry modal */
+    .code-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .code-modal-overlay.open { display: flex; }
+
+    .code-modal-box {
+      background: #0f172a;
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 20px;
+      padding: 36px 32px 28px;
+      width: 100%;
+      max-width: 420px;
+      animation: modalPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.88); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .code-modal-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin: 0 auto 18px;
+    }
+    .code-modal-icon.quiz { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+    .code-modal-icon.exam { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+
+    .code-modal-title {
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 6px;
+    }
+    .code-modal-subtitle {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+
+    .code-modal-input {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 10px;
+      color: #f1f5f9;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-align: center;
+      text-transform: uppercase;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 8px;
+    }
+    .code-modal-input:focus {
+      border-color: rgba(124, 58, 237, 0.6);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+    }
+    .code-modal-input.exam-mode:focus {
+      border-color: rgba(220, 38, 38, 0.6);
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    .code-modal-error {
+      font-size: 0.8rem;
+      color: #f87171;
+      text-align: center;
+      min-height: 18px;
+      margin-bottom: 16px;
+    }
+
+    .code-modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .code-modal-btn {
+      flex: 1;
+      padding: 11px;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .code-modal-btn:active { transform: scale(0.97); }
+    .code-modal-btn.cancel {
+      background: rgba(148, 163, 184, 0.1);
+      color: #94a3b8;
+    }
+    .code-modal-btn.cancel:hover { background: rgba(148, 163, 184, 0.18); }
+    .code-modal-btn.join-quiz {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      color: #fff;
+    }
+    .code-modal-btn.join-quiz:hover { box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4); }
+    .code-modal-btn.join-exam {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      color: #fff;
+    }
+    .code-modal-btn.join-exam:hover { box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35); }
+
     /* Responsive */
     @media (max-width: 768px) {
       .dashboard-grid {
@@ -386,16 +515,22 @@
         <p class="card-description">Join coding rooms, work on projects with classmates, and learn together in real-time.</p>
       </div>
 
-      <div class="dashboard-card" onclick="openQuizMode()">
+      <div class="dashboard-card quiz-card" onclick="openCodeModal('quiz')">
         <div class="card-icon">📝</div>
         <h3 class="card-title">Take Quiz</h3>
-        <p class="card-description">Access supervised quizzes and examinations created by your teachers.</p>
+        <p class="card-description">Join a live quiz session using the code your teacher shared with you.</p>
       </div>
 
-      <div class="dashboard-card" onclick="openFlashcards()">
+      <div class="dashboard-card exam-card" onclick="openCodeModal('exam')">
+        <div class="card-icon">📋</div>
+        <h3 class="card-title">Take Exam</h3>
+        <p class="card-description">Enter your exam code to begin a timed, supervised exam session.</p>
+      </div>
+
+      <div class="dashboard-card flashcard-card" onclick="openFlashcards()">
         <div class="card-icon">🃏</div>
         <h3 class="card-title">Flashcards</h3>
-        <p class="card-description">Study with interactive flashcards created by teachers or classmates.</p>
+        <p class="card-description">Join a teacher's set with a code, or self-study 11 coding languages at Easy, Medium, or Hard.</p>
       </div>
 
       <div class="dashboard-card" onclick="openProgress()">
@@ -447,82 +582,180 @@
       </ul>
     </div>
   </div>
-<script src="/socket.io/socket.io.js"></script>
-<script>
-const socket = io();
-socket.on('quizLaunched', data => {
-  // Show notification
-  alert('A new quiz is available! Code: ' + data.code);
-  openQuizModal();
-  document.getElementById('quiz-code-input').value = data.code;
-});
-</script>
-  <script>
-    // Load user information
-    document.addEventListener('DOMContentLoaded', function() {
-      const userData = JSON.parse(localStorage.getItem('currentUser') || '{}');
-      if (userData.displayName) {
-        document.getElementById('user-name').textContent = userData.displayName;
-        document.getElementById('user-avatar').textContent = userData.displayName.charAt(0).toUpperCase();
-      } else if (userData.email) {
-        const name = userData.email.split('@')[0];
-        document.getElementById('user-name').textContent = name;
-        document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
-      }
-    });
-
-    function logout() {
-      localStorage.removeItem('currentUser');
-      window.location.href = 'index.html';
-    }
-
-    function joinWithCode() {
-      const code = document.getElementById('share-code').value.trim().toUpperCase();
-      if (!code) {
-        alert('Please enter a share code');
-        return;
-      }
-
-      // For now, redirect to editor with project parameter
-      // In a real implementation, this would validate the code and redirect appropriately
-      window.location.href = `editor.html?project=${code}`;
-    }
-
-    function openQuizMode() {
-      // Placeholder for quiz functionality
-      alert('Quiz mode will be available soon! Teachers can create quizzes that you can access here.');
-    }
-
-    function openFlashcards() {
-      // Placeholder for flashcard functionality
-      alert('Flashcard mode will be available soon! Study with interactive flashcards created by your teachers.');
-    }
-
-    function openProgress() {
-      // Placeholder for progress tracking
-      alert('Progress tracking will be available soon! Monitor your learning journey and achievements.');
-    }
-  </script>
-  <!-- Add this modal near the end of <body> -->
-<div id="quiz-code-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:10000;align-items:center;justify-content:center;">
-  <div style="background:#222;padding:32px;border-radius:12px;box-shadow:0 8px 32px #0004;">
-    <h3 style="color:#fff;">Enter Quiz Code</h3>
-    <input id="quiz-code-input" style="padding:8px 12px;border-radius:6px;border:1px solid #444;margin:12px 0;width:200px;" placeholder="Quiz Code">
-    <button onclick="submitQuizCode()" style="padding:8px 16px;border-radius:6px;background:#3b82f6;color:#fff;border:none;">Join</button>
-    <button onclick="closeQuizModal()" style="padding:8px 16px;border-radius:6px;background:#444;color:#fff;border:none;margin-left:8px;">Cancel</button>
+  <!-- ── CODE ENTRY MODAL ── -->
+  <div id="code-modal-overlay" class="code-modal-overlay" onclick="handleOverlayClick(event)">
+    <div class="code-modal-box">
+      <div class="code-modal-icon" id="modal-icon">📝</div>
+      <div class="code-modal-title" id="modal-title">Enter Quiz Code</div>
+      <div class="code-modal-subtitle" id="modal-subtitle">Ask your teacher for the 6-character session code.</div>
+      <input
+        id="code-input"
+        class="code-modal-input"
+        type="text"
+        maxlength="6"
+        placeholder="ABC123"
+        autocomplete="off"
+        spellcheck="false"
+        oninput="clearModalError()"
+        onkeydown="if(event.key==='Enter') submitCode()"
+      />
+      <div class="code-modal-error" id="modal-error"></div>
+      <div class="code-modal-actions">
+        <button class="code-modal-btn cancel" onclick="closeCodeModal()">Cancel</button>
+        <button class="code-modal-btn" id="modal-join-btn" onclick="submitCode()">Join Quiz</button>
+      </div>
+    </div>
   </div>
-</div>
-<script>
-function openQuizModal() {
-  document.getElementById('quiz-code-modal').style.display = 'flex';
-}
-function closeQuizModal() {
-  document.getElementById('quiz-code-modal').style.display = 'none';
-}
-function submitQuizCode() {
-  const code = document.getElementById('quiz-code-input').value.trim();
-  if (code) window.location.href = 'quiztest_student.html?code=' + encodeURIComponent(code);
-}
-</script>
+
+  <script type="module">
+    import { initializeApp }        from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBCcyLy_rNx-riDjmK4SUu-gZbKtDPqEYQ",
+      authDomain: "echopoly-ide.firebaseapp.com",
+      databaseURL: "https://echopoly-ide-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "echopoly-ide",
+      storageBucket: "echopoly-ide.firebasestorage.app",
+      messagingSenderId: "290647098484",
+      appId: "1:290647098484:web:61a9a5503c43d465bdbd21",
+      measurementId: "G-LYBESX64E5"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);       // initialise Auth so Firestore gets the token
+    const db   = getFirestore(app);
+
+    // Wait for Firebase Auth to restore the session before allowing queries.
+    // authReady resolves once the auth state is known (logged-in or not).
+    const authReady = new Promise(resolve => onAuthStateChanged(auth, resolve));
+
+    // ── User info ────────────────────────────────────────────────────────────
+    const userData = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if (userData.displayName) {
+      document.getElementById('user-name').textContent = userData.displayName;
+      document.getElementById('user-avatar').textContent = userData.displayName.charAt(0).toUpperCase();
+    } else if (userData.email) {
+      const name = userData.email.split('@')[0];
+      document.getElementById('user-name').textContent = name;
+      document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
+    }
+
+    // ── Modal state ──────────────────────────────────────────────────────────
+    let currentModalMode = 'quiz'; // 'quiz' | 'exam'
+
+    window.openCodeModal = function(mode) {
+      currentModalMode = mode;
+      const isExam = mode === 'exam';
+
+      document.getElementById('modal-icon').className    = 'code-modal-icon ' + mode;
+      document.getElementById('modal-icon').textContent  = isExam ? '📋' : '📝';
+      document.getElementById('modal-title').textContent = isExam ? 'Enter Exam Code' : 'Enter Quiz Code';
+      document.getElementById('modal-subtitle').textContent = isExam
+        ? 'Your teacher will provide the exam code. Once you join, the timer starts.'
+        : 'Ask your teacher for the 6-character session code.';
+
+      const joinBtn = document.getElementById('modal-join-btn');
+      joinBtn.textContent = isExam ? 'Join Exam' : 'Join Quiz';
+      joinBtn.className   = 'code-modal-btn ' + (isExam ? 'join-exam' : 'join-quiz');
+
+      const inp = document.getElementById('code-input');
+      inp.className = 'code-modal-input' + (isExam ? ' exam-mode' : '');
+      inp.value = '';
+
+      document.getElementById('modal-error').textContent = '';
+      document.getElementById('code-modal-overlay').classList.add('open');
+      setTimeout(() => inp.focus(), 120);
+    };
+
+    window.closeCodeModal = function() {
+      document.getElementById('code-modal-overlay').classList.remove('open');
+    };
+
+    window.handleOverlayClick = function(e) {
+      if (e.target === document.getElementById('code-modal-overlay')) closeCodeModal();
+    };
+
+    window.clearModalError = function() {
+      document.getElementById('modal-error').textContent = '';
+    };
+
+    window.submitCode = async function() {
+      const raw     = document.getElementById('code-input').value.trim().toUpperCase();
+      const errEl   = document.getElementById('modal-error');
+      const joinBtn = document.getElementById('modal-join-btn');
+      const label   = currentModalMode === 'exam' ? 'Join Exam' : 'Join Quiz';
+
+      if (!raw) { errEl.textContent = 'Please enter a code.'; return; }
+      if (raw.length < 4) { errEl.textContent = 'Code is too short.'; return; }
+
+      joinBtn.textContent = 'Checking…';
+      joinBtn.disabled    = true;
+      errEl.textContent   = '';
+
+      try {
+        // Ensure Firebase Auth token is ready before querying Firestore
+        await authReady;
+
+        const q    = query(collection(db, 'quizSessions'), where('code', '==', raw));
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+          errEl.textContent   = 'Code not found. Check with your teacher.';
+          joinBtn.textContent = label;
+          joinBtn.disabled    = false;
+          return;
+        }
+
+        const sessionData = snap.docs[0].data();
+
+        // Warn if mode mismatch
+        if (sessionData.type && sessionData.type !== currentModalMode) {
+          errEl.textContent   = `This is a ${sessionData.type} code, not a ${currentModalMode}.`;
+          joinBtn.textContent = label;
+          joinBtn.disabled    = false;
+          return;
+        }
+
+        if (sessionData.status === 'ended' || sessionData.status === 'cancelled') {
+          errEl.textContent   = 'This session has already ended.';
+          joinBtn.textContent = label;
+          joinBtn.disabled    = false;
+          return;
+        }
+
+        window.location.href = 'quiztest_student.html?code=' + encodeURIComponent(raw);
+      } catch (e) {
+        console.error('submitCode error:', e);
+        errEl.textContent   = e.code === 'permission-denied'
+          ? 'Permission denied. Please log out and log in again.'
+          : 'Error checking code. Please try again.';
+        joinBtn.textContent = label;
+        joinBtn.disabled    = false;
+      }
+    };
+
+    // ── Other nav functions ──────────────────────────────────────────────────
+    window.logout = function() {
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('role');
+      window.location.href = 'index.html';
+    };
+
+    window.joinWithCode = function() {
+      const code = document.getElementById('share-code').value.trim().toUpperCase();
+      if (!code) { alert('Please enter a share code'); return; }
+      window.location.href = `editor.html?project=${code}`;
+    };
+
+    window.openFlashcards = function() {
+      window.location.href = 'flashcard_student.html';
+    };
+
+    window.openProgress = function() {
+      alert('Progress tracking coming soon!');
+    };
+  </script>
 </body>
 </html>

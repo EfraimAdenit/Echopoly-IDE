@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flashcards | EchoPoly</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#1a1f35 100%);color:#f1f5f9;min-height:100vh;overflow-x:hidden;}
+    .bg-gradient{position:fixed;inset:0;background:linear-gradient(-45deg,#1e3c72,#2a5298,#0f172a,#1e293b);background-size:400% 400%;animation:bgAnim 15s ease infinite;z-index:0;}
+    @keyframes bgAnim{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    .glow{position:fixed;border-radius:50%;filter:blur(60px);opacity:.12;pointer-events:none;z-index:0;}
+    .g1{width:380px;height:380px;background:#3b82f6;top:-120px;right:-80px;animation:float 20s ease-in-out infinite;}
+    .g2{width:260px;height:260px;background:#06b6d4;bottom:-60px;left:-60px;animation:float 16s ease-in-out infinite reverse;}
+    .g3{width:220px;height:220px;background:#10b981;top:45%;left:5%;animation:float 24s ease-in-out infinite;}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(28px)}}
+
+    /* ── Header ── */
+    header{position:fixed;top:0;left:0;right:0;background:rgba(15,23,42,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(148,163,184,.1);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;z-index:100;}
+    .logo{font-size:22px;font-weight:800;background:linear-gradient(135deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;letter-spacing:-0.5px;}
+    .user-info{display:flex;align-items:center;gap:12px;font-size:14px;color:#94a3b8;}
+    .user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;}
+    .logout-btn{padding:6px 14px;background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.3);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;transition:background .2s;}
+    .logout-btn:hover{background:rgba(239,68,68,.22);}
+
+    /* ── Screens ── */
+    .screen{display:none;position:relative;z-index:10;min-height:100vh;padding:84px 20px 60px;align-items:center;justify-content:center;flex-direction:column;}
+    .screen.active{display:flex;}
+    @keyframes slideUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── Back link ── */
+    .back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#64748b;text-decoration:none;padding:6px 12px;border:1px solid rgba(148,163,184,.15);border-radius:8px;transition:all .2s;margin-bottom:20px;}
+    .back-link:hover{color:#94a3b8;border-color:rgba(148,163,184,.3);}
+
+    /* ── LANDING ── */
+    .landing-wrap{width:100%;max-width:720px;}
+    .landing-title{font-size:30px;font-weight:800;text-align:center;margin-bottom:8px;}
+    .landing-sub{font-size:15px;color:#64748b;text-align:center;margin-bottom:36px;}
+    .landing-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:580px){.landing-grid{grid-template-columns:1fr;}}
+    .choice-card{background:rgba(15,23,42,.7);backdrop-filter:blur(20px);border:1px solid rgba(148,163,184,.1);border-radius:20px;padding:32px 28px;cursor:pointer;transition:all .25s;text-align:center;}
+    .choice-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.3);}
+    .choice-card.join:hover{border-color:rgba(124,58,237,.4);}
+    .choice-card.self:hover{border-color:rgba(6,182,212,.4);}
+    .choice-icon{font-size:44px;margin-bottom:16px;}
+    .choice-title{font-size:18px;font-weight:700;margin-bottom:8px;}
+    .choice-desc{font-size:13px;color:#64748b;line-height:1.6;}
+    .choice-tag{display:inline-block;margin-top:14px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+    .choice-card.join .choice-tag{background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.3);}
+    .choice-card.self .choice-tag{background:rgba(6,182,212,.12);color:#67e8f9;border:1px solid rgba(6,182,212,.3);}
+
+    /* ── JOIN SCREEN ── */
+    .join-card{width:100%;max-width:420px;background:rgba(15,23,42,.75);backdrop-filter:blur(20px);border:1px solid rgba(148,163,184,.1);border-radius:20px;padding:40px 36px;animation:slideUp .4s ease;}
+    .join-icon{font-size:40px;text-align:center;margin-bottom:12px;}
+    .join-title{font-size:24px;font-weight:700;text-align:center;margin-bottom:6px;}
+    .join-sub{font-size:14px;color:#64748b;text-align:center;margin-bottom:28px;}
+    .field{display:flex;flex-direction:column;gap:5px;margin-bottom:16px;}
+    .field label{font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;}
+    .field input{padding:12px 14px;border:1px solid rgba(148,163,184,.18);border-radius:10px;background:rgba(30,41,59,.5);color:#f1f5f9;font-size:15px;font-family:inherit;outline:none;transition:border .2s,box-shadow .2s;letter-spacing:.1em;text-transform:uppercase;}
+    .field input::placeholder{color:#475569;letter-spacing:normal;text-transform:none;}
+    .field input:focus{border-color:#7c3aed;background:rgba(30,41,59,.8);box-shadow:0 0 0 3px rgba(124,58,237,.12);}
+    .error-msg{padding:10px 13px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;color:#fca5a5;font-size:13px;margin-bottom:14px;display:none;}
+    .btn-join{width:100%;padding:13px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s;}
+    .btn-join:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 24px rgba(124,58,237,.4);}
+    .btn-join:disabled{opacity:.55;cursor:not-allowed;}
+    .btn-ghost{width:100%;margin-top:10px;padding:10px;background:transparent;color:#64748b;border:1px solid rgba(148,163,184,.15);border-radius:10px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;}
+    .btn-ghost:hover{color:#94a3b8;border-color:rgba(148,163,184,.3);}
+    .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ── SELF-STUDY PICKER ── */
+    .picker-wrap{width:100%;max-width:700px;animation:slideUp .4s ease;}
+    .picker-title{font-size:24px;font-weight:700;margin-bottom:6px;text-align:center;}
+    .picker-sub{font-size:14px;color:#64748b;text-align:center;margin-bottom:28px;}
+    .picker-section{background:rgba(15,23,42,.65);backdrop-filter:blur(16px);border:1px solid rgba(148,163,184,.1);border-radius:16px;padding:22px 24px;margin-bottom:14px;}
+    .picker-label{font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;}
+    .lang-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
+    .lang-pill{padding:10px;border-radius:10px;border:1px solid rgba(148,163,184,.15);background:rgba(30,41,59,.4);color:#94a3b8;font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:5px;}
+    .lang-pill:hover{border-color:rgba(6,182,212,.4);color:#67e8f9;}
+    .lang-pill.selected{border-color:#06b6d4;background:rgba(6,182,212,.12);color:#67e8f9;}
+    .lang-pill .lang-icon{font-size:20px;}
+    .diff-grid{display:flex;gap:10px;flex-wrap:wrap;}
+    .diff-pill{padding:9px 22px;border-radius:10px;border:1px solid rgba(148,163,184,.15);background:rgba(30,41,59,.4);color:#94a3b8;font-size:14px;font-weight:600;cursor:pointer;transition:all .18s;}
+    .diff-pill:hover{border-color:rgba(148,163,184,.3);color:#cbd5e1;}
+    .diff-pill.easy.selected{border-color:#22c55e;background:rgba(34,197,94,.12);color:#86efac;}
+    .diff-pill.medium.selected{border-color:#f59e0b;background:rgba(245,158,11,.1);color:#fcd34d;}
+    .diff-pill.hard.selected{border-color:#ef4444;background:rgba(239,68,68,.1);color:#fca5a5;}
+
+    /* ── Study Mode selector ── */
+    .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    @media(max-width:480px){.mode-grid{grid-template-columns:1fr;}}
+    .mode-pill{padding:14px 12px;border-radius:12px;border:1px solid rgba(148,163,184,.15);background:rgba(30,41,59,.4);color:#94a3b8;font-size:14px;font-weight:600;cursor:pointer;text-align:center;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:6px;}
+    .mode-pill .mode-icon{font-size:26px;}
+    .mode-pill .mode-name{font-size:13px;font-weight:700;}
+    .mode-pill .mode-desc{font-size:11px;color:#475569;line-height:1.4;font-weight:400;}
+    .mode-pill:hover{border-color:rgba(148,163,184,.3);}
+    .mode-pill.flashcard.selected{border-color:#06b6d4;background:rgba(6,182,212,.1);color:#67e8f9;}
+    .mode-pill.flashcard.selected .mode-desc{color:#94a3b8;}
+    .mode-pill.quiz.selected{border-color:#7c3aed;background:rgba(124,58,237,.1);color:#c4b5fd;}
+    .mode-pill.quiz.selected .mode-desc{color:#94a3b8;}
+
+    .btn-start{width:100%;padding:14px;background:linear-gradient(135deg,#06b6d4,#0284c7);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:16px;transition:all .2s;}
+    .btn-start:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 24px rgba(6,182,212,.35);}
+    .btn-start:disabled{opacity:.5;cursor:not-allowed;}
+
+    /* ── MODE SELECT for teacher sets ── */
+    .mode-select-wrap{width:100%;max-width:480px;animation:slideUp .4s ease;text-align:center;}
+    .mode-select-title{font-size:22px;font-weight:700;margin-bottom:6px;}
+    .mode-select-sub{font-size:14px;color:#64748b;margin-bottom:24px;}
+    .mode-select-set{padding:12px 16px;background:rgba(30,41,59,.5);border-radius:10px;margin-bottom:20px;font-size:14px;font-weight:600;color:#e2e8f0;}
+    .mode-select-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+    @media(max-width:440px){.mode-select-grid{grid-template-columns:1fr;}}
+    .mode-select-card{background:rgba(15,23,42,.75);border:1px solid rgba(148,163,184,.12);border-radius:16px;padding:24px 18px;cursor:pointer;transition:all .22s;text-align:center;}
+    .mode-select-card:hover{transform:translateY(-3px);}
+    .mode-select-card.fc:hover{border-color:rgba(6,182,212,.4);}
+    .mode-select-card.mc:hover{border-color:rgba(124,58,237,.4);}
+    .ms-icon{font-size:36px;margin-bottom:10px;}
+    .ms-title{font-size:16px;font-weight:700;margin-bottom:6px;}
+    .ms-desc{font-size:12px;color:#64748b;line-height:1.5;}
+
+    /* ── FLASHCARD STUDY ── */
+    #screen-study{padding-top:80px;padding-bottom:50px;}
+    .study-wrap{width:100%;max-width:640px;}
+    .study-topbar{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+    .progress-track{flex:1;height:8px;background:rgba(148,163,184,.1);border-radius:4px;overflow:hidden;}
+    .progress-fill{height:100%;border-radius:4px;transition:width .4s ease;}
+    .progress-fill.fc{background:linear-gradient(90deg,#06b6d4,#3b82f6);}
+    .progress-fill.mc{background:linear-gradient(90deg,#7c3aed,#6d28d9);}
+    .card-counter{font-size:13px;font-weight:700;color:#64748b;white-space:nowrap;}
+    .set-name-badge{padding:3px 10px;background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.25);border-radius:20px;font-size:11px;font-weight:700;color:#67e8f9;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;}
+    .mode-badge-study{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
+    .mode-badge-study.fc{background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.25);color:#67e8f9;}
+    .mode-badge-study.mc{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);color:#a78bfa;}
+
+    /* 3D Flip Card */
+    .flip-scene{width:100%;perspective:1200px;margin-bottom:20px;}
+    .flip-card{width:100%;min-height:240px;position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1);cursor:pointer;border-radius:18px;}
+    .flip-card.flipped{transform:rotateY(180deg);}
+    .flip-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 32px;text-align:center;}
+    .flip-front{background:rgba(15,23,42,.8);backdrop-filter:blur(20px);border:1px solid rgba(148,163,184,.12);box-shadow:0 20px 50px rgba(0,0,0,.35);}
+    .flip-back{background:rgba(6,38,70,.85);backdrop-filter:blur(20px);border:1px solid rgba(6,182,212,.2);box-shadow:0 20px 50px rgba(0,0,0,.35);transform:rotateY(180deg);}
+    .face-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px;padding:3px 10px;border-radius:20px;}
+    .flip-front .face-tag{color:#475569;background:rgba(148,163,184,.08);}
+    .flip-back .face-tag{color:#67e8f9;background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.2);}
+    .card-text{font-size:18px;font-weight:600;color:#f1f5f9;line-height:1.55;}
+    .flip-hint{font-size:12px;color:#475569;margin-top:18px;display:flex;align-items:center;gap:5px;}
+    .card-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+    .btn-action{padding:13px 16px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .btn-got-it{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.3);}
+    .btn-got-it:hover{background:rgba(34,197,94,.25);transform:translateY(-2px);}
+    .btn-review{background:rgba(245,158,11,.1);color:#fcd34d;border:1px solid rgba(245,158,11,.25);}
+    .btn-review:hover{background:rgba(245,158,11,.2);transform:translateY(-2px);}
+    .btn-action:disabled{opacity:.35;cursor:not-allowed;transform:none!important;}
+    .card-nav{display:flex;align-items:center;justify-content:space-between;}
+    .btn-nav{padding:9px 18px;border-radius:9px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .18s;border:1px solid rgba(148,163,184,.2);background:transparent;color:#94a3b8;}
+    .btn-nav:hover:not(:disabled){border-color:rgba(148,163,184,.4);color:#e2e8f0;}
+    .btn-nav:disabled{opacity:.3;cursor:not-allowed;}
+    .flip-btn{padding:9px 18px;border-radius:9px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;background:rgba(6,182,212,.1);color:#67e8f9;border:1px solid rgba(6,182,212,.25);transition:all .18s;}
+    .flip-btn:hover{background:rgba(6,182,212,.2);}
+    .known-bar{display:flex;gap:8px;align-items:center;margin-top:14px;font-size:12px;color:#475569;}
+    .known-bar-fill{flex:1;height:5px;background:rgba(148,163,184,.08);border-radius:3px;overflow:hidden;}
+    .known-bar-inner{height:100%;background:linear-gradient(90deg,#22c55e,#16a34a);border-radius:3px;transition:width .4s ease;}
+
+    /* ── MULTIPLE CHOICE SCREEN ── */
+    #screen-mc{padding-top:80px;padding-bottom:50px;}
+    .mc-wrap{width:100%;max-width:660px;}
+    .mc-question-card{background:rgba(15,23,42,.8);backdrop-filter:blur(20px);border:1px solid rgba(148,163,184,.12);border-radius:18px;padding:32px 28px;margin-bottom:16px;animation:slideUp .3s ease;box-shadow:0 20px 50px rgba(0,0,0,.3);}
+    .mc-q-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#475569;margin-bottom:14px;}
+    .mc-q-text{font-size:18px;font-weight:600;color:#f1f5f9;line-height:1.6;}
+    .mc-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;}
+    @media(max-width:520px){.mc-options{grid-template-columns:1fr;}}
+    .mc-opt-btn{padding:14px 16px;border-radius:12px;border:1px solid rgba(148,163,184,.18);background:rgba(30,41,59,.5);color:#e2e8f0;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;text-align:left;display:flex;align-items:flex-start;gap:10px;transition:all .18s;line-height:1.5;}
+    .mc-opt-btn:hover:not(:disabled){border-color:rgba(124,58,237,.5);background:rgba(124,58,237,.1);}
+    .mc-opt-btn:disabled{cursor:default;}
+    .mc-opt-btn.selected{border-color:#7c3aed;background:rgba(124,58,237,.15);color:#c4b5fd;}
+    .mc-opt-btn.correct{border-color:#22c55e;background:rgba(34,197,94,.15);color:#86efac;}
+    .mc-opt-btn.wrong{border-color:#ef4444;background:rgba(239,68,68,.12);color:#fca5a5;}
+    .opt-label{min-width:24px;height:24px;border-radius:6px;background:rgba(148,163,184,.12);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px;}
+    .mc-opt-btn.correct .opt-label{background:rgba(34,197,94,.25);}
+    .mc-opt-btn.wrong .opt-label{background:rgba(239,68,68,.2);}
+
+    /* MC feedback row */
+    .mc-feedback-row{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;font-size:14px;font-weight:600;margin-bottom:14px;display:none;}
+    .mc-feedback-row.show{display:flex;}
+    .mc-feedback-row.correct-fb{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);color:#86efac;}
+    .mc-feedback-row.wrong-fb{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#fca5a5;}
+    .mc-feedback-icon{font-size:20px;flex-shrink:0;}
+    .mc-feedback-text{flex:1;line-height:1.4;}
+
+    /* MC next button */
+    .mc-next-btn{width:100%;padding:13px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s;display:none;}
+    .mc-next-btn.show{display:block;}
+    .mc-next-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(124,58,237,.35);}
+
+    /* ── RESULTS ── */
+    .results-card{width:100%;max-width:580px;background:rgba(15,23,42,.75);backdrop-filter:blur(20px);border:1px solid rgba(148,163,184,.1);border-radius:20px;padding:40px 32px;animation:slideUp .5s ease;text-align:center;}
+    .trophy{font-size:56px;margin-bottom:12px;}
+    .results-title{font-size:26px;font-weight:800;margin-bottom:4px;}
+    .results-sub{font-size:15px;color:#64748b;margin-bottom:28px;}
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+    .stat-box{background:rgba(30,41,59,.5);border-radius:12px;padding:16px;}
+    .stat-val{font-size:26px;font-weight:800;margin-bottom:4px;}
+    .stat-lbl{font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+    .stat-val.green{color:#86efac;}
+    .stat-val.yellow{color:#fcd34d;}
+    .stat-val.blue{color:#93c5fd;}
+    .stat-val.purple{color:#c4b5fd;}
+
+    /* Breakdown list */
+    .breakdown-wrap{text-align:left;margin-bottom:20px;}
+    .breakdown-label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+    .breakdown-list{max-height:220px;overflow-y:auto;}
+    .bd-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:9px;margin-bottom:5px;font-size:13px;}
+    .bd-item.pass{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.12);}
+    .bd-item.fail{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.12);}
+    .bd-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+    .bd-content{flex:1;}
+    .bd-question{color:#cbd5e1;line-height:1.4;}
+    .bd-answer{font-size:11px;color:#64748b;margin-top:3px;line-height:1.4;}
+    .bd-your-answer{font-size:11px;color:#fca5a5;margin-top:2px;line-height:1.4;}
+
+    /* Score ring for MC */
+    .score-ring-wrap{display:flex;justify-content:center;margin-bottom:20px;}
+    .score-ring{position:relative;width:110px;height:110px;}
+    .score-ring svg{transform:rotate(-90deg);}
+    .score-ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;background:linear-gradient(135deg,#7c3aed,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+    .results-btns{display:flex;gap:10px;flex-wrap:wrap;}
+    .btn-retry{flex:1;min-width:120px;padding:13px;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s;}
+    .btn-retry.cyan{background:linear-gradient(135deg,#06b6d4,#0284c7);}
+    .btn-retry.cyan:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(6,182,212,.35);}
+    .btn-retry.purple{background:linear-gradient(135deg,#7c3aed,#6d28d9);}
+    .btn-retry.purple:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(124,58,237,.35);}
+    .btn-retry.orange{background:linear-gradient(135deg,#f59e0b,#d97706);}
+    .btn-retry.orange:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(245,158,11,.35);}
+    .btn-dash{flex:1;min-width:120px;padding:13px;background:rgba(148,163,184,.1);border:1px solid rgba(148,163,184,.2);border-radius:10px;color:#e2e8f0;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;}
+    .btn-dash:hover{background:rgba(148,163,184,.18);}
+
+    .hidden{display:none!important;}
+  </style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+
+  <header>
+    <a href="dashboard_student.html" class="logo">🎓 EchoPoly</a>
+    <div class="user-info">
+      <div class="user-avatar" id="user-avatar">S</div>
+      <span id="user-name">Student</span>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- ── LANDING ─────────────────────────────────────── -->
+  <div class="screen active" id="screen-landing">
+    <div class="landing-wrap">
+      <a href="dashboard_student.html" class="back-link">← Back to Dashboard</a>
+      <div class="landing-title">🃏 Flashcards</div>
+      <div class="landing-sub">Study with teacher-created sets or explore built-in coding flashcards</div>
+      <div class="landing-grid">
+        <div class="choice-card join" onclick="goTo('screen-join')">
+          <div class="choice-icon">🔗</div>
+          <div class="choice-title">Join Teacher Set</div>
+          <div class="choice-desc">Enter the code your teacher shared to study their custom flashcard set.</div>
+          <span class="choice-tag">Enter Code</span>
+        </div>
+        <div class="choice-card self" onclick="goTo('screen-picker')">
+          <div class="choice-icon">💻</div>
+          <div class="choice-title">Self-Study</div>
+          <div class="choice-desc">Pick a programming language and difficulty to study built-in coding flashcards.</div>
+          <span class="choice-tag">11 Languages</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── JOIN ────────────────────────────────────────── -->
+  <div class="screen" id="screen-join">
+    <div class="join-card">
+      <div class="join-icon">🔗</div>
+      <div class="join-title">Join Teacher Set</div>
+      <div class="join-sub">Enter the 6-character code from your teacher</div>
+      <div class="error-msg" id="join-error"></div>
+      <div class="field">
+        <label>Set Code</label>
+        <input type="text" id="join-code-input" placeholder="e.g. ABC123" maxlength="8" autocomplete="off"/>
+      </div>
+      <button class="btn-join" id="join-load-btn" onclick="loadTeacherSet()">Load Set →</button>
+      <button class="btn-ghost" onclick="goTo('screen-landing')">← Back</button>
+    </div>
+  </div>
+
+  <!-- ── MODE SELECT (teacher set) ───────────────────── -->
+  <div class="screen" id="screen-mode-select">
+    <div class="mode-select-wrap">
+      <div class="mode-select-title">Choose Study Mode</div>
+      <div class="mode-select-sub">How would you like to study this set?</div>
+      <div class="mode-select-set" id="mode-select-set-name">📚 Set Name</div>
+      <div class="mode-select-grid">
+        <div class="mode-select-card fc" onclick="startWithMode('flashcard')">
+          <div class="ms-icon">🃏</div>
+          <div class="ms-title">Flashcard Mode</div>
+          <div class="ms-desc">Flip cards to reveal answers. Mark cards as Known or Review.</div>
+        </div>
+        <div class="mode-select-card mc" onclick="startWithMode('mc')">
+          <div class="ms-icon">🧠</div>
+          <div class="ms-title">Multiple Choice</div>
+          <div class="ms-desc">4-option quiz questions. Get a score at the end.</div>
+        </div>
+      </div>
+      <button class="btn-ghost" onclick="goTo('screen-join')">← Back</button>
+    </div>
+  </div>
+
+  <!-- ── SELF-STUDY PICKER ────────────────────────────── -->
+  <div class="screen" id="screen-picker">
+    <div class="picker-wrap">
+      <div class="picker-title">Self-Study Mode</div>
+      <div class="picker-sub">Choose your language, difficulty, and study mode</div>
+
+      <div class="picker-section">
+        <div class="picker-label">Programming Language</div>
+        <div class="lang-grid" id="lang-grid"></div>
+      </div>
+
+      <div class="picker-section">
+        <div class="picker-label">Difficulty</div>
+        <div class="diff-grid">
+          <div class="diff-pill easy" data-diff="easy" onclick="selectDiff(this)">🟢 Easy</div>
+          <div class="diff-pill medium" data-diff="medium" onclick="selectDiff(this)">🟡 Medium</div>
+          <div class="diff-pill hard" data-diff="hard" onclick="selectDiff(this)">🔴 Hard</div>
+        </div>
+      </div>
+
+      <div class="picker-section">
+        <div class="picker-label">Study Mode</div>
+        <div class="mode-grid">
+          <div class="mode-pill flashcard" data-mode="flashcard" onclick="selectMode(this)">
+            <span class="mode-icon">🃏</span>
+            <span class="mode-name">Flashcard</span>
+            <span class="mode-desc">Flip cards, mark Known or Review</span>
+          </div>
+          <div class="mode-pill quiz" data-mode="mc" onclick="selectMode(this)">
+            <span class="mode-icon">🧠</span>
+            <span class="mode-name">Multiple Choice</span>
+            <span class="mode-desc">4 options per question, scored results</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-start" id="start-study-btn" onclick="startSelfStudy()" disabled>Start Studying →</button>
+      <button class="btn-ghost" style="margin-top:10px;" onclick="goTo('screen-landing')">← Back</button>
+    </div>
+  </div>
+
+  <!-- ── FLASHCARD STUDY ──────────────────────────────── -->
+  <div class="screen" id="screen-study">
+    <div class="study-wrap">
+      <div class="study-topbar">
+        <span class="set-name-badge" id="study-set-name">Set</span>
+        <div class="progress-track"><div class="progress-fill fc" id="study-progress" style="width:0%"></div></div>
+        <span class="card-counter" id="study-counter">1 / 10</span>
+      </div>
+
+      <div class="flip-scene">
+        <div class="flip-card" id="flip-card" onclick="flipCard()">
+          <div class="flip-face flip-front">
+            <span class="face-tag">Question</span>
+            <div class="card-text" id="card-front-text">Loading…</div>
+            <div class="flip-hint">👆 Click card or press Space to reveal answer</div>
+          </div>
+          <div class="flip-face flip-back">
+            <span class="face-tag">Answer</span>
+            <div class="card-text" id="card-back-text"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-action btn-got-it" id="btn-got-it" onclick="markCard(true)" disabled>✓ Got It</button>
+        <button class="btn-action btn-review" id="btn-review" onclick="markCard(false)" disabled>↺ Review Again</button>
+      </div>
+
+      <div class="card-nav">
+        <button class="btn-nav" id="btn-prev-card" onclick="prevCard()" disabled>← Prev</button>
+        <button class="flip-btn" onclick="flipCard()">🔄 Flip</button>
+        <button class="btn-nav" id="btn-next-card" onclick="nextCard()">Next →</button>
+      </div>
+
+      <div class="known-bar">
+        <span id="known-count">0 known</span>
+        <div class="known-bar-fill"><div class="known-bar-inner" id="known-bar-inner" style="width:0%"></div></div>
+        <span id="review-count">0 to review</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MULTIPLE CHOICE SCREEN ───────────────────────── -->
+  <div class="screen" id="screen-mc">
+    <div class="mc-wrap">
+      <div class="study-topbar">
+        <span class="set-name-badge" id="mc-set-name">Set</span>
+        <div class="progress-track"><div class="progress-fill mc" id="mc-progress" style="width:0%"></div></div>
+        <span class="card-counter" id="mc-counter">1 / 10</span>
+      </div>
+
+      <div class="mc-question-card">
+        <div class="mc-q-label">Question</div>
+        <div class="mc-q-text" id="mc-q-text">Loading…</div>
+        <div class="mc-options" id="mc-options"></div>
+      </div>
+
+      <div class="mc-feedback-row" id="mc-feedback">
+        <span class="mc-feedback-icon" id="mc-fb-icon">✅</span>
+        <div class="mc-feedback-text" id="mc-fb-text"></div>
+      </div>
+
+      <button class="mc-next-btn" id="mc-next-btn" onclick="mcNext()">Next Question →</button>
+    </div>
+  </div>
+
+  <!-- ── RESULTS ──────────────────────────────────────── -->
+  <div class="screen" id="screen-results">
+    <div class="results-card">
+
+      <!-- Flashcard results -->
+      <div id="results-fc">
+        <div class="trophy" id="fc-trophy">🏆</div>
+        <div class="results-title" id="fc-title">Session Complete!</div>
+        <div class="results-sub" id="fc-sub">Here's how you did</div>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-val green" id="fc-known">0</div><div class="stat-lbl">Known</div></div>
+          <div class="stat-box"><div class="stat-val yellow" id="fc-review">0</div><div class="stat-lbl">To Review</div></div>
+          <div class="stat-box"><div class="stat-val blue" id="fc-total">0</div><div class="stat-lbl">Total</div></div>
+        </div>
+        <div class="breakdown-wrap hidden" id="fc-review-wrap">
+          <div class="breakdown-label">Cards to review again</div>
+          <div class="breakdown-list" id="fc-review-list"></div>
+        </div>
+      </div>
+
+      <!-- MC results -->
+      <div id="results-mc" class="hidden">
+        <div class="score-ring-wrap">
+          <div class="score-ring">
+            <svg width="110" height="110" viewBox="0 0 110 110">
+              <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(148,163,184,.08)" stroke-width="10"/>
+              <circle cx="55" cy="55" r="46" fill="none" stroke="url(#ringGrad)" stroke-width="10"
+                stroke-linecap="round" stroke-dasharray="289" id="ring-dash" stroke-dashoffset="289"/>
+              <defs>
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#7c3aed"/>
+                  <stop offset="100%" stop-color="#3b82f6"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="score-ring-val" id="mc-score-pct">0%</div>
+          </div>
+        </div>
+        <div class="results-title" id="mc-results-title">Quiz Complete!</div>
+        <div class="results-sub" id="mc-results-sub">Here's your score</div>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-val green" id="mc-correct">0</div><div class="stat-lbl">Correct</div></div>
+          <div class="stat-box"><div class="stat-val yellow" id="mc-wrong">0</div><div class="stat-lbl">Wrong</div></div>
+          <div class="stat-box"><div class="stat-val blue" id="mc-total">0</div><div class="stat-lbl">Total</div></div>
+        </div>
+        <div class="breakdown-wrap" id="mc-breakdown-wrap">
+          <div class="breakdown-label">Question Breakdown</div>
+          <div class="breakdown-list" id="mc-breakdown-list"></div>
+        </div>
+      </div>
+
+      <div class="results-btns" id="results-btns" style="margin-top:16px;"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+    const fbApp = initializeApp({
+      apiKey:"AIzaSyBCcyLy_rNx-riDjmK4SUu-gZbKtDPqEYQ",
+      authDomain:"echopoly-ide.firebaseapp.com",
+      projectId:"echopoly-ide",
+      storageBucket:"echopoly-ide.firebasestorage.app",
+      messagingSenderId:"290647098484",
+      appId:"1:290647098484:web:61a9a5503c43d465bdbd21"
+    });
+    const auth = getAuth(fbApp);
+    const db   = getFirestore(fbApp);
+    const authReady = new Promise(r => onAuthStateChanged(auth, r));
+
+    onAuthStateChanged(auth, user => {
+      const src = user || (() => { try { return JSON.parse(localStorage.getItem('currentUser')); } catch{} })();
+      if (src) {
+        document.getElementById('user-avatar').textContent = (src.displayName || src.email || 'S').charAt(0).toUpperCase();
+        document.getElementById('user-name').textContent   = src.displayName || src.email?.split('@')[0] || 'Student';
+      }
+    });
+
+    window.doLogout = async () => {
+      await signOut(auth).catch(()=>{});
+      localStorage.removeItem('currentUser'); localStorage.removeItem('role');
+      window.location.href = 'login.html';
+    };
+
+    // ── Built-in card data ─────────────────────────────────────────────────
+    const CARDS = {
+      javascript:{
+        easy:[
+          {f:"What keyword declares a block-scoped variable?",b:"`let` — scoped to the nearest block `{}`"},
+          {f:"What does `typeof null` return?",b:"`\"object\"` — a historical bug kept for backward compatibility"},
+          {f:"How do you check strict equality in JS?",b:"`===` checks value AND type; `==` coerces types before comparing"},
+          {f:"What does `console.log()` do?",b:"Prints output to the browser's developer console"},
+          {f:"What is the result of `\"5\" - 2`?",b:"`3` — JS converts the string \"5\" to a number for subtraction"},
+          {f:"What keyword declares a constant?",b:"`const` — the binding cannot be reassigned after declaration"},
+          {f:"How do you get the length of an array `arr`?",b:"`arr.length` — a built-in property on all arrays"},
+          {f:"What does `Array.isArray([1,2])` return?",b:"`true` — the only reliable way to test for an array"},
+          {f:"What is the result of `2 + \"3\"`?",b:"`\"23\"` — `+` concatenates when either side is a string"},
+          {f:"How do you declare an arrow function?",b:"`const fn = (params) => expression` or `(params) => { body }`"}
+        ],
+        medium:[
+          {f:"What is a closure?",b:"A function that retains access to variables from its outer scope even after that scope returns"},
+          {f:"What does `Promise.all([p1,p2])` do?",b:"Resolves when ALL promises resolve; rejects immediately if ANY one rejects"},
+          {f:"What is destructuring?",b:"Syntax to unpack values: `const {a} = obj` or `const [x] = arr`"},
+          {f:"What does `Array.prototype.reduce()` do?",b:"Accumulates all array elements into a single value using a callback"},
+          {f:"What is the spread operator `...`?",b:"Expands an iterable: `[...arr1, ...arr2]` merges arrays without mutating"},
+          {f:"What does `async/await` do?",b:"Syntactic sugar over Promises — `await` pauses until a Promise settles"},
+          {f:"What does optional chaining `?.` do?",b:"Returns `undefined` instead of throwing if any part of the chain is null/undefined"},
+          {f:"What is the nullish coalescing `??` operator?",b:"Returns right side only when left is `null` or `undefined` — unlike `||` which also catches `0` and `\"\"`"},
+          {f:"What does `Array.prototype.map()` return?",b:"A new array with each element transformed — does not mutate the original"},
+          {f:"What is `Object.keys(obj)`?",b:"Returns an array of the object's own enumerable property names"}
+        ],
+        hard:[
+          {f:"What is the JavaScript event loop?",b:"Processes callbacks from the task queue and microtask queue when the call stack is empty"},
+          {f:"Microtasks vs macrotasks — which runs first?",b:"Microtasks (Promises, queueMicrotask) drain completely before the next macrotask (setTimeout, I/O)"},
+          {f:"What is a WeakMap?",b:"A Map with weakly-held keys that can be garbage-collected when no other references exist"},
+          {f:"What does `Object.create(null)` produce?",b:"An object with NO prototype — a pure hash map with no inherited methods"},
+          {f:"Difference between `call`, `apply`, and `bind`?",b:"`call(ctx,a,b)` invokes now; `apply(ctx,[a,b])` same with array; `bind(ctx)` returns a new bound function"},
+          {f:"What is a Proxy object?",b:"Wraps an object to intercept and redefine fundamental operations via handler traps"},
+          {f:"What is tail call optimization?",b:"Engine reuses the stack frame when the last operation is a recursive return — prevents stack overflow"},
+          {f:"What does `structuredClone(obj)` do?",b:"Deep clones an object including nested objects, Dates, Maps, Sets — unlike JSON.parse/stringify"}
+        ]
+      },
+      python:{
+        easy:[
+          {f:"How do you print output in Python?",b:"`print(\"Hello!\")` — built-in function, no import needed"},
+          {f:"How do you create a list?",b:"`my_list = [1, 2, 3]` — ordered, mutable, allows duplicates"},
+          {f:"What does `len()` do?",b:"Returns the number of elements in a sequence (list, string, tuple, etc.)"},
+          {f:"How do you write a comment in Python?",b:"`# This is a comment` — Python has no multi-line comment syntax"},
+          {f:"What is an f-string?",b:"`f\"Hello {name}\"` — embeds expressions directly in string literals (Python 3.6+)"},
+          {f:"What does `range(5)` produce?",b:"An iterable of integers 0 through 4"},
+          {f:"How do you create a dictionary?",b:"`d = {\"key\": \"value\"}` — mutable key-value pairs in curly braces"},
+          {f:"How do you check a value's type?",b:"`type(val)` returns the type; `isinstance(val, int)` checks with subclass support"}
+        ],
+        medium:[
+          {f:"What is list comprehension?",b:"`[expr for item in iterable if cond]` — concise filtered/transformed list"},
+          {f:"What is a Python decorator?",b:"A function wrapping another function to modify its behavior — applied with `@decorator`"},
+          {f:"What are `*args` and `**kwargs`?",b:"`*args` = extra positional args as tuple; `**kwargs` = extra keyword args as dict"},
+          {f:"What is a generator?",b:"A function using `yield` — produces values lazily one at a time"},
+          {f:"What does the `with` statement do?",b:"Context manager — guarantees setup/teardown: `with open('f') as f:` always closes file"},
+          {f:"How does `enumerate()` work?",b:"Returns `(index, value)` pairs: `for i, v in enumerate(lst):`"},
+          {f:"What does `zip()` do?",b:"Pairs elements from multiple iterables — stops at the shortest"},
+          {f:"Difference between `is` and `==`?",b:"`is` checks identity (same object); `==` checks equality (same value)"}
+        ],
+        hard:[
+          {f:"What is a metaclass?",b:"A class whose instances are classes — `type` is the default metaclass"},
+          {f:"What is a descriptor?",b:"Object implementing `__get__`/`__set__`/`__delete__` — powers `property`, `classmethod`"},
+          {f:"What is `__slots__`?",b:"Restricts instance attributes, replacing per-instance `__dict__` — reduces memory"},
+          {f:"How does Python's GC handle reference cycles?",b:"Reference counting for most; cyclic GC (`gc` module) detects and collects reference cycles"},
+          {f:"What is `functools.lru_cache`?",b:"Memoization decorator — caches function results by arguments"},
+          {f:"What does `dataclasses.dataclass` generate?",b:"Auto-generates `__init__`, `__repr__`, `__eq__` from annotated fields"},
+          {f:"What is cooperative multitasking in asyncio?",b:"Coroutines yield control with `await`, letting the event loop run other tasks"},
+          {f:"What is `__init_subclass__`?",b:"Classmethod called whenever a class is subclassed — register subclasses without metaclasses"}
+        ]
+      },
+      html:{
+        easy:[
+          {f:"What does `<!DOCTYPE html>` do?",b:"Tells the browser to use HTML5 standards mode"},
+          {f:"What element creates a hyperlink?",b:"`<a href=\"url\">text</a>`"},
+          {f:"Difference between `<div>` and `<span>`?",b:"`<div>` is block-level; `<span>` is inline"},
+          {f:"Name 4 semantic HTML5 elements.",b:"`<header>`, `<nav>`, `<main>`, `<article>`, `<section>`, `<footer>`"},
+          {f:"How do you include an image?",b:"`<img src=\"path.jpg\" alt=\"description\">`"},
+          {f:"What does the `alt` attribute do?",b:"Fallback text when image fails + read by screen readers"},
+          {f:"How do you create an ordered list?",b:"`<ol>` with `<li>` items — auto-numbered by browser"},
+          {f:"What does `<meta charset=\"UTF-8\">` do?",b:"Sets character encoding for correct display of all characters"}
+        ],
+        medium:[
+          {f:"What are `data-*` attributes?",b:"Custom data storage: `data-id=\"123\"` accessed in JS via `el.dataset.id`"},
+          {f:"What does `tabindex` control?",b:"Tab focus order: `0` = natural; `-1` = programmatic only; positive = explicit order"},
+          {f:"What is the `srcset` attribute?",b:"Multiple image sources for different screen densities — responsive images"},
+          {f:"What does `<template>` element do?",b:"Holds inert HTML not rendered — blueprint for JS-generated content"},
+          {f:"What is ARIA?",b:"Attributes like `aria-label`, `role` that improve screen reader support"},
+          {f:"What does `rel=\"noopener noreferrer\"` do?",b:"`noopener` blocks `window.opener` access; `noreferrer` hides referrer — security best practice"},
+          {f:"Difference between `<input type=\"submit\">` and `<button>`?",b:"`<button>` can contain HTML; both submit forms by default"},
+          {f:"What does `loading=\"lazy\"` do?",b:"Defers image loading until near viewport — improves initial page load"}
+        ],
+        hard:[
+          {f:"What are Web Components?",b:"Custom Elements + Shadow DOM + HTML Templates — reusable, encapsulated browser-native components"},
+          {f:"What is Shadow DOM?",b:"Scoped DOM subtree — CSS and JS inside are isolated from the main document"},
+          {f:"What is `<slot>` in Shadow DOM?",b:"Placeholder where light DOM children are projected into the shadow tree"},
+          {f:"What is the Critical Rendering Path?",b:"HTML → DOM → CSS → CSSOM → Render Tree → Layout → Paint → Composite"},
+          {f:"What is Content Security Policy (CSP)?",b:"HTTP header restricting loadable resources — primary XSS defense"},
+          {f:"Difference between `defer` and `async` on scripts?",b:"`defer` runs after parse in order; `async` runs as soon as downloaded in any order"},
+          {f:"What does `rel=\"preload\"` do?",b:"Hints browser to fetch a resource early — reduces render-blocking latency"},
+          {f:"What does `<picture>` element do?",b:"Wraps multiple `<source>` elements for art direction across breakpoints"}
+        ]
+      },
+      css:{
+        easy:[
+          {f:"What is the CSS box model?",b:"Every element: content → padding → border → margin (inside out)"},
+          {f:"What does `display: flex` do?",b:"Turns a container into a flexbox — children support flex properties"},
+          {f:"Difference between `margin` and `padding`?",b:"`padding` is space INSIDE the border; `margin` is space OUTSIDE"},
+          {f:"What does `position: absolute` do?",b:"Removes from flow — positioned relative to nearest positioned ancestor"},
+          {f:"What does `z-index` control?",b:"Stacking order of positioned elements — higher = on top"},
+          {f:"What is `box-sizing: border-box`?",b:"Width/height includes padding and border — prevents box from expanding"},
+          {f:"What is a CSS pseudo-class?",b:"Selects special states: `:hover`, `:focus`, `:nth-child()`, `:not()`"},
+          {f:"How do you center horizontally?",b:"`margin: 0 auto` with a set width, or `display:flex; justify-content:center` on parent"}
+        ],
+        medium:[
+          {f:"`justify-content` vs `align-items` in Flexbox?",b:"`justify-content` = main axis; `align-items` = cross axis"},
+          {f:"What does `grid-template-columns: repeat(3,1fr)` do?",b:"Creates 3 equal-width columns in CSS Grid"},
+          {f:"What is a CSS custom property?",b:"`--name: value` declared; used as `var(--name)` — cascades naturally"},
+          {f:"What does `transform: translate()` do?",b:"Moves element without affecting flow — GPU-accelerated"},
+          {f:"What does `clamp(min,val,max)` do?",b:"Returns `val` bounded between `min` and `max` — great for fluid typography"},
+          {f:"What does `:is()` do?",b:"Groups selectors: `:is(h1,h2,h3) a {}` — takes highest specificity of arguments"},
+          {f:"What is `will-change`?",b:"Hints browser a property will change — allows pre-compositing optimization (use sparingly)"},
+          {f:"Difference between `transition` and `animation`?",b:"`transition` reacts to state changes; `animation` runs keyframes automatically"}
+        ],
+        hard:[
+          {f:"What is CSS specificity?",b:"inline > ID > class/attr/pseudo-class > element. Equal specificity = last rule wins"},
+          {f:"What are CSS container queries?",b:"`@container` — styles based on PARENT size, not viewport — CSS Containment Level 3"},
+          {f:"What is `@layer`?",b:"Explicit cascade layer ordering — resolves specificity battles between design systems"},
+          {f:"What does `content-visibility: auto` do?",b:"Skips rendering off-screen elements — biggest CSS rendering performance win"},
+          {f:"Difference between `em` and `rem`?",b:"`em` = element's own font-size; `rem` = root `<html>` font-size"},
+          {f:"What does `isolation: isolate` do?",b:"Creates a new stacking context — prevents `mix-blend-mode` from leaking through"},
+          {f:"What does `@property` at-rule do?",b:"Registers custom property with a type — required for animating custom properties"},
+          {f:"What is CSS subgrid?",b:"`grid-template-columns: subgrid` — nested grid inherits parent grid track definitions"}
+        ]
+      },
+      java:{
+        easy:[
+          {f:"How do you print to console in Java?",b:"`System.out.println(\"Hello\");`"},
+          {f:"Difference between `int` and `Integer`?",b:"`int` is a primitive; `Integer` is a wrapper class needed for collections and null"},
+          {f:"What does `final` mean on a variable?",b:"Cannot be reassigned after initial assignment — acts as a constant"},
+          {f:"How do you create an array of 5 ints?",b:"`int[] arr = new int[5];` — initialized to `0` by default"},
+          {f:"Difference between `==` and `.equals()` for Strings?",b:"`==` checks reference (same object); `.equals()` checks character content"},
+          {f:"What is `ArrayList`?",b:"Resizable array from `java.util` implementing `List<E>` — dynamic size"},
+          {f:"What is the `main` method signature?",b:"`public static void main(String[] args)` — exact signature required by JVM"},
+          {f:"What does `null` mean in Java?",b:"Reference pointing to no object — calling methods on it throws `NullPointerException`"}
+        ],
+        medium:[
+          {f:"What is an interface in Java?",b:"Contract of method signatures (+ default methods Java 8+) that classes must implement"},
+          {f:"What does `try-with-resources` do?",b:"Auto-calls `close()` on `AutoCloseable` resources — no finally block needed"},
+          {f:"What is a lambda expression?",b:"`(params) -> expression` — inline functional interface implementation (Java 8+)"},
+          {f:"What does `Stream.filter().map().collect()` do?",b:"Declarative pipeline: filter → transform → collect — does not mutate source"},
+          {f:"What is `Optional<T>`?",b:"Container that may or may not hold a value — avoids NullPointerException"},
+          {f:"Difference between `HashMap` and `TreeMap`?",b:"`HashMap` = O(1) unordered; `TreeMap` = O(log n) sorted by key"},
+          {f:"What is generics in Java?",b:"Type parameters like `List<String>` — compile-time safety, eliminates casts"},
+          {f:"Difference between `extends` and `implements`?",b:"`extends` = single class inheritance; `implements` = multiple interface fulfillment"}
+        ],
+        hard:[
+          {f:"What is the Java Memory Model?",b:"Defines thread-memory visibility, atomicity, and happens-before relationships"},
+          {f:"What does `volatile` do?",b:"Reads/writes bypass CPU cache to main memory — visibility but NOT atomicity"},
+          {f:"What is `CompletableFuture`?",b:"Non-blocking async composition: `supplyAsync().thenApply().thenCompose()` — like JS Promises"},
+          {f:"What is reflection?",b:"API to inspect/modify classes, fields, methods at runtime: `Class.forName()`, `Method.invoke()`"},
+          {f:"Checked vs unchecked exceptions?",b:"Checked: must declare/catch (extends Exception); Unchecked: RuntimeException — no forced handling"},
+          {f:"What does `synchronized` block do?",b:"Acquires intrinsic monitor lock — one thread executes at a time"},
+          {f:"What is JIT compilation?",b:"JVM compiles hot bytecode to native machine code at runtime — key performance source"},
+          {f:"What is a ClassLoader?",b:"Loads class files into JVM; parent delegation: Bootstrap → Platform → Application"}
+        ]
+      },
+      cpp:{
+        easy:[
+          {f:"How do you output text in C++?",b:"`std::cout << \"Hello\" << std::endl;`"},
+          {f:"What is a reference in C++?",b:"`int& ref = var;` — alias for existing variable; changes affect original"},
+          {f:"What does `nullptr` mean?",b:"Null pointer constant (C++11) — safer than `NULL` (which is just `0`)"},
+          {f:"Difference between `struct` and `class`?",b:"`struct` members are `public` by default; `class` members are `private`"},
+          {f:"What does `const` on a parameter do?",b:"Prevents modification of the parameter inside the function"},
+          {f:"What is `std::vector`?",b:"Dynamic array from STL that auto-resizes — use instead of raw arrays"},
+          {f:"How do you read input with `cin`?",b:"`std::cin >> variable;` — reads whitespace-delimited input"},
+          {f:"How do you declare a compile-time constant?",b:"`constexpr int MAX = 100;` — evaluated at compile time"}
+        ],
+        medium:[
+          {f:"What is RAII?",b:"Resources acquired in constructors, released in destructors — automatic cleanup"},
+          {f:"What are smart pointers?",b:"`unique_ptr` (sole ownership), `shared_ptr` (shared), `weak_ptr` (non-owning) — replace `new/delete`"},
+          {f:"What does `const` on a method mean?",b:"`void fn() const` — method cannot modify member variables"},
+          {f:"What is a template?",b:"`template<typename T>` — compile-time code generation for different types"},
+          {f:"What is move semantics?",b:"`std::move()` transfers ownership instead of copying — avoids expensive copies"},
+          {f:"What is a `virtual` function?",b:"Enables runtime polymorphism — most-derived override called through base pointer"},
+          {f:"Stack vs heap allocation?",b:"Stack: automatic cleanup, limited, fast; Heap: `new`/`delete`, large, manual cleanup"},
+          {f:"What is operator overloading?",b:"Define custom behavior for operators like `+`, `==`, `<<` for user types"}
+        ],
+        hard:[
+          {f:"What is the Rule of Five?",b:"If you define any of: destructor, copy ctor, copy assign, move ctor, move assign — define ALL five"},
+          {f:"What is undefined behavior?",b:"Compiler assumes it never happens — signed overflow, null deref, use-after-free all cause UB"},
+          {f:"What is the vtable?",b:"Virtual function table — objects hold a `vptr` to it for O(1) runtime dispatch"},
+          {f:"What does `std::move` actually do?",b:"Only casts to rvalue reference `T&&` — actual transfer happens in move constructors"},
+          {f:"What is `constexpr`?",b:"Evaluated at compile time — `constexpr int sq(int n){return n*n;}` → `sq(5)` = `25` in binary"},
+          {f:"What is SFINAE?",b:"Substitution Failure Is Not An Error — silent template failure enables compile-time selection"},
+          {f:"What is template metaprogramming?",b:"Using template instantiation as compile-time computation — logic encoded in types"},
+          {f:"What is ADL?",b:"Argument-Dependent Lookup — compiler searches argument namespaces, enabling `operator<<` in custom namespaces"}
+        ]
+      },
+      typescript:{
+        easy:[
+          {f:"How do you annotate a variable type?",b:"`let name: string = \"Alice\";`"},
+          {f:"What is an interface in TypeScript?",b:"`interface User { name: string; age: number; }` — describes object shape"},
+          {f:"What does `?` mean in `name?: string`?",b:"Optional property — may or may not be present"},
+          {f:"What is a union type?",b:"`type ID = string | number;` — value can be one of several types"},
+          {f:"What does `readonly` do?",b:"Property can be read but not reassigned after initialization"},
+          {f:"What is `any` type?",b:"Opts out of type checking — loses safety. Prefer `unknown` when possible"},
+          {f:"What does TypeScript compile to?",b:"Plain JavaScript — types are erased at build time, never exist at runtime"},
+          {f:"What is a type alias?",b:"`type Point = { x: number; y: number; }` — names any type including unions"}
+        ],
+        medium:[
+          {f:"What is a generic type?",b:"`function identity<T>(arg: T): T` — type resolved at call site"},
+          {f:"What is `keyof`?",b:"Union of all keys of a type: `keyof User` → `\"name\" | \"age\"`"},
+          {f:"What is a mapped type?",b:"`type Optional<T> = { [K in keyof T]?: T[K] }` — transforms every property"},
+          {f:"What is a type guard?",b:"`function isString(val: unknown): val is string` — narrows type in a branch"},
+          {f:"What does `Partial<T>` do?",b:"Makes all properties of T optional — built-in utility type"},
+          {f:"What is `never` type?",b:"A type with no values — used for exhaustive checks and always-throwing functions"},
+          {f:"What does `as const` do?",b:"Infers literal types and makes the value readonly"},
+          {f:"What is a discriminated union?",b:"Shared literal field enables safe narrowing: `type Shape = {kind:'circle'} | {kind:'rect'}`"}
+        ],
+        hard:[
+          {f:"What are conditional types?",b:"`T extends U ? X : Y` — type-level if/else evaluated by the compiler"},
+          {f:"What is the `infer` keyword?",b:"Captures a sub-type inside conditional: `T extends Promise<infer R> ? R : never`"},
+          {f:"What is a template literal type?",b:"`` `${keyof User}Changed` `` → `\"nameChanged\" | \"ageChanged\"`"},
+          {f:"What is a recursive type?",b:"`type JSON = string | number | null | JSON[] | {[k:string]:JSON}` — self-referential"},
+          {f:"What does `satisfies` operator do?",b:"Validates type without widening — keeps the more specific inferred type"},
+          {f:"What is declaration merging?",b:"Multiple interfaces with same name merge — used to extend third-party types"},
+          {f:"What does `NoInfer<T>` do?",b:"Prevents inference at a specific argument position (TypeScript 5.4+)"},
+          {f:"What is variance in TypeScript?",b:"Covariant: `T<A>` where A extends B → `T<A>` extends `T<B>`; Contravariant: opposite for function params"}
+        ]
+      },
+      json:{
+        easy:[
+          {f:"What are the valid JSON value types?",b:"string, number, boolean, null, object `{}`, array `[]`"},
+          {f:"How must JSON keys be formatted?",b:"Always double-quoted: `\"name\": \"value\"` — single quotes are NOT valid"},
+          {f:"What does `JSON.parse('{\"a\":1}')` return?",b:"A JavaScript object: `{a: 1}`"},
+          {f:"What does `JSON.stringify({a: 1})` return?",b:"The string `'{\"a\":1}'`"},
+          {f:"Can JSON have comments?",b:"No — JSON does not support comments"},
+          {f:"What happens to `undefined` in `JSON.stringify`?",b:"Object values with `undefined` are omitted; array elements become `null`"},
+          {f:"Difference between `{}` and `[]` in JSON?",b:"`{}` = object (key-value pairs); `[]` = array (ordered list)"},
+          {f:"Is `{key: 'value'}` valid JSON?",b:"No — keys must be double-quoted and strings must use double quotes"}
+        ],
+        medium:[
+          {f:"What does `JSON.stringify(obj, null, 2)` do?",b:"Pretty-prints JSON with 2-space indentation"},
+          {f:"What is a JSON replacer?",b:"2nd arg to `stringify` — array of keys to include OR function to transform values"},
+          {f:"What is a JSON reviver?",b:"2nd arg to `parse` — function called on each key/value pair to transform results"},
+          {f:"How are dates handled in JSON?",b:"No Date type — typically ISO 8601 strings: `\"2024-01-15T10:30:00Z\"`"},
+          {f:"What is JSON Schema?",b:"Vocabulary for describing and validating JSON data structure"},
+          {f:"What is NDJSON?",b:"Newline-Delimited JSON — one JSON object per line — used for streaming and logs"},
+          {f:"What is the max safe integer in JSON?",b:"2^53 − 1 — beyond this numbers lose precision; use strings for large IDs"},
+          {f:"How do you handle `BigInt` with `JSON.stringify`?",b:"`JSON.stringify(1n)` throws — convert to string first or use a custom replacer"}
+        ],
+        hard:[
+          {f:"What is JSON Pointer (RFC 6901)?",b:"Path syntax: `/foo/0/bar` — references a JSON value, used in JSON Patch"},
+          {f:"What is JSON Patch (RFC 6902)?",b:"Array of operations (add, remove, replace, move, copy, test) to transform JSON atomically"},
+          {f:"What is JSON Merge Patch?",b:"Simpler alternative — merge object to update; `null` means delete that key"},
+          {f:"How does `JSON.stringify` handle circular references?",b:"Throws `TypeError` — need a custom replacer or library"},
+          {f:"What is CBOR?",b:"Concise Binary Object Representation — compact binary encoding of JSON-like data"},
+          {f:"What is JSON-LD?",b:"JSON for Linked Data — adds `@context`, `@type`, `@id` for semantic RDF meaning"},
+          {f:"What is the `$ref` keyword in JSON Schema?",b:"References another schema by URI — enables reuse and recursive definitions"},
+          {f:"What happens parsing very large numbers in JSON?",b:"Lose precision beyond 15 significant digits — require BigInt reviver or alternative parser"}
+        ]
+      },
+      markdown:{
+        easy:[
+          {f:"How do you make a heading?",b:"`# H1`, `## H2`, `### H3` — up to 6 levels"},
+          {f:"How do you make text bold?",b:"`**bold**` or `__bold__`"},
+          {f:"How do you create a link?",b:"`[text](url)` — text in brackets, URL in parentheses"},
+          {f:"How do you embed an image?",b:"`![alt](image.jpg)` — same as link but with `!` prefix"},
+          {f:"How do you make text italic?",b:"`*italic*` or `_italic_`"},
+          {f:"How do you create inline code?",b:"Wrap with backticks: `` `code here` ``"},
+          {f:"How do you create an unordered list?",b:"`- item` or `* item` — one per line"},
+          {f:"How do you escape a special character?",b:"Prefix with backslash: `\\*` renders as `*`"}
+        ],
+        medium:[
+          {f:"How do you create a fenced code block?",b:"Triple backticks — specify language after opening: ` ```python `"},
+          {f:"How do you create a table?",b:"`| Col1 | Col2 |` header, `|---|---|` separator, then data rows"},
+          {f:"How do you create a blockquote?",b:"`> quote text` — nest with `>>`"},
+          {f:"How do you create a task list?",b:"`- [x] done` and `- [ ] pending` — GitHub Flavored Markdown"},
+          {f:"How do you add a horizontal rule?",b:"`---` or `***` or `___` on its own line"},
+          {f:"What is strikethrough syntax?",b:"`~~text~~` in GFM — renders as `<del>text</del>`"},
+          {f:"How do you create a footnote?",b:"`[^1]` inline, `[^1]: definition` at bottom"},
+          {f:"How does reference-style linking work?",b:"`[text][ref]` inline, `[ref]: url` defined elsewhere"}
+        ],
+        hard:[
+          {f:"Difference between CommonMark and GFM?",b:"GFM is CommonMark + tables, task lists, strikethrough, autolinks"},
+          {f:"What is MDX?",b:"Markdown + JSX — embeds React components in Markdown — used in Next.js, Gatsby"},
+          {f:"What is YAML front matter?",b:"`---` block at file start with metadata (`title:`, `date:`) — used by Jekyll, Hugo"},
+          {f:"How do you create a Mermaid diagram?",b:"` ```mermaid ` block — rendered to SVG in GitHub, VS Code"},
+          {f:"What is the `:::note` directive?",b:"Extended Remark/Docusaurus callout syntax — not standard CommonMark"},
+          {f:"What are definition lists?",b:"`Term` + `: Definition` on next line — PHP Markdown Extra / Pandoc extension"},
+          {f:"What does Pandoc extend Markdown with?",b:"Smart quotes, small caps, raw TeX, definition lists, multiline tables, and more"},
+          {f:"How does Markdown handle inline HTML?",b:"Most parsers pass it through — security depends on sanitizer"}
+        ]
+      },
+      sql:{
+        easy:[
+          {f:"How do you select all columns?",b:"`SELECT * FROM table_name;`"},
+          {f:"How do you filter rows?",b:"`WHERE condition` — e.g. `WHERE age > 18`"},
+          {f:"How do you insert a row?",b:"`INSERT INTO users (name,age) VALUES ('Alice',25);`"},
+          {f:"How do you update a row?",b:"`UPDATE users SET age=26 WHERE id=1;` — always use WHERE"},
+          {f:"How do you delete a row?",b:"`DELETE FROM users WHERE id=1;` — omitting WHERE deletes ALL rows"},
+          {f:"What does `ORDER BY` do?",b:"Sorts results: `ORDER BY age DESC` — default is `ASC`"},
+          {f:"How do you count rows?",b:"`SELECT COUNT(*) FROM users;`"},
+          {f:"What does `DISTINCT` do?",b:"`SELECT DISTINCT city FROM users` — returns unique values only"}
+        ],
+        medium:[
+          {f:"What is an INNER JOIN?",b:"Returns rows where the condition matches in BOTH tables"},
+          {f:"LEFT JOIN vs INNER JOIN?",b:"LEFT JOIN returns ALL left table rows; NULLs for unmatched right table columns"},
+          {f:"What does `GROUP BY` do?",b:"Groups rows with same values — required with aggregates like `COUNT`, `SUM`"},
+          {f:"What is `HAVING` clause?",b:"Filters GROUPS after `GROUP BY` — like WHERE but for aggregated results"},
+          {f:"What is a subquery?",b:"Query nested inside another: `WHERE id IN (SELECT user_id FROM orders)`"},
+          {f:"What does `COALESCE(a,b,c)` do?",b:"Returns first non-NULL argument — useful for defaults"},
+          {f:"What does `LIMIT` do?",b:"Restricts rows returned — `LIMIT 10 OFFSET 20` for pagination"},
+          {f:"What is a FOREIGN KEY?",b:"Enforces referential integrity — value must exist in referenced table's PRIMARY KEY"}
+        ],
+        hard:[
+          {f:"What are window functions?",b:"`ROW_NUMBER() OVER (PARTITION BY dept ORDER BY salary DESC)` — calculations without collapsing"},
+          {f:"What is a CTE?",b:"`WITH cte AS (SELECT...)` — temporary named result set; enables recursion"},
+          {f:"UNION vs UNION ALL?",b:"`UNION` removes duplicates (costly); `UNION ALL` keeps all rows — prefer when safe"},
+          {f:"What is a covering index?",b:"Contains all columns needed — avoids table row lookup (index-only scan)"},
+          {f:"What is ACID?",b:"Atomicity, Consistency, Isolation, Durability — transaction reliability guarantees"},
+          {f:"What is the N+1 query problem?",b:"N related records fetched with N+1 queries instead of JOIN — major performance issue"},
+          {f:"What is an execution plan?",b:"Database's query strategy — shows index use, join type, row estimates"},
+          {f:"Difference between B-tree and Hash index?",b:"B-tree: sorted, range scans; Hash: O(1) equality only, no range support"}
+        ]
+      },
+      shell:{
+        easy:[
+          {f:"How do you list files?",b:"`ls` — add `-la` for detailed view including hidden files"},
+          {f:"How do you change directory?",b:"`cd /path` — `cd ..` up; `cd ~` home; `cd -` previous"},
+          {f:"How do you display file contents?",b:"`cat filename` or `less filename` for scrollable view"},
+          {f:"How do you search text in files?",b:"`grep \"pattern\" file` — `-r` recursive; `-i` case-insensitive"},
+          {f:"How do you create a directory?",b:"`mkdir dirname` — `-p dir/subdir` creates nested dirs"},
+          {f:"How do you copy a file?",b:"`cp source dest` — `-r` for recursive directory copy"},
+          {f:"How do you delete a file?",b:"`rm filename` — `rm -rf dir/` for directory (IRREVERSIBLE)"},
+          {f:"How do you print current directory?",b:"`pwd` — Print Working Directory"}
+        ],
+        medium:[
+          {f:"What does `|` (pipe) do?",b:"Connects stdout of one command to stdin of another: `ls | grep \".txt\"`"},
+          {f:"`>` vs `>>`?",b:"`>` overwrites file; `>>` appends; `2>` redirects stderr"},
+          {f:"How do you declare a shell variable?",b:"`NAME=\"value\"` — NO spaces around `=`; use with `$NAME`"},
+          {f:"What does `&&` vs `||` do?",b:"`&&` runs next only if previous SUCCEEDS; `||` only if FAILS"},
+          {f:"What is command substitution?",b:"`$(command)` captures output: `DATE=$(date +%Y-%m-%d)`"},
+          {f:"What does `chmod 755` set?",b:"Owner: rwx(7); Group: r-x(5); Other: r-x(5)"},
+          {f:"How do you write an if statement?",b:"`if [ condition ]; then ... fi` — spaces inside `[ ]` required"},
+          {f:"How do you write a for loop?",b:"`for i in 1 2 3; do echo $i; done`"}
+        ],
+        hard:[
+          {f:"What is process substitution?",b:"`<(cmd)` treats output as a file: `diff <(ls dir1) <(ls dir2)` — bash/zsh"},
+          {f:"What is a here-document?",b:"`cmd <<EOF ... EOF` — multi-line inline input; `<<'EOF'` prevents expansion"},
+          {f:"What does `set -euo pipefail` do?",b:"`e`=exit on error; `u`=error unset vars; `pipefail`=pipe fails if any stage fails"},
+          {f:"What is parameter expansion?",b:"`${var:-default}` fallback; `${var#prefix}` strip; `${var%suffix}` strip suffix"},
+          {f:"What does `trap` do?",b:"`trap 'cleanup' EXIT INT TERM` — handler for signals or exit"},
+          {f:"Why is `eval` dangerous?",b:"Executes a string as shell code — user input reaching `eval` = command injection"},
+          {f:"What is `xargs`?",b:"`find . -name '*.log' | xargs rm` — builds and runs commands from stdin safely"},
+          {f:"What is a subshell `( )`?",b:"Commands run in a child process — variable changes and `cd` don't affect parent"}
+        ]
+      }
+    };
+
+    // ── Language config ────────────────────────────────────────────────────
+    const LANGS = [
+      {id:'javascript',label:'JavaScript',icon:'🟨'},
+      {id:'python',label:'Python',icon:'🐍'},
+      {id:'html',label:'HTML',icon:'🌐'},
+      {id:'css',label:'CSS',icon:'🎨'},
+      {id:'java',label:'Java',icon:'☕'},
+      {id:'cpp',label:'C++',icon:'⚙️'},
+      {id:'typescript',label:'TypeScript',icon:'🔷'},
+      {id:'json',label:'JSON',icon:'📋'},
+      {id:'markdown',label:'Markdown',icon:'📝'},
+      {id:'sql',label:'SQL',icon:'🗄️'},
+      {id:'shell',label:'Shell',icon:'💻'}
+    ];
+
+    // ── State ──────────────────────────────────────────────────────────────
+    let studyCards    = [];
+    let cardIndex     = 0;
+    let isFlipped     = false;
+    let knownSet      = new Set();
+    let reviewSet     = new Set();
+    let setTitle      = '';
+    let selectedLang  = '';
+    let selectedDiff  = '';
+    let selectedStudyMode = ''; // 'flashcard' | 'mc'
+
+    // MC state
+    let mcQuestions   = [];   // [{card, options[], correctIdx, selectedIdx, isAnswered}]
+    let mcIdx         = 0;
+
+    // ── Build language grid ────────────────────────────────────────────────
+    const langGrid = document.getElementById('lang-grid');
+    LANGS.forEach(l => {
+      const el = document.createElement('div');
+      el.className = 'lang-pill';
+      el.dataset.lang = l.id;
+      el.innerHTML = `<span class="lang-icon">${l.icon}</span>${l.label}`;
+      el.onclick = () => {
+        document.querySelectorAll('.lang-pill').forEach(p => p.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedLang = l.id;
+        checkStartReady();
+      };
+      langGrid.appendChild(el);
+    });
+
+    window.selectDiff = function(el) {
+      document.querySelectorAll('.diff-pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedDiff = el.dataset.diff;
+      checkStartReady();
+    };
+
+    window.selectMode = function(el) {
+      document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedStudyMode = el.dataset.mode;
+      checkStartReady();
+    };
+
+    function checkStartReady() {
+      document.getElementById('start-study-btn').disabled = !(selectedLang && selectedDiff && selectedStudyMode);
+    }
+
+    // ── Navigation ─────────────────────────────────────────────────────────
+    window.goTo = function(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    };
+
+    // ── Join teacher set ───────────────────────────────────────────────────
+    document.getElementById('join-code-input').addEventListener('input', e => {
+      e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    });
+    document.getElementById('join-code-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') loadTeacherSet();
+    });
+
+    window.loadTeacherSet = async function() {
+      const code  = document.getElementById('join-code-input').value.trim().toUpperCase();
+      const errEl = document.getElementById('join-error');
+      errEl.style.display = 'none';
+      if (!code) { errEl.textContent = 'Please enter a code.'; errEl.style.display = 'block'; return; }
+
+      const btn = document.getElementById('join-load-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spin"></span>Loading…';
+
+      try {
+        await authReady;
+        const snap = await getDocs(query(collection(db, 'flashcardSets'), where('code', '==', code)));
+        if (snap.empty) {
+          errEl.textContent = 'Set not found. Check your code.';
+          errEl.style.display = 'block';
+          btn.disabled = false; btn.textContent = 'Load Set →';
+          return;
+        }
+        const data = snap.docs[0].data();
+        setTitle   = data.title || 'Flashcard Set';
+        studyCards = (data.cards || []).map((c, i) => ({ id: i, front: c.front||'', back: c.back||'' }));
+        if (!studyCards.length) {
+          errEl.textContent = 'This set has no cards.';
+          errEl.style.display = 'block';
+          btn.disabled = false; btn.textContent = 'Load Set →';
+          return;
+        }
+        document.getElementById('mode-select-set-name').textContent = '📚 ' + setTitle;
+        btn.disabled = false; btn.textContent = 'Load Set →';
+        goTo('screen-mode-select');
+      } catch(e) {
+        errEl.textContent = 'Error: ' + e.message;
+        errEl.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Load Set →';
+      }
+    };
+
+    // Called from mode-select screen buttons
+    window.startWithMode = function(mode) {
+      selectedStudyMode = mode;
+      if (mode === 'flashcard') beginFlashcardStudy();
+      else beginMCStudy();
+    };
+
+    // ── Self study ─────────────────────────────────────────────────────────
+    window.startSelfStudy = function() {
+      const pool = CARDS[selectedLang]?.[selectedDiff] || [];
+      if (!pool.length) { alert('No cards for this selection.'); return; }
+      const lang = LANGS.find(l => l.id === selectedLang);
+      const diffLabel = selectedDiff.charAt(0).toUpperCase() + selectedDiff.slice(1);
+      setTitle   = `${lang?.icon || ''} ${lang?.label} — ${diffLabel}`;
+      studyCards = pool.map((c, i) => ({ id: i, front: c.f, back: c.b }));
+      if (selectedStudyMode === 'mc') beginMCStudy();
+      else beginFlashcardStudy();
+    };
+
+    // ── Shuffle utility ────────────────────────────────────────────────────
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  FLASHCARD MODE
+    // ══════════════════════════════════════════════════════
+    function beginFlashcardStudy() {
+      cardIndex = 0; isFlipped = false;
+      knownSet  = new Set(); reviewSet = new Set();
+      document.getElementById('flip-card').classList.remove('flipped');
+      document.getElementById('btn-got-it').disabled = true;
+      document.getElementById('btn-review').disabled = true;
+      renderFC();
+      goTo('screen-study');
+    }
+
+    function renderFC() {
+      const card  = studyCards[cardIndex];
+      const total = studyCards.length;
+      document.getElementById('study-set-name').textContent = setTitle;
+      document.getElementById('study-counter').textContent  = `${cardIndex + 1} / ${total}`;
+      document.getElementById('study-progress').style.width = `${Math.round((cardIndex / total) * 100)}%`;
+      document.getElementById('card-front-text').textContent = card.front;
+      document.getElementById('card-back-text').textContent  = card.back;
+      isFlipped = false;
+      document.getElementById('flip-card').classList.remove('flipped');
+      document.getElementById('btn-got-it').disabled = true;
+      document.getElementById('btn-review').disabled = true;
+      document.getElementById('btn-prev-card').disabled = cardIndex === 0;
+      document.getElementById('btn-next-card').disabled = cardIndex === total - 1;
+      updateKnownBar();
+    }
+
+    function updateKnownBar() {
+      const total = studyCards.length;
+      document.getElementById('known-count').textContent    = knownSet.size + ' known';
+      document.getElementById('review-count').textContent   = reviewSet.size + ' to review';
+      document.getElementById('known-bar-inner').style.width = `${total ? Math.round(knownSet.size / total * 100) : 0}%`;
+    }
+
+    window.flipCard = function() {
+      isFlipped = !isFlipped;
+      document.getElementById('flip-card').classList.toggle('flipped', isFlipped);
+      if (isFlipped) {
+        document.getElementById('btn-got-it').disabled = false;
+        document.getElementById('btn-review').disabled = false;
+      }
+    };
+
+    window.markCard = function(known) {
+      const card = studyCards[cardIndex];
+      if (known) { knownSet.add(card.id); reviewSet.delete(card.id); }
+      else        { reviewSet.add(card.id); knownSet.delete(card.id); }
+      updateKnownBar();
+      if (cardIndex < studyCards.length - 1) { cardIndex++; renderFC(); }
+      else showFCResults();
+    };
+
+    window.nextCard = function() {
+      if (cardIndex < studyCards.length - 1) { cardIndex++; renderFC(); }
+      else showFCResults();
+    };
+    window.prevCard = function() {
+      if (cardIndex > 0) { cardIndex--; renderFC(); }
+    };
+
+    function showFCResults() {
+      document.getElementById('results-fc').style.display = 'block';
+      document.getElementById('results-mc').classList.add('hidden');
+      const total = studyCards.length;
+      const known = knownSet.size;
+      const pct   = total ? Math.round(known / total * 100) : 0;
+      document.getElementById('fc-trophy').textContent = pct >= 80 ? '🏆' : pct >= 50 ? '🥈' : '📖';
+      document.getElementById('fc-title').textContent  = pct >= 80 ? '🎉 Excellent!' : pct >= 50 ? '👍 Good Progress!' : '📚 Keep Studying!';
+      document.getElementById('fc-sub').textContent    = `You knew ${pct}% of the cards`;
+      document.getElementById('fc-known').textContent  = known;
+      document.getElementById('fc-review').textContent = reviewSet.size;
+      document.getElementById('fc-total').textContent  = total;
+
+      const reviewCards = studyCards.filter(c => reviewSet.has(c.id));
+      const wrap = document.getElementById('fc-review-wrap');
+      if (reviewCards.length) {
+        wrap.classList.remove('hidden');
+        document.getElementById('fc-review-list').innerHTML = reviewCards.map(c =>
+          `<div class="bd-item fail"><span class="bd-icon">📌</span><div class="bd-content"><div class="bd-question">${esc(c.front)}</div></div></div>`
+        ).join('');
+      } else wrap.classList.add('hidden');
+
+      buildResultBtns('flashcard');
+      goTo('screen-results');
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  MULTIPLE CHOICE MODE
+    // ══════════════════════════════════════════════════════
+    function buildMCQuestions(cards) {
+      return shuffle(cards).map((card, i, arr) => {
+        const others      = arr.filter((_, j) => j !== i);
+        const distractors = shuffle(others).slice(0, 3).map(c => c.back);
+        const allOptions  = shuffle([card.back, ...distractors]);
+        return {
+          card,
+          options: allOptions,
+          correctIdx: allOptions.indexOf(card.back),
+          selectedIdx: null,
+          isAnswered: false
+        };
+      });
+    }
+
+    function beginMCStudy() {
+      mcQuestions = buildMCQuestions(studyCards);
+      mcIdx = 0;
+      renderMC();
+      goTo('screen-mc');
+    }
+
+    function renderMC() {
+      const q     = mcQuestions[mcIdx];
+      const total = mcQuestions.length;
+      const labels = ['A', 'B', 'C', 'D'];
+
+      document.getElementById('mc-set-name').textContent = setTitle;
+      document.getElementById('mc-counter').textContent  = `${mcIdx + 1} / ${total}`;
+      document.getElementById('mc-progress').style.width = `${Math.round((mcIdx / total) * 100)}%`;
+      document.getElementById('mc-q-text').textContent   = q.card.front;
+
+      const feedback = document.getElementById('mc-feedback');
+      feedback.className = 'mc-feedback-row';
+      const nextBtn = document.getElementById('mc-next-btn');
+      nextBtn.className = 'mc-next-btn';
+      nextBtn.textContent = mcIdx === total - 1 ? 'See Results →' : 'Next Question →';
+
+      const opts = document.getElementById('mc-options');
+      opts.innerHTML = '';
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'mc-opt-btn';
+        if (q.isAnswered) {
+          btn.disabled = true;
+          if (i === q.correctIdx)  btn.classList.add('correct');
+          if (i === q.selectedIdx && i !== q.correctIdx) btn.classList.add('wrong');
+        }
+        btn.innerHTML = `<span class="opt-label">${labels[i]}</span><span>${esc(opt)}</span>`;
+        btn.onclick = () => handleMCAnswer(i);
+        opts.appendChild(btn);
+      });
+
+      if (q.isAnswered) {
+        const correct = q.selectedIdx === q.correctIdx;
+        feedback.className = 'mc-feedback-row show ' + (correct ? 'correct-fb' : 'wrong-fb');
+        document.getElementById('mc-fb-icon').textContent = correct ? '✅' : '❌';
+        document.getElementById('mc-fb-text').textContent = correct
+          ? 'Correct!'
+          : `Wrong. Correct answer: ${q.options[q.correctIdx]}`;
+        nextBtn.className = 'mc-next-btn show';
+      }
+    }
+
+    function handleMCAnswer(optIdx) {
+      const q = mcQuestions[mcIdx];
+      if (q.isAnswered) return;
+      q.selectedIdx = optIdx;
+      q.isAnswered  = true;
+
+      const labels  = ['A','B','C','D'];
+      const correct = optIdx === q.correctIdx;
+      const opts    = document.getElementById('mc-options').querySelectorAll('.mc-opt-btn');
+      opts.forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === q.correctIdx) btn.classList.add('correct');
+        if (i === optIdx && !correct) btn.classList.add('wrong');
+      });
+
+      const feedback = document.getElementById('mc-feedback');
+      feedback.className = 'mc-feedback-row show ' + (correct ? 'correct-fb' : 'wrong-fb');
+      document.getElementById('mc-fb-icon').textContent = correct ? '✅' : '❌';
+      document.getElementById('mc-fb-text').innerHTML   = correct
+        ? '<strong>Correct!</strong>'
+        : `<strong>Wrong.</strong> The correct answer was: <em>${esc(q.options[q.correctIdx])}</em>`;
+
+      const nextBtn = document.getElementById('mc-next-btn');
+      nextBtn.className = 'mc-next-btn show';
+      nextBtn.textContent = mcIdx === mcQuestions.length - 1 ? 'See Results →' : 'Next Question →';
+    }
+
+    window.mcNext = function() {
+      if (mcIdx < mcQuestions.length - 1) { mcIdx++; renderMC(); }
+      else showMCResults();
+    };
+
+    function showMCResults() {
+      document.getElementById('results-fc').style.display = 'none';
+      document.getElementById('results-mc').classList.remove('hidden');
+
+      const total   = mcQuestions.length;
+      const correct = mcQuestions.filter(q => q.selectedIdx === q.correctIdx).length;
+      const wrong   = total - correct;
+      const pct     = total ? Math.round((correct / total) * 100) : 0;
+
+      // Score ring animation
+      const circumference = 289;
+      const offset = circumference - (pct / 100) * circumference;
+      setTimeout(() => {
+        document.getElementById('ring-dash').style.transition = 'stroke-dashoffset 1s ease';
+        document.getElementById('ring-dash').style.strokeDashoffset = offset;
+      }, 100);
+      document.getElementById('mc-score-pct').textContent   = pct + '%';
+      document.getElementById('mc-results-title').textContent = pct >= 80 ? '🎉 Excellent!' : pct >= 50 ? '👍 Good Progress!' : '📚 Keep Practicing!';
+      document.getElementById('mc-results-sub').textContent  = `You scored ${correct} out of ${total}`;
+      document.getElementById('mc-correct').textContent = correct;
+      document.getElementById('mc-wrong').textContent   = wrong;
+      document.getElementById('mc-total').textContent   = total;
+
+      const list = document.getElementById('mc-breakdown-list');
+      list.innerHTML = mcQuestions.map((q, i) => {
+        const pass = q.selectedIdx === q.correctIdx;
+        const yourAns = q.selectedIdx !== null ? q.options[q.selectedIdx] : 'Not answered';
+        return `<div class="bd-item ${pass ? 'pass' : 'fail'}">
+          <span class="bd-icon">${pass ? '✅' : '❌'}</span>
+          <div class="bd-content">
+            <div class="bd-question">${i + 1}. ${esc(q.card.front)}</div>
+            <div class="bd-answer">✓ ${esc(q.options[q.correctIdx])}</div>
+            ${!pass ? `<div class="bd-your-answer">✗ You answered: ${esc(yourAns)}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+
+      buildResultBtns('mc');
+      goTo('screen-results');
+    }
+
+    // ── Build result action buttons ────────────────────────────────────────
+    function buildResultBtns(mode) {
+      const wrap = document.getElementById('results-btns');
+      if (mode === 'flashcard') {
+        const reviewCards = studyCards.filter(c => reviewSet.has(c.id));
+        wrap.innerHTML = `
+          <button class="btn-retry cyan" onclick="retryFC()">🔄 Study Again</button>
+          ${reviewCards.length ? `<button class="btn-retry orange" onclick="retryReview()">📖 Review Missed (${reviewCards.length})</button>` : ''}
+          <button class="btn-dash" onclick="location.href='dashboard_student.html'">← Dashboard</button>`;
+      } else {
+        const wrong = mcQuestions.filter(q => q.selectedIdx !== q.correctIdx);
+        wrap.innerHTML = `
+          <button class="btn-retry purple" onclick="retryMC()">🔄 Try Again</button>
+          ${wrong.length ? `<button class="btn-retry orange" onclick="retryWrongMC()">📖 Retry Wrong (${wrong.length})</button>` : ''}
+          <button class="btn-dash" onclick="location.href='dashboard_student.html'">← Dashboard</button>`;
+      }
+    }
+
+    window.retryFC = function() { studyCards = shuffle(studyCards); beginFlashcardStudy(); };
+    window.retryReview = function() {
+      const missed = studyCards.filter(c => reviewSet.has(c.id));
+      if (missed.length) { studyCards = missed; beginFlashcardStudy(); }
+    };
+    window.retryMC = function() { beginMCStudy(); };
+    window.retryWrongMC = function() {
+      const wrong = mcQuestions.filter(q => q.selectedIdx !== q.correctIdx).map(q => q.card);
+      if (wrong.length) { studyCards = wrong; beginMCStudy(); }
+    };
+
+    // ── Keyboard shortcuts ─────────────────────────────────────────────────
+    document.addEventListener('keydown', e => {
+      if (document.getElementById('screen-study').classList.contains('active')) {
+        if (e.code === 'Space')      { e.preventDefault(); flipCard(); }
+        if (e.code === 'ArrowRight') nextCard();
+        if (e.code === 'ArrowLeft')  prevCard();
+        if (e.code === 'KeyG' && isFlipped) markCard(true);
+        if (e.code === 'KeyR' && isFlipped) markCard(false);
+      }
+    });
+
+    // ── Utilities ──────────────────────────────────────────────────────────
+    function esc(s) {
+      return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+  </script>
+</body>
+</html>

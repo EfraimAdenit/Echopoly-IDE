@@ -397,6 +397,35 @@
       color: #94a3b8;
     }
 
+    /* Card accent variants */
+    .dashboard-card.quiz-card  .card-icon { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+    .dashboard-card.quiz-card:hover        { border-color: rgba(124, 58, 237, 0.4); }
+
+    .dashboard-card.exam-card  .card-icon { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+    .dashboard-card.exam-card:hover        { border-color: rgba(220, 38, 38, 0.4); }
+
+    .dashboard-card.flash-card .card-icon { background: linear-gradient(135deg, #0891b2, #0e7490); }
+    .dashboard-card.flash-card:hover       { border-color: rgba(8, 145, 178, 0.4); }
+
+    /* Session list real data */
+    .session-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #475569;
+    }
+    .session-empty .icon { font-size: 2rem; margin-bottom: 10px; }
+
+    .session-status-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .badge-active  { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .badge-waiting { background: rgba(100, 116, 139, 0.2); color: #94a3b8; }
+    .badge-paused  { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+
     /* Responsive */
     @media (max-width: 768px) {
       .dashboard-grid {
@@ -447,174 +476,202 @@
     </div>
 
     <div class="dashboard-grid">
-      <div class="dashboard-card" onclick="createQuiz()">
+      <div class="dashboard-card quiz-card" onclick="window.location.href='quiztest_teacher.html?create=quiz'">
         <div class="card-icon">📝</div>
         <h3 class="card-title">Create Quiz</h3>
-        <p class="card-description">Design interactive quizzes with multiple choice, coding challenges, and instant feedback.</p>
+        <p class="card-description">Design interactive quizzes with multiple choice, true/false, and short-answer questions with instant feedback.</p>
       </div>
 
-      <div class="dashboard-card" onclick="createExam()">
+      <div class="dashboard-card exam-card" onclick="window.location.href='quiztest_teacher.html?create=exam'">
         <div class="card-icon">📋</div>
         <h3 class="card-title">Create Exam</h3>
-        <p class="card-description">Set up supervised examinations with time limits, question randomization, and proctoring.</p>
+        <p class="card-description">Set up supervised timed examinations with anti-cheat monitoring, question randomization, and proctoring.</p>
       </div>
 
-      <div class="dashboard-card" onclick="createCodingRoom()">
+      <div class="dashboard-card flash-card" onclick="window.location.href='flashcard_teacher.html'">
+        <div class="card-icon">🃏</div>
+        <h3 class="card-title">Create Flashcards</h3>
+        <p class="card-description">Build interactive flashcard decks for students to review and study key concepts at their own pace.</p>
+      </div>
+
+      <div class="dashboard-card" onclick="window.location.href='projects.html'">
         <div class="card-icon">👥</div>
         <h3 class="card-title">Coding Room</h3>
-        <p class="card-description">Create collaborative coding environments for pair programming and group projects.</p>
-      </div>
-
-      <div class="dashboard-card" onclick="manageStudents()">
-        <div class="card-icon">👨‍🎓</div>
-        <h3 class="card-title">Student Management</h3>
-        <p class="card-description">Monitor student progress, view submissions, and provide personalized feedback.</p>
+        <p class="card-description">Create collaborative coding environments for pair programming and group projects with students.</p>
       </div>
     </div>
 
     <div class="quick-actions">
       <h2 class="actions-title">Quick Actions</h2>
       <div class="actions-grid">
-        <button class="action-btn" onclick="generateShareCode()">
-          <span>🔗</span>
-          Generate Share Code
+        <button class="action-btn" onclick="window.location.href='quiztest_teacher.html?create=quiz'">
+          <span>📝</span>
+          New Quiz
         </button>
-        <button class="action-btn secondary" onclick="viewAnalytics()">
-          <span>📊</span>
-          View Analytics
+        <button class="action-btn" onclick="window.location.href='quiztest_teacher.html?create=exam'" style="background:linear-gradient(135deg,#dc2626,#b91c1c);">
+          <span>📋</span>
+          New Exam
         </button>
-        <button class="action-btn" onclick="createFlashcards()">
+        <button class="action-btn secondary" onclick="window.location.href='flashcard_teacher.html'">
           <span>🃏</span>
           Create Flashcards
         </button>
-        <button class="action-btn secondary" onclick="scheduleSession()">
-          <span>📅</span>
-          Schedule Session
+        <button class="action-btn secondary" onclick="window.location.href='quiztest_teacher.html'">
+          <span>📊</span>
+          Manage Sessions
         </button>
       </div>
     </div>
 
     <div class="sessions-section">
-      <h2 class="sessions-title">Active Sessions</h2>
-      <ul class="sessions-list">
-        <li class="session-item">
-          <div class="session-info">
-            <div class="session-name">JavaScript Fundamentals Quiz</div>
-            <div class="session-details">12 students • Started 2 hours ago • Code: JS101</div>
-          </div>
-          <div class="session-actions">
-            <button class="session-btn primary" onclick="monitorSession('JS101')">Monitor</button>
-            <button class="session-btn secondary" onclick="endSession('JS101')">End</button>
-          </div>
-        </li>
-        <li class="session-item">
-          <div class="session-info">
-            <div class="session-name">React Components Workshop</div>
-            <div class="session-details">8 students • Started 1 hour ago • Code: RCT202</div>
-          </div>
-          <div class="session-actions">
-            <button class="session-btn primary" onclick="monitorSession('RCT202')">Monitor</button>
-            <button class="session-btn secondary" onclick="endSession('RCT202')">End</button>
-          </div>
-        </li>
-        <li class="session-item">
-          <div class="session-info">
-            <div class="session-name">Data Structures Exam</div>
-            <div class="session-details">15 students • Started 30 min ago • Code: DS301</div>
-          </div>
-          <div class="session-actions">
-            <button class="session-btn primary" onclick="monitorSession('DS301')">Monitor</button>
-            <button class="session-btn secondary" onclick="endSession('DS301')">End</button>
-          </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+        <h2 class="sessions-title" style="margin-bottom:0;">Active Sessions</h2>
+        <a href="quiztest_teacher.html" style="font-size:13px;color:#a78bfa;text-decoration:none;font-weight:600;">View all →</a>
+      </div>
+      <ul class="sessions-list" id="sessions-list">
+        <li style="text-align:center;padding:36px;color:#475569;">
+          <div style="font-size:1.8rem;margin-bottom:8px;">⏳</div>
+          Loading sessions…
         </li>
       </ul>
     </div>
 
     <div class="stats-section">
-      <h2 class="stats-title">Classroom Statistics</h2>
+      <h2 class="stats-title">Your Statistics</h2>
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-number">47</div>
-          <div class="stat-label">Active Students</div>
+          <div class="stat-number" id="stat-total">—</div>
+          <div class="stat-label">Total Sessions</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">12</div>
-          <div class="stat-label">Active Sessions</div>
+          <div class="stat-number" id="stat-active">—</div>
+          <div class="stat-label">Active Now</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">89%</div>
-          <div class="stat-label">Avg. Completion</div>
+          <div class="stat-number" id="stat-ended">—</div>
+          <div class="stat-label">Completed</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">156</div>
-          <div class="stat-label">Quizzes Created</div>
+          <div class="stat-number" id="stat-quizzes">—</div>
+          <div class="stat-label">Quizzes</div>
         </div>
       </div>
     </div>
   </div>
 
-  <script>
-    // Load user information
-    document.addEventListener('DOMContentLoaded', function() {
-      const userData = JSON.parse(localStorage.getItem('currentUser') || '{}');
-      if (userData.displayName) {
-        document.getElementById('user-name').textContent = userData.displayName;
-        document.getElementById('user-avatar').textContent = userData.displayName.charAt(0).toUpperCase();
-      } else if (userData.email) {
-        const name = userData.email.split('@')[0];
-        document.getElementById('user-name').textContent = name;
-        document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
-      }
-    });
+  <script type="module">
+    import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-    function logout() {
-      localStorage.removeItem('currentUser');
+    const firebaseConfig = {
+      apiKey: "AIzaSyBCcyLy_rNx-riDjmK4SUu-gZbKtDPqEYQ",
+      authDomain: "echopoly-ide.firebaseapp.com",
+      databaseURL: "https://echopoly-ide-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "echopoly-ide",
+      storageBucket: "echopoly-ide.firebasestorage.app",
+      messagingSenderId: "290647098484",
+      appId: "1:290647098484:web:61a9a5503c43d465bdbd21",
+      measurementId: "G-LYBESX64E5"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    // ── Auth guard ────────────────────────────────────────────────────────────
+    const userData = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const resolvedRole = localStorage.getItem('role') || userData.role;
+    if (!userData.uid || resolvedRole !== 'teacher') {
       window.location.href = 'index.html';
     }
 
-    function createQuiz() {
-      alert('Quiz creation tool will be available soon! You can create interactive quizzes with coding challenges.');
+    // ── User info ─────────────────────────────────────────────────────────────
+    if (userData.displayName) {
+      document.getElementById('user-name').textContent = userData.displayName;
+      document.getElementById('user-avatar').textContent = userData.displayName.charAt(0).toUpperCase();
+    } else if (userData.email) {
+      const name = userData.email.split('@')[0];
+      document.getElementById('user-name').textContent = name;
+      document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
     }
 
-    function createExam() {
-      alert('Exam creation tool will be available soon! Set up supervised examinations with proctoring features.');
-    }
+    window.logout = function() {
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('role');
+      window.location.href = 'index.html';
+    };
 
-    function createCodingRoom() {
-      alert('Coding room creation will be available soon! Generate share codes for collaborative coding sessions.');
-    }
+    // ── Load sessions from Firestore ──────────────────────────────────────────
+    async function loadSessions() {
+      const tid = userData.uid || userData.id || 'unknown';
+      try {
+        const snap = await getDocs(collection(db, 'quizSessions'));
+        const all  = [];
+        snap.forEach(d => { const data = d.data(); if (data.teacherId === tid) all.push({ id: d.id, ...data }); });
+        all.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
 
-    function manageStudents() {
-      alert('Student management dashboard will be available soon! Monitor progress and provide feedback.');
-    }
+        // Stats
+        const active  = all.filter(s => s.status === 'active' || s.status === 'paused').length;
+        const ended   = all.filter(s => s.status === 'ended').length;
+        const quizzes = all.filter(s => s.type === 'quiz').length;
+        document.getElementById('stat-total').textContent   = all.length;
+        document.getElementById('stat-active').textContent  = active;
+        document.getElementById('stat-ended').textContent   = ended;
+        document.getElementById('stat-quizzes').textContent = quizzes;
 
-    function generateShareCode() {
-      const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-      alert(`Generated share code: ${code}\n\nStudents can use this code to join your sessions.`);
-    }
+        // Active / waiting sessions list (top 5)
+        const live = all.filter(s => s.status === 'active' || s.status === 'waiting' || s.status === 'paused').slice(0, 5);
+        const list = document.getElementById('sessions-list');
 
-    function viewAnalytics() {
-      alert('Analytics dashboard will be available soon! View detailed reports on student performance.');
-    }
+        if (live.length === 0) {
+          list.innerHTML = `
+            <li class="session-empty">
+              <div class="icon">📋</div>
+              <div>No active sessions right now.</div>
+              <div style="margin-top:8px;">
+                <a href="quiztest_teacher.html" style="color:#a78bfa;font-size:13px;font-weight:600;">Create one →</a>
+              </div>
+            </li>`;
+          return;
+        }
 
-    function createFlashcards() {
-      alert('Flashcard creation tool will be available soon! Create interactive study materials for your students.');
-    }
-
-    function scheduleSession() {
-      alert('Session scheduling will be available soon! Plan and organize your classroom activities.');
-    }
-
-    function monitorSession(code) {
-      alert(`Monitoring session ${code}...\n\nReal-time monitoring features will be available soon!`);
-    }
-
-    function endSession(code) {
-      if (confirm(`Are you sure you want to end session ${code}?`)) {
-        alert(`Session ${code} has been ended.`);
-        // In a real implementation, this would update the session status
+        list.innerHTML = '';
+        live.forEach(s => {
+          const typeLabel  = s.type === 'exam' ? '📋 Exam' : '📝 Quiz';
+          const statusMap  = { active: 'badge-active', waiting: 'badge-waiting', paused: 'badge-paused' };
+          const statusText = { active: '● Active', waiting: '⏳ Waiting', paused: '⏸ Paused' };
+          const badgeClass = statusMap[s.status] || 'badge-waiting';
+          const qCount     = s.questions ? s.questions.length : 0;
+          const li = document.createElement('li');
+          li.className = 'session-item';
+          li.innerHTML = `
+            <div class="session-info">
+              <div class="session-name">${esc(s.title || 'Untitled')}</div>
+              <div class="session-details">
+                ${typeLabel} &nbsp;·&nbsp; ${qCount} question${qCount !== 1 ? 's' : ''} &nbsp;·&nbsp; Code: <strong>${esc(s.code || '—')}</strong>
+                &nbsp;<span class="session-status-badge ${badgeClass}">${statusText[s.status] || s.status}</span>
+              </div>
+            </div>
+            <div class="session-actions">
+              <button class="session-btn primary" onclick="window.location.href='quiztest_teacher.html?resume=${s.id}'">
+                ${s.status === 'waiting' ? 'Lobby' : 'Supervise'}
+              </button>
+            </div>
+          `;
+          list.appendChild(li);
+        });
+      } catch (e) {
+        console.error(e);
+        document.getElementById('sessions-list').innerHTML = `<li style="text-align:center;padding:30px;color:#f87171;">Error loading sessions.</li>`;
       }
     }
+
+    function esc(s) {
+      return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    onAuthStateChanged(auth, () => loadSessions());
   </script>
 </body>
 </html>

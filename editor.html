@@ -793,8 +793,28 @@
 
     .rp-action-btn:hover { background: #3a3a3e; color: #fff; }
 
-    /* Switch Guest btn - make it subtle */
-    #switch-guest-btn {
+    /* Notification bell badge (positioned over the header icon btn) */
+    #notif-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 17px;
+      height: 17px;
+      border-radius: 9px;
+      background: #ef4444;
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      line-height: 17px;
+      text-align: center;
+      padding: 0 4px;
+      border: 2px solid #1e1e2e;
+      pointer-events: none;
+      display: none;
+    }
+
+    /* ── keep old rule block intact as empty placeholder ── */
+    #switch-guest-btn-removed {
       padding: 5px 8px;
       border-radius: 6px;
       border: 1px solid #3a3a3e;
@@ -804,7 +824,6 @@
       font-size: 11px;
     }
 
-    #switch-guest-btn:hover { color: #4ec9b0; border-color: #4ec9b0; }
   </style>
 </head>
 <body>
@@ -843,11 +862,15 @@
         <!-- View tools -->
         <button id="preview-btn" class="header-tool-btn" title="Toggle browser preview">🌐 Browser</button>
         <button id="run-code-header-btn" class="execute-btn" title="Run code">▶ Execute</button>
+        <button id="header-popout-btn" class="header-tool-btn" title="Pop out preview/output to floating window" style="font-size:13px;">⧉ Pop Out</button>
         <div class="header-divider"></div>
         <!-- Settings + Profile -->
         <button id="settings-btn" class="header-icon-btn" title="Settings">⚙</button>
         <button id="profile-avatar-btn" class="profile-avatar-btn" title="Profile">?</button>
-        <button id="switch-guest-btn">Switch</button>
+        <div style="position:relative;display:flex;align-items:center;">
+          <button id="notif-btn" class="header-icon-btn" title="Notifications" style="font-size:16px;">🔔</button>
+          <span id="notif-badge">0</span>
+        </div>
       </div>
     </header>
 
@@ -962,7 +985,8 @@
             <div id="right-panel-tab-bar">
               <button id="rp-tab-browser" class="rp-tab active">🌐 Browser</button>
               <button id="rp-tab-output" class="rp-tab">⬛ Output</button>
-              <button id="close-right-panel-btn" class="rp-close-btn" title="Close panel">✕</button>
+              <button id="popout-btn" title="Pop out to floating window" style="margin-left:auto;display:flex;align-items:center;gap:4px;padding:4px 9px;border:1px solid rgba(124,58,237,0.4);border-radius:5px;background:rgba(124,58,237,0.12);color:#a78bfa;cursor:pointer;font-size:11px;font-weight:600;transition:background .15s,color .15s;" onmouseover="this.style.background='rgba(124,58,237,0.25)';this.style.color='#c4b5fd'" onmouseout="this.style.background='rgba(124,58,237,0.12)';this.style.color='#a78bfa'">⧉ Pop Out</button>
+              <button id="close-right-panel-btn" class="rp-close-btn" title="Close panel" style="margin-left:6px;">✕</button>
             </div>
             <!-- Browser content -->
             <div id="rp-browser-content" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
@@ -1016,7 +1040,7 @@
         Continue with Google
       </button>
 
-      <p style="text-align:center;margin:10px 0 0;color:#374151;font-size:12px;">No account? <a href="register.html" style="color:#a78bfa;text-decoration:none;font-weight:600;">Register here</a></p>
+      <p style="text-align:center;margin:10px 0 0;color:#374151;font-size:12px;">No account? <a id="register-link" href="register.html" style="color:#a78bfa;text-decoration:none;font-weight:600;" onclick="this.href='register.html?returnUrl='+encodeURIComponent(location.href)">Register here</a></p>
     </div>
   </div>
 
@@ -1238,7 +1262,19 @@
     function fmtNum(n) {
       return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
     }
+    // Language routing: which languages run in Output vs render in Browser
+    const RENDERABLE_LANGS = new Set(['html', 'css', 'markdown', 'json', 'xml', 'yaml']);
+    const EXECUTABLE_LANGS = new Set(['javascript', 'typescript', 'python', 'java', 'cpp', 'c', 'shell', 'sql']);
+    const LANG_LABELS = { html:'HTML', css:'CSS', markdown:'Markdown', json:'JSON', xml:'XML', yaml:'YAML',
+      javascript:'JavaScript', typescript:'TypeScript', python:'Python', java:'Java',
+      cpp:'C++', c:'C', shell:'Shell', sql:'SQL' };
+
     let previewEnabled = false;
+    let popoutMode = false;
+    let popoutMinimized = false;
+    let popoutMaximized = false;
+    let popoutActiveTab = 'browser';
+    let popoutSavedRect = null; // stores size/position before maximize
     let presenceRef = null;
     let currentUserPresenceRef = null;
     let activeUsersData = [];
@@ -1374,43 +1410,107 @@
       }, 3000);
     }
 
-    // Code execution functions
+    // ── Language-aware run button label ──────────────────────────────────────
+    function updateRunButtonLabel() {
+      const btn = document.getElementById('run-code-header-btn');
+      if (!btn) return;
+      const tab  = openTabs.find(t => t.id === currentTabId);
+      const lang = tab ? (tab.language || 'javascript') : 'javascript';
+      if (RENDERABLE_LANGS.has(lang)) {
+        btn.textContent = '🌐 Preview';
+        btn.title = `${LANG_LABELS[lang] || lang} — open in Browser Preview`;
+      } else {
+        btn.textContent = '▶ Execute';
+        btn.title = `Run ${LANG_LABELS[lang] || lang} in Output`;
+      }
+    }
+
+    // ── Code execution ────────────────────────────────────────────────────────
     function runCode() {
-      const outputConsole = document.getElementById('output-console');
-      if (!outputConsole) return;
-
-      // Get current code from editor
-      let code = '';
-      let language = 'javascript';
-
+      let code = '', language = 'javascript';
       if (editorInstance) {
-        code = editorInstance.getValue();
+        code     = editorInstance.getValue();
         language = editorInstance.getModel().getLanguageId();
       } else {
-        const fallbackEditor = document.getElementById('fallback-editor');
-        if (fallbackEditor) {
-          code = fallbackEditor.value;
-        }
+        const fb = document.getElementById('fallback-editor');
+        if (fb) code = fb.value;
       }
 
       if (!code.trim()) {
-        appendToOutput('No code to execute\n', 'error');
+        if (popoutMode) openPopout('output'); else openRightPanel('output');
+        clearOutput();
+        appendToOutput('⚠️  Nothing to run — the editor is empty.\n', 'error');
         return;
       }
 
-      // Open right panel on Output tab
-      openRightPanel('output');
+      // ── Renderable languages → Browser Preview ──────────────────────────
+      if (RENDERABLE_LANGS.has(language)) {
+        const label = LANG_LABELS[language] || language.toUpperCase();
+        if (popoutMode) { switchPopoutTab('browser'); }
+        else { openRightPanel('browser'); }
+        updatePreview();
+        showToast(`${label} is a markup language — showing in Browser Preview`);
+        return;
+      }
 
-      // Clear previous output and show running message
+      // ── Executable languages → Output ───────────────────────────────────
+      if (popoutMode) openPopout('output'); else openRightPanel('output');
       clearOutput();
-      appendToOutput('Running…\n', 'normal');
-      if (outputConsole) { outputConsole.textContent = ''; }
+      const label = LANG_LABELS[language] || language;
 
-      // Execute based on language
       if (language === 'javascript') {
+        appendToOutput(`▶  Running JavaScript…\n${'─'.repeat(40)}\n`, 'normal');
         executeJavaScript(code);
+
+      } else if (language === 'typescript') {
+        appendToOutput(`▶  Running TypeScript (transpiled → JS)…\n${'─'.repeat(40)}\n`, 'normal');
+        executeTypeScript(code);
+
+      } else if (language === 'python') {
+        appendToOutput(
+          `🐍  Python\n${'─'.repeat(40)}\n` +
+          `⚠️  Python requires a server-side runtime.\n` +
+          `    EchoPoly runs entirely in the browser and cannot execute Python natively.\n\n` +
+          `💡  Try your code at:\n` +
+          `    • python.org/shell  (official)\n` +
+          `    • repl.it           (supports libraries)\n` +
+          `    • colab.research.google.com\n`, 'error');
+
+      } else if (language === 'java') {
+        appendToOutput(
+          `☕  Java\n${'─'.repeat(40)}\n` +
+          `⚠️  Java requires server-side compilation (javac) and a JVM.\n` +
+          `    Browser execution is not supported.\n\n` +
+          `💡  Try your code at:\n` +
+          `    • repl.it  •  ideone.com  •  jdoodle.com\n`, 'error');
+
+      } else if (language === 'cpp' || language === 'c') {
+        appendToOutput(
+          `⚙️   ${language === 'cpp' ? 'C++' : 'C'}\n${'─'.repeat(40)}\n` +
+          `⚠️  ${language === 'cpp' ? 'C++' : 'C'} requires native compilation (g++/gcc).\n` +
+          `    Browser execution is not supported.\n\n` +
+          `💡  Try your code at:\n` +
+          `    • cpp.sh  •  repl.it  •  godbolt.org\n`, 'error');
+
+      } else if (language === 'shell') {
+        appendToOutput(
+          `🖥️   Shell Script\n${'─'.repeat(40)}\n` +
+          `⚠️  Shell scripts require a terminal environment.\n` +
+          `    Browser execution is not supported.\n\n` +
+          `💡  Run in your local terminal, or try:\n` +
+          `    • repl.it (bash shell)  •  JSFiddle (for JS shell-like)\n`, 'error');
+
+      } else if (language === 'sql') {
+        appendToOutput(
+          `🗄️   SQL\n${'─'.repeat(40)}\n` +
+          `⚠️  SQL requires a database connection — none is configured for this project.\n\n` +
+          `💡  Test your SQL at:\n` +
+          `    • dbfiddle.uk  •  sqlfiddle.com  •  db-fiddle.com\n`, 'error');
+
       } else {
-        appendToOutput(`Code execution for ${language} is not yet supported. Only JavaScript execution is available.\n`, 'error');
+        appendToOutput(
+          `⚠️  "${label}" cannot be executed in the browser.\n` +
+          `    Switch to a supported language (JavaScript or TypeScript) to run code here.\n`, 'error');
       }
     }
 
@@ -1499,6 +1599,24 @@
       }
     }
 
+    function executeTypeScript(code) {
+      try {
+        // Basic TypeScript → JS: strip common type syntax
+        let js = code
+          .replace(/^\s*\/\/.*$/gm, match => match)            // keep line comments
+          .replace(/:\s*(string|number|boolean|any|void|never|null|undefined|object|unknown)(\[\])?\b/g, '')
+          .replace(/\bas\s+\w[\w.<>[\], |&]*/g, '')            // type assertions
+          .replace(/<[A-Z]\w*(?:\s*,\s*\w+)*>/g, '')           // generic calls
+          .replace(/\binterface\s+\w+[\s\S]*?\{[\s\S]*?\}/g, '') // interface blocks
+          .replace(/\btype\s+\w+\s*=\s*[^;{]+;/g, '')          // type aliases
+          .replace(/\b(public|private|protected|readonly|abstract|declare)\s+/g, '') // modifiers
+          .replace(/:\s*[A-Z]\w*(\[\])?\b/g, '');              // user-defined type refs
+        executeJavaScript(js);
+      } catch (e) {
+        appendToOutput('TypeScript transpile error: ' + e.message + '\n', 'error');
+      }
+    }
+
     function appendToOutput(text, type = 'normal') {
       const colorMap = { error: '#f48771', success: '#4ec9b0', normal: '#d4d4d4' };
       const color = colorMap[type] || colorMap.normal;
@@ -1517,13 +1635,16 @@
 
       writeToEl(document.getElementById('output-console'));
       writeToEl(document.getElementById('right-output-console'));
+      writeToEl(document.getElementById('popout-output-console'));
     }
 
     function clearOutput() {
       const c1 = document.getElementById('output-console');
       const c2 = document.getElementById('right-output-console');
+      const c3 = document.getElementById('popout-output-console');
       if (c1) c1.textContent = '';
       if (c2) c2.textContent = '';
+      if (c3) c3.textContent = '';
     }
 
     // Collaboration status functions
@@ -1645,16 +1766,26 @@
         if (!structure.updatedBy || structure.updatedBy === currentUserId) return;
 
         if (Array.isArray(structure.openTabs)) {
-          // Merge remote tabs into local list
+          const changer = activeUsersData.find(u => u.id === structure.updatedBy);
+          const changerName = changer ? changer.name : 'Someone';
+
+          // Merge remote tabs into local list — notify on new files
           structure.openTabs.forEach(remoteTab => {
             if (!openTabs.find(t => t.id === remoteTab.id)) {
               openTabs.push({ ...remoteTab, content: '' });
+              pushNotif('filecreated', changerName, changerName.charAt(0).toUpperCase(),
+                `${changerName} created file "${remoteTab.name}"`);
             } else {
               const local = openTabs.find(t => t.id === remoteTab.id);
               if (local) { local.name = remoteTab.name; local.language = remoteTab.language; }
             }
           });
-          // Remove tabs deleted by remote
+          // Remove tabs deleted by remote — notify on removed files
+          const removedTabs = openTabs.filter(t => !structure.openTabs.find(r => r.id === t.id));
+          removedTabs.forEach(t => {
+            pushNotif('filedeleted', changerName, changerName.charAt(0).toUpperCase(),
+              `${changerName} deleted file "${t.name}"`);
+          });
           openTabs = openTabs.filter(t => structure.openTabs.find(r => r.id === t.id));
         }
 
@@ -1703,6 +1834,20 @@
               rst.codeLines = rc.split('\n').length;
               rst.codeChars = rc.length;
               rst.lastEditAt = data.writtenAt || Date.now();
+
+              // File-save notification (debounced: max once per 15 s per user)
+              const localId = userId || (currentGuest && currentGuest.id);
+              if (data.updatedBy !== localId) {
+                const lastNotif = lastFileSaveNotif[data.updatedBy] || 0;
+                if (Date.now() - lastNotif > 15000) {
+                  lastFileSaveNotif[data.updatedBy] = Date.now();
+                  const saver = activeUsersData.find(u => u.id === data.updatedBy);
+                  const saverName = saver ? saver.name : 'Someone';
+                  const tabName  = openTabs.find(t => t.id === fileId)?.name || 'a file';
+                  pushNotif('filesaved', saverName, saverName.charAt(0).toUpperCase(),
+                    `${saverName} saved ${tabName}`);
+                }
+              }
             }
 
             // Apply to editor only if this is the active tab
@@ -2174,6 +2319,7 @@
 
     async function logout() {
       localStorage.removeItem('currentUser');
+      localStorage.removeItem('role');
       const liveUser = (auth && auth.currentUser) || currentUser;
       const uid = liveUser ? liveUser.uid : userId;
       if (db && uid) {
@@ -2351,6 +2497,34 @@
             isLocal: isCurrentUser
           };
         });
+
+        // Detect joins, leaves, and online ↔ offline transitions
+        users.forEach(u => {
+          if (u.isLocal) return;
+
+          const prev = activeUsersData.find(p => p.id === u.id);
+          const isNewUser = !seenUserIds.has(u.id);
+
+          if (u.online) {
+            if (isNewUser && presenceInitialLoadDone) {
+              // Brand-new user just appeared in the session
+              pushNotif('joined', u.name, u.avatar, `${u.name} joined the project`);
+            } else if (prev && !prev.online && presenceInitialLoadDone) {
+              // User came back online
+              pushNotif('online', u.name, u.avatar, `${u.name} is back online`);
+              userOfflineNotified.delete(u.id);
+            }
+            seenUserIds.add(u.id);
+            userIdleNotified.delete(u.id);
+          } else {
+            if (prev && prev.online && !userOfflineNotified.has(u.id) && presenceInitialLoadDone) {
+              userOfflineNotified.add(u.id);
+              userIdleNotified.delete(u.id);
+              pushNotif('left', u.name, u.avatar, `${u.name} left the project`);
+            }
+          }
+        });
+        presenceInitialLoadDone = true;
 
         activeUsersData = users;
         renderActiveUsers();
@@ -2596,6 +2770,26 @@
             if (change.type === 'added') {
               if (!chatMessages.some(m => m.id === message.id)) {
                 chatMessages.push(message);
+                // Notify for new messages from other users after initial load
+                if (chatInitialLoadDone) {
+                  const localId   = getCurrentChatUserId();
+                  const senderId  = message.userId || message.guestId;
+                  if (senderId && senderId !== localId) {
+                    const sender  = message.senderName || message.username || 'Someone';
+                    const preview = (message.text || '').slice(0, 60);
+                    const localUser = activeUsersData.find(u => u.isLocal);
+                    const localName = localUser ? localUser.name.toLowerCase() : '';
+                    const msgLower  = (message.text || '').toLowerCase();
+                    // Check if local user was @mentioned
+                    if (localName && msgLower.includes('@' + localName)) {
+                      pushNotif('mentioned', sender, sender.charAt(0).toUpperCase(),
+                        `${sender} mentioned you: "${(message.text || '').slice(0, 60)}"`);
+                    } else {
+                      pushNotif('message', sender, sender.charAt(0).toUpperCase(),
+                        `${sender} sent a message${preview ? ': "' + preview + '"' : ''}`);
+                    }
+                  }
+                }
               }
             } else if (change.type === 'modified') {
               const idx = chatMessages.findIndex(m => m.id === message.id);
@@ -2607,6 +2801,7 @@
           chatMessages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
           renderChatMessages();
           scrollChatToBottom();
+          chatInitialLoadDone = true; // first snapshot processed — future adds are real-time
         }, err => console.warn('Chat listener error:', err));
     }
 
@@ -3114,6 +3309,7 @@
         restoreProjectState();
         initializeTheme();
         setupUserActivityTracking();
+        setupNotifSystem();
         setupSidebarResizer();
         setupPreviewResizer();
         const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
@@ -3373,6 +3569,7 @@
       renderTabs();
       document.getElementById('project-title').textContent = tab.name;
       showToast('Switched to: ' + tab.name);
+      updateRunButtonLabel();
       updatePreview();
     }
 
@@ -4106,9 +4303,23 @@
     }
 
     function tickUserTimers() {
+      const now = Date.now();
       activeUsersData.forEach(user => {
         if (user.online) {
           user.activeSeconds = (user.activeSeconds || 0) + 1;
+        }
+
+        // Idle detection — only notify for other online users
+        if (!user.isLocal && user.online && user.lastSeen) {
+          const idleSec = (now - user.lastSeen) / 1000;
+          if (idleSec >= 30 && !userIdleNotified.has(user.id)) {
+            userIdleNotified.add(user.id);
+            pushNotif('idle', user.name, user.avatar, `${user.name} is idle`);
+          }
+          // Reset idle flag if they became active again
+          if (idleSec < 10 && userIdleNotified.has(user.id)) {
+            userIdleNotified.delete(user.id);
+          }
         }
       });
       renderActiveUsers();
@@ -4430,6 +4641,16 @@
       const runCodeHeaderBtn = document.getElementById('run-code-header-btn');
       if (runCodeHeaderBtn) runCodeHeaderBtn.addEventListener('click', runCode);
 
+      // Header popout button
+      const headerPopoutBtn = document.getElementById('header-popout-btn');
+      if (headerPopoutBtn) headerPopoutBtn.addEventListener('click', () => {
+        const activeTab = document.getElementById('rp-tab-output')?.classList.contains('active') ? 'output' : 'browser';
+        openPopout(activeTab);
+      });
+
+      // Init run button label for current file
+      updateRunButtonLabel();
+
       const clearOutputBtn = document.getElementById('clear-output-btn');
       if (clearOutputBtn) clearOutputBtn.addEventListener('click', clearOutput);
 
@@ -4551,6 +4772,44 @@
         if (editorInstance) setTimeout(() => editorInstance.layout(), 100);
       });
 
+      // Popout button — opens floating window, hides side panel
+      const popoutBtn = document.getElementById('popout-btn');
+      if (popoutBtn) popoutBtn.addEventListener('click', () => {
+        const activeTab = document.getElementById('rp-tab-output')?.classList.contains('active') ? 'output' : 'browser';
+        openPopout(activeTab);
+      });
+
+      // Popout window controls
+      const popoutCloseBtn    = document.getElementById('popout-close-btn');
+      const popoutMinimizeBtn = document.getElementById('popout-minimize-btn');
+      const popoutTabBrowser  = document.getElementById('popout-tab-browser');
+      const popoutTabOutput   = document.getElementById('popout-tab-output');
+      const popoutMaximizeBtn = document.getElementById('popout-maximize-btn');
+      if (popoutCloseBtn)    popoutCloseBtn.addEventListener('click',    closePopout);
+      if (popoutMinimizeBtn) popoutMinimizeBtn.addEventListener('click', minimizePopout);
+      if (popoutMaximizeBtn) popoutMaximizeBtn.addEventListener('click', maximizePopout);
+      if (popoutTabBrowser)  popoutTabBrowser.addEventListener('click',  () => switchPopoutTab('browser'));
+      if (popoutTabOutput)   popoutTabOutput.addEventListener('click',   () => switchPopoutTab('output'));
+
+      // Double-click title bar to toggle maximize
+      const popoutTitlebar = document.getElementById('popout-titlebar');
+      if (popoutTitlebar) popoutTitlebar.addEventListener('dblclick', e => {
+        if (e.target.tagName !== 'BUTTON') maximizePopout();
+      });
+
+      // Popout output actions
+      const clearPopoutOutputBtn = document.getElementById('clear-popout-output-btn');
+      const copyPopoutOutputBtn  = document.getElementById('copy-popout-output-btn');
+      if (clearPopoutOutputBtn) clearPopoutOutputBtn.addEventListener('click', clearOutput);
+      if (copyPopoutOutputBtn)  copyPopoutOutputBtn.addEventListener('click', () => {
+        const el = document.getElementById('popout-output-console');
+        if (!el) return;
+        navigator.clipboard.writeText(el.innerText || el.textContent || '').then(() => showToast('Output copied!')).catch(() => {});
+      });
+
+      // Init drag after DOM ready
+      setupPopoutDrag();
+
       // Clear right output
       const clearRightOutputBtn = document.getElementById('clear-right-output-btn');
       if (clearRightOutputBtn) clearRightOutputBtn.addEventListener('click', clearOutput);
@@ -4615,6 +4874,11 @@
 
     // Right panel: open on a specific tab ('browser' or 'output')
     function openRightPanel(tab) {
+      if (popoutMode) {
+        const win = document.getElementById('popout-window');
+        if (win) win.style.display = 'none';
+        popoutMode = false;
+      }
       previewEnabled = true;
       setPreviewPanelVisible(true);
       switchRightPanelTab(tab || 'browser');
@@ -4655,10 +4919,171 @@
       if (editorInstance) setTimeout(() => editorInstance.layout(), 100);
     }
 
+    // ── Popout floating window ────────────────────────────────────────────────
+    function switchPopoutTab(tab) {
+      popoutActiveTab = tab;
+      const browserPane = document.getElementById('popout-browser-pane');
+      const outputPane  = document.getElementById('popout-output-pane');
+      const tabBrowser  = document.getElementById('popout-tab-browser');
+      const tabOutput   = document.getElementById('popout-tab-output');
+      if (!browserPane || !outputPane) return;
+      if (tab === 'output') {
+        browserPane.style.display = 'none';
+        outputPane.style.display  = 'flex';
+        if (tabBrowser) tabBrowser.classList.remove('active');
+        if (tabOutput)  tabOutput.classList.add('active');
+      } else {
+        outputPane.style.display  = 'none';
+        browserPane.style.display = 'flex';
+        if (tabOutput)  tabOutput.classList.remove('active');
+        if (tabBrowser) tabBrowser.classList.add('active');
+        updatePreview();
+      }
+    }
+
+    function openPopout(tab) {
+      popoutMode      = true;
+      popoutMinimized = false;
+      previewEnabled  = true;
+      const win  = document.getElementById('popout-window');
+      const body = document.getElementById('popout-body');
+      if (win)  { win.style.display  = 'flex'; }
+      if (body) { body.style.display = 'flex'; }
+      const minBtn = document.getElementById('popout-minimize-btn');
+      if (minBtn) minBtn.textContent = '─';
+      setPreviewPanelVisible(false);
+      if (editorInstance) setTimeout(() => editorInstance.layout(), 100);
+      switchPopoutTab(tab || popoutActiveTab || 'browser');
+    }
+
+    function closePopout() {
+      popoutMode      = false;
+      popoutMinimized = false;
+      if (popoutMaximized) {
+        // Restore window geometry before hiding so it opens at normal size next time
+        const win = document.getElementById('popout-window');
+        if (win && popoutSavedRect) {
+          win.style.width        = popoutSavedRect.width;
+          win.style.height       = popoutSavedRect.height;
+          win.style.top          = popoutSavedRect.top;
+          win.style.left         = popoutSavedRect.left;
+          win.style.maxWidth     = '96vw';
+          win.style.transform    = popoutSavedRect.transform;
+          win.style.resize       = popoutSavedRect.resize || 'both';
+          win.style.borderRadius = popoutSavedRect.borderRadius || '14px';
+        }
+        popoutMaximized = false;
+        popoutSavedRect = null;
+        const maxBtn = document.getElementById('popout-maximize-btn');
+        if (maxBtn) { maxBtn.textContent = '⛶'; maxBtn.title = 'Maximize'; }
+      }
+      const win = document.getElementById('popout-window');
+      if (win) win.style.display = 'none';
+      if (previewEnabled) {
+        setPreviewPanelVisible(true);
+        if (editorInstance) setTimeout(() => editorInstance.layout(), 100);
+      }
+    }
+
+    function minimizePopout() {
+      popoutMinimized = !popoutMinimized;
+      const body   = document.getElementById('popout-body');
+      const minBtn = document.getElementById('popout-minimize-btn');
+      if (body)   body.style.display = popoutMinimized ? 'none' : 'flex';
+      if (minBtn) minBtn.textContent = popoutMinimized ? '□' : '─';
+    }
+
+    function maximizePopout() {
+      const win    = document.getElementById('popout-window');
+      const maxBtn = document.getElementById('popout-maximize-btn');
+      if (!win) return;
+
+      if (!popoutMaximized) {
+        // Save current geometry before going fullscreen
+        const rect = win.getBoundingClientRect();
+        popoutSavedRect = {
+          width:  win.style.width  || rect.width  + 'px',
+          height: win.style.height || rect.height + 'px',
+          top:    win.style.top    || rect.top    + 'px',
+          left:   win.style.left   || rect.left   + 'px',
+          transform: win.style.transform,
+          resize: win.style.resize,
+          borderRadius: win.style.borderRadius,
+        };
+        // Go fullscreen
+        win.style.top          = '0';
+        win.style.left         = '0';
+        win.style.width        = '100vw';
+        win.style.height       = '100vh';
+        win.style.maxWidth     = '100vw';
+        win.style.transform    = 'none';
+        win.style.resize       = 'none';
+        win.style.borderRadius = '0';
+        popoutMaximized = true;
+        if (maxBtn) maxBtn.title = 'Restore';
+        if (maxBtn) maxBtn.textContent = '⊡';
+      } else {
+        // Restore saved geometry
+        if (popoutSavedRect) {
+          win.style.width        = popoutSavedRect.width;
+          win.style.height       = popoutSavedRect.height;
+          win.style.top          = popoutSavedRect.top;
+          win.style.left         = popoutSavedRect.left;
+          win.style.maxWidth     = '96vw';
+          win.style.transform    = popoutSavedRect.transform;
+          win.style.resize       = popoutSavedRect.resize || 'both';
+          win.style.borderRadius = popoutSavedRect.borderRadius || '14px';
+        }
+        popoutMaximized = false;
+        if (maxBtn) maxBtn.title = 'Maximize';
+        if (maxBtn) maxBtn.textContent = '⛶';
+      }
+    }
+
+    function setupPopoutDrag() {
+      const titlebar = document.getElementById('popout-titlebar');
+      const win      = document.getElementById('popout-window');
+      if (!titlebar || !win) return;
+      let dragging = false, startX = 0, startY = 0, origX = 0, origY = 0;
+
+      titlebar.addEventListener('mousedown', e => {
+        if (e.target.tagName === 'BUTTON') return;
+        dragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        const rect = win.getBoundingClientRect();
+        origX = rect.left;
+        origY = rect.top;
+        win.style.transform = 'none';
+        win.style.left = origX + 'px';
+        win.style.top  = origY + 'px';
+        document.body.style.userSelect = 'none';
+        titlebar.style.cursor = 'grabbing';
+      });
+
+      document.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        const nx = origX + (e.clientX - startX);
+        const ny = origY + (e.clientY - startY);
+        win.style.left = Math.max(0, Math.min(window.innerWidth  - 120, nx)) + 'px';
+        win.style.top  = Math.max(0, Math.min(window.innerHeight - 40,  ny)) + 'px';
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (!dragging) return;
+        dragging = false;
+        document.body.style.userSelect = '';
+        titlebar.style.cursor = 'grab';
+      });
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     function updatePreview() {
       if (!previewEnabled) return;
-      
-      const iframe = document.getElementById('preview-iframe');
+
+      const iframe = popoutMode
+        ? document.getElementById('popout-iframe')
+        : document.getElementById('preview-iframe');
       const currentTab = openTabs.find(tab => tab.id === currentTabId);
       
       if (!currentTab) return;
@@ -4838,8 +5263,279 @@
       }
     }
 
+    // ══════════════════════════════════════════════════════════════════════════
+    // NOTIFICATION SYSTEM
+    // ══════════════════════════════════════════════════════════════════════════
+    const notifList = [];          // { id, type, username, avatar, color, message, timestamp, read }
+    let notifDropdownOpen = false;
+    const userIdleNotified    = new Set(); // uids that have triggered an idle notif this session
+    const userOfflineNotified = new Set(); // uids that triggered an offline notif (cleared on reconnect)
+    let chatInitialLoadDone   = false;     // skip notifs for the initial chat history load
+
+    const NOTIF_COLORS = {
+      idle:        '#f59e0b',
+      offline:     '#64748b',
+      online:      '#4ec9b0',
+      message:     '#7c3aed',
+      joined:      '#3b82f6',
+      left:        '#94a3b8',
+      filesaved:   '#10b981',
+      filecreated: '#06b6d4',
+      filedeleted: '#f87171',
+      mentioned:   '#f472b6',
+    };
+
+    const NOTIF_ICONS = {
+      idle:        '💤',
+      offline:     '🔴',
+      online:      '🟢',
+      message:     '💬',
+      joined:      '👋',
+      left:        '🚪',
+      filesaved:   '💾',
+      filecreated: '📄',
+      filedeleted: '🗑️',
+      mentioned:   '@',
+    };
+
+    // Track which users we've already seen so we can detect true first-joins
+    const seenUserIds = new Set();
+    let presenceInitialLoadDone = false;
+    // Per-user save debounce: uid → last notified timestamp
+    const lastFileSaveNotif = {};
+
+    function pushNotif(type, username, avatarChar, message) {
+      const id = 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+      const entry = {
+        id, type, username,
+        avatar: avatarChar || (username || '?').charAt(0).toUpperCase(),
+        color:  NOTIF_COLORS[type] || '#7c3aed',
+        message,
+        timestamp: Date.now(),
+        read: false,
+      };
+      notifList.unshift(entry); // newest first
+      if (notifList.length > 50) notifList.pop(); // cap at 50
+      updateNotifBadge();
+      renderNotifDropdown();
+      showNotifToast(entry);
+    }
+
+    function updateNotifBadge() {
+      const badge = document.getElementById('notif-badge');
+      const unread = notifList.filter(n => !n.read).length;
+      if (!badge) return;
+      if (unread > 0) {
+        badge.style.display = 'block';
+        badge.textContent = unread > 99 ? '99+' : String(unread);
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function renderNotifDropdown() {
+      const list  = document.getElementById('notif-list');
+      const empty = document.getElementById('notif-empty');
+      if (!list) return;
+      list.innerHTML = '';
+
+      if (notifList.length === 0) {
+        if (empty) empty.style.display = 'block';
+        return;
+      }
+      if (empty) empty.style.display = 'none';
+
+      notifList.forEach(n => {
+        const item = document.createElement('div');
+        item.style.cssText = `display:flex;align-items:flex-start;gap:10px;padding:11px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04);transition:background .12s;background:${n.read ? 'transparent' : 'rgba(124,58,237,0.06)'};`;
+        item.onmouseover = () => item.style.background = 'rgba(255,255,255,0.04)';
+        item.onmouseout  = () => item.style.background = n.read ? 'transparent' : 'rgba(124,58,237,0.06)';
+        item.onclick = () => { n.read = true; updateNotifBadge(); renderNotifDropdown(); };
+
+        // Unread dot
+        const dot = document.createElement('div');
+        dot.style.cssText = `width:7px;height:7px;border-radius:50%;background:${n.read ? 'transparent' : n.color};flex-shrink:0;margin-top:5px;`;
+
+        // Avatar
+        const av = document.createElement('div');
+        av.textContent = n.avatar;
+        av.style.cssText = `width:36px;height:36px;border-radius:50%;background:${n.color}22;border:1px solid ${n.color}55;color:${n.color};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;`;
+
+        // Text block
+        const txt = document.createElement('div');
+        txt.style.cssText = 'flex:1;min-width:0;';
+
+        const icon = NOTIF_ICONS[n.type] || '🔔';
+        const msgEl = document.createElement('div');
+        msgEl.style.cssText = `color:${n.read ? '#9aa0c7' : '#e2e8f0'};font-size:12px;line-height:1.45;`;
+        msgEl.innerHTML = `<span style="margin-right:4px;">${icon}</span>${escapeHtml(n.message)}`;
+
+        const tsEl = document.createElement('div');
+        tsEl.style.cssText = 'color:#4a5170;font-size:10px;margin-top:3px;';
+        tsEl.textContent = timeAgo(n.timestamp);
+
+        txt.appendChild(msgEl);
+        txt.appendChild(tsEl);
+        item.appendChild(dot);
+        item.appendChild(av);
+        item.appendChild(txt);
+        list.appendChild(item);
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function toggleNotifDropdown() {
+      const dd = document.getElementById('notif-dropdown');
+      if (!dd) return;
+      notifDropdownOpen = !notifDropdownOpen;
+      dd.style.display = notifDropdownOpen ? 'flex' : 'none';
+      if (notifDropdownOpen) renderNotifDropdown();
+    }
+
+    function showNotifToast(entry) {
+      const container = document.getElementById('notif-toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.style.cssText = `pointer-events:all;display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:#13141f;border:1px solid ${entry.color}55;border-left:3px solid ${entry.color};border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.5);width:300px;max-width:calc(100vw - 32px);opacity:0;transform:translateX(20px);transition:opacity .25s,transform .25s;`;
+
+      const av = document.createElement('div');
+      av.textContent = entry.avatar;
+      av.style.cssText = `width:32px;height:32px;border-radius:50%;background:${entry.color}22;color:${entry.color};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;`;
+
+      const body = document.createElement('div');
+      body.style.cssText = 'flex:1;min-width:0;';
+      body.innerHTML = `<div style="color:#e2e8f0;font-size:12px;line-height:1.4;">${NOTIF_ICONS[entry.type]||'🔔'} ${escapeHtml(entry.message)}</div>`
+                     + `<div style="color:#4a5170;font-size:10px;margin-top:2px;">Just now</div>`;
+
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = '✕';
+      closeBtn.style.cssText = 'background:transparent;border:none;color:#6b7099;cursor:pointer;font-size:12px;padding:0;line-height:1;flex-shrink:0;margin-top:1px;';
+      closeBtn.onclick = () => dismissToast(toast);
+
+      toast.appendChild(av);
+      toast.appendChild(body);
+      toast.appendChild(closeBtn);
+      container.appendChild(toast);
+
+      // Animate in
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          toast.style.opacity = '1';
+          toast.style.transform = 'translateX(0)';
+        });
+      });
+
+      // Auto-dismiss after 5 s
+      const timer = setTimeout(() => dismissToast(toast), 5000);
+      toast._dismissTimer = timer;
+    }
+
+    function dismissToast(toast) {
+      if (!toast || toast._dismissed) return;
+      toast._dismissed = true;
+      clearTimeout(toast._dismissTimer);
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(20px)';
+      setTimeout(() => toast.remove(), 280);
+    }
+
+    function setupNotifSystem() {
+      const btn = document.getElementById('notif-btn');
+      if (btn) btn.addEventListener('click', e => {
+        e.stopPropagation();
+        toggleNotifDropdown();
+      });
+
+      const markReadBtn = document.getElementById('notif-mark-read-btn');
+      if (markReadBtn) markReadBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        notifList.forEach(n => n.read = true);
+        updateNotifBadge();
+        renderNotifDropdown();
+      });
+
+      const clearBtn = document.getElementById('notif-clear-btn');
+      if (clearBtn) clearBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        notifList.length = 0;
+        updateNotifBadge();
+        renderNotifDropdown();
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', e => {
+        if (!notifDropdownOpen) return;
+        const dd  = document.getElementById('notif-dropdown');
+        const btn = document.getElementById('notif-btn');
+        if (dd && !dd.contains(e.target) && e.target !== btn) {
+          notifDropdownOpen = false;
+          dd.style.display = 'none';
+        }
+      });
+
+      // Refresh timestamps every 30 s
+      setInterval(() => {
+        if (notifDropdownOpen) renderNotifDropdown();
+      }, 30000);
+    }
+    // ══════════════════════════════════════════════════════════════════════════
+
     // Load project from URL (projects feature removed)
   </script>
+
+  <!-- ── Notification dropdown panel (opens from header bell) ────── -->
+  <div id="notif-dropdown" style="display:none;position:fixed;top:54px;right:8px;width:340px;max-width:calc(100vw - 16px);background:#13141f;border:1px solid rgba(124,58,237,0.25);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,0.65);z-index:4600;overflow:hidden;flex-direction:column;">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,0.06);">
+      <span style="flex:1;color:#e2e8f0;font-size:14px;font-weight:700;">🔔 Notifications</span>
+      <button id="notif-mark-read-btn" style="padding:4px 9px;border:1px solid rgba(124,58,237,0.3);border-radius:5px;background:transparent;color:#a78bfa;font-size:10px;font-weight:600;cursor:pointer;margin-right:6px;" onmouseover="this.style.background='rgba(124,58,237,0.15)'" onmouseout="this.style.background='transparent'">Mark all read</button>
+      <button id="notif-clear-btn"     style="padding:4px 9px;border:1px solid rgba(255,255,255,0.1);border-radius:5px;background:transparent;color:#6b7099;font-size:10px;font-weight:600;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">Clear</button>
+    </div>
+    <!-- List -->
+    <div id="notif-list" style="max-height:360px;overflow-y:auto;"></div>
+    <!-- Empty state -->
+    <div id="notif-empty" style="padding:32px 16px;text-align:center;color:#4a5170;font-size:13px;">
+      <div style="font-size:28px;margin-bottom:8px;">🔕</div>
+      No notifications yet
+    </div>
+  </div>
+
+  <!-- ── Slide-in toast container (top-right) ──────────────────────── -->
+  <div id="notif-toast-container" style="position:fixed;top:62px;right:360px;z-index:4700;display:flex;flex-direction:column;gap:8px;pointer-events:none;"></div>
+
+  <!-- Popout floating preview/output window -->
+  <div id="popout-window" style="display:none;flex-direction:column;position:fixed;z-index:6000;top:80px;left:50%;transform:translateX(-50%);width:860px;max-width:96vw;min-width:380px;min-height:120px;background:#13141f;border:1px solid rgba(124,58,237,0.35);border-radius:14px;box-shadow:0 32px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(124,58,237,0.1);overflow:auto;resize:both;">
+    <!-- Title bar (drag handle) -->
+    <div id="popout-titlebar" style="display:flex;align-items:center;gap:8px;padding:0 10px;height:40px;background:#0f1020;border-bottom:1px solid rgba(255,255,255,0.07);cursor:grab;user-select:none;flex-shrink:0;">
+      <span style="font-size:15px;opacity:0.7;">⧉</span>
+      <span id="popout-title" style="color:#c4c9e8;font-size:12px;font-weight:700;letter-spacing:.03em;flex:1;">EchoPoly Preview</span>
+      <button id="popout-tab-browser" class="rp-tab active" style="margin-left:0;">🌐 Browser</button>
+      <button id="popout-tab-output"  class="rp-tab"        style="margin-left:0;">⬛ Output</button>
+      <div style="width:1px;height:18px;background:rgba(255,255,255,0.1);margin:0 4px;"></div>
+      <button id="popout-minimize-btn" title="Minimize"        style="width:26px;height:26px;border:none;border-radius:5px;background:transparent;color:#8a8fbc;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#8a8fbc'">─</button>
+      <button id="popout-maximize-btn" title="Maximize / Restore" style="width:26px;height:26px;border:none;border-radius:5px;background:transparent;color:#8a8fbc;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#8a8fbc'">⛶</button>
+      <button id="popout-close-btn"    title="Close"             style="width:26px;height:26px;border:none;border-radius:5px;background:transparent;color:#8a8fbc;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;" onmouseover="this.style.background='rgba(239,68,68,0.2)';this.style.color='#ef4444'" onmouseout="this.style.background='transparent';this.style.color='#8a8fbc'">✕</button>
+    </div>
+    <!-- Popout body -->
+    <div id="popout-body" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;">
+      <!-- Browser pane -->
+      <div id="popout-browser-pane" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+        <iframe id="popout-iframe" style="width:100%;flex:1;border:none;background:#ffffff;min-height:480px;"></iframe>
+      </div>
+      <!-- Output pane -->
+      <div id="popout-output-pane" style="flex:1;display:none;flex-direction:column;overflow:hidden;padding:10px;gap:8px;">
+        <div id="popout-output-console" style="flex:1;overflow-y:auto;background:#0d0d0f;border-radius:6px;padding:10px;font-family:'Consolas','JetBrains Mono',monospace;font-size:12px;color:#d4d4d4;white-space:pre-wrap;min-height:440px;max-height:60vh;"></div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button id="clear-popout-output-btn"  style="flex:1;padding:6px;background:transparent;color:#8a8fbc;border:1px solid #2a2d3e;border-radius:6px;cursor:pointer;font-family:inherit;font-size:11px;">🗑 Clear</button>
+          <button id="copy-popout-output-btn"   style="flex:1;padding:6px;background:transparent;color:#8a8fbc;border:1px solid #2a2d3e;border-radius:6px;cursor:pointer;font-family:inherit;font-size:11px;">⎘ Copy Output</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
