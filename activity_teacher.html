@@ -483,14 +483,18 @@
       const grid = document.getElementById('classes-grid');
       grid.innerHTML = '<div style="color:#64748b;font-size:13px;padding:12px;">Loading…</div>';
       await authReady;
-      const q = query(collection(db,'classes'), where('teacherId','==',me.uid), orderBy('createdAt','desc'));
-      const snap = await getDocs(q).catch(()=>null);
+      const q = query(collection(db,'classes'), where('teacherId','==',me.uid));
+      const snap = await getDocs(q).catch(e=>{
+        grid.innerHTML=`<div style="color:#fca5a5;padding:20px;font-size:13px;">Error loading classes: ${e.message}</div>`;
+        return null;
+      });
       if (!snap||snap.empty) {
         grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🏫</div><div class="empty-title">No classes yet</div><div style="font-size:13px;">Create your first class</div></div>`;
         return;
       }
+      const docs = snap.docs.slice().sort((a,b)=>(b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0));
       grid.innerHTML = '';
-      snap.docs.forEach(d => {
+      docs.forEach(d => {
         const c = {id:d.id,...d.data()};
         const ci = COURSES[c.course]||{name:c.course||'Course'};
         const el = document.createElement('div');
@@ -559,14 +563,18 @@
     async function loadActivities() {
       const list = document.getElementById('activities-list');
       list.innerHTML = '<div style="color:#64748b;font-size:13px;padding:8px;">Loading…</div>';
-      const q = query(collection(db,'activities'), where('classId','==',currentClass.id), orderBy('createdAt','desc'));
-      const snap = await getDocs(q).catch(()=>null);
+      const q = query(collection(db,'activities'), where('classId','==',currentClass.id));
+      const snap = await getDocs(q).catch(e=>{
+        list.innerHTML=`<div style="color:#fca5a5;padding:12px;font-size:13px;">Error: ${e.message}</div>`;
+        return null;
+      });
       if (!snap||snap.empty) {
         list.innerHTML = `<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">No activities yet</div><div style="font-size:13px;">Click "Create Activity" to start</div></div>`;
         return;
       }
+      const docs = snap.docs.slice().sort((a,b)=>(b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0));
       list.innerHTML='';
-      snap.docs.forEach(d => {
+      docs.forEach(d => {
         const a = {id:d.id,...d.data()};
         const items = a.items||[];
         const el = document.createElement('div');
