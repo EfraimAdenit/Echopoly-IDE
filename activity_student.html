@@ -639,8 +639,9 @@ function executeJS(code,testCases){
       warn:(...args)=>captured.push(String(args.join(' ')))
     };
     try{
-      const fn=new Function('console','input',code);
-      fn(mockConsole,tc.input);
+      const mockPrint=(...args)=>captured.push(args.map(a=>typeof a==='object'?JSON.stringify(a):String(a)).join(' '));
+      const fn=new Function('console','input','print','alert','confirm','prompt',code);
+      fn(mockConsole,tc.input,mockPrint,()=>{},()=>false,()=>'');
       const actual=captured.join('\n').trim();
       const expected=(tc.expected||'').trim();
       return{input:tc.input,expected,actual,passed:actual===expected};
@@ -669,7 +670,8 @@ window.runCode=function(){
       warn:(...args)=>captured.push(args.join(' '))
     };
     try{
-      new Function('console','input',code)(mockConsole,'');
+      const mockPrint2=(...args)=>captured.push(args.map(a=>String(a)).join(' '));
+      new Function('console','input','print','alert','confirm','prompt',code)(mockConsole,'',mockPrint2,()=>{},()=>false,()=>'');
       out.innerHTML=captured.map(l=>`<div class="out-line">${esc(l)}</div>`).join('')||'<div class="out-line" style="color:#64748b;">(no output)</div>';
     }catch(e){
       out.innerHTML=`<div class="out-error">Runtime Error: ${esc(e.message)}</div>`;
