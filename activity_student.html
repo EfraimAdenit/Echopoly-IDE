@@ -300,8 +300,8 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
           <option value="cpp">C++</option>
         </select>
         <span id="lang-hint" class="lang-hint">Ctrl+Enter to Run</span>
-        <span id="nonjs-notice" style="display:none;background:#451a03;color:#fde68a;border:1px solid #92400e;padding:4px 12px;border-radius:6px;font-size:.8rem;">
-          ⚠ In-browser execution not available for this language — write your solution and click <strong>Submit All</strong> for teacher review.
+        <span id="nonjs-notice" style="display:none;background:#1e3a5f;color:#93c5fd;border:1px solid #2563eb;padding:4px 12px;border-radius:6px;font-size:.8rem;align-items:center;gap:6px;">
+          ☁ Runs via Piston API — requires internet
         </span>
       </div>
       <textarea id="code-editor" spellcheck="false" placeholder="// Write your code here"></textarea>
@@ -634,12 +634,39 @@ function updateLangHint(){
   const lang=document.getElementById('lang-select').value;
   const isJS=lang==='javascript';
   document.getElementById('lang-hint').style.display=isJS?'':'none';
-  document.getElementById('nonjs-notice').style.display=isJS?'none':'';
-  // Hide Run button for non-JS (no point running Java/Python in-browser)
-  document.querySelector('.btn-run').style.display=isJS?'':'none';
+  document.getElementById('nonjs-notice').style.display=isJS?'none':'flex';
+  document.querySelector('.btn-run').style.display='';
 }
 
-// ── Code execution (JS only) ──
+// ── Piston API (Java / Python / C / C++) ──
+const PISTON_LANG={
+  python:{language:'python',version:'3.10.0',file:'main.py'},
+  java:{language:'java',version:'15.0.2',file:'Main.java'},
+  c:{language:'c',version:'10.2.0',file:'main.c'},
+  cpp:{language:'c++',version:'10.2.0',file:'main.cpp'}
+};
+async function pistonRun(code,lang,stdin){
+  const cfg=PISTON_LANG[lang];
+  if(!cfg)return{stdout:'',stderr:'Unsupported language'};
+  try{
+    const res=await fetch('https://emkc.org/api/v2/piston/execute',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({language:cfg.language,version:cfg.version,files:[{name:cfg.file,content:code}],stdin:stdin||''})
+    });
+    const data=await res.json();
+    const compileErr=(data.compile?.stderr||'').trim();
+    const stdout=(data.run?.stdout||'').trim();
+    const runErr=(data.run?.stderr||'').trim();
+    if(compileErr)return{stdout:'',stderr:'Compilation Error:\n'+compileErr};
+    if(runErr&&!stdout)return{stdout:'',stderr:'Runtime Error:\n'+runErr};
+    return{stdout,stderr:runErr};
+  }catch(e){
+    return{stdout:'',stderr:'Network error: '+e.message+'\n(Check your internet connection)'};
+  }
+}
+
+// ── JS in-browser execution ──
 function executeJS(code,testCases){
   return testCases.map(tc=>{
     const captured=[];
@@ -661,77 +688,95 @@ function executeJS(code,testCases){
   });
 }
 
-window.runCode=function(){
-  const code=document.getElementById('code-editor').value;
+function setRunning(on){
+  document.querySelector('.btn-run').disabled=on;
+  document.querySelector('.btn-check').disabled=on;
+  document.getElementById('btn-submit-code').disabled=on;
+}
+
+window.runCode=async function(){
+  const code=document.getElementById('code-editor').value.trim();
   const lang=document.getElementById('lang-select').value;
   const out=document.getElementById('output-area');
-  if(lang!=='javascript'){
-    out.innerHTML='<div class="out-line" style="color:#f59e0b;">Non-JS languages run server-side. Use Check to validate against test cases.</div>';
-    return;
-  }
+  if(!code){out.innerHTML='<div class="out-line" style="color:#64748b;">Nothing to run.</div>';return;}
   const item=currentItems[currentItemIdx];
-  const tcs=item?.testCases||[];
-  if(!tcs.length){
-    // Just run without test cases
-    const captured=[];
-    const mockConsole={
-      log:(...args)=>captured.push(args.map(a=>String(a)).join(' ')),
-      error:(...args)=>captured.push('Error: '+args.join(' ')),
-      warn:(...args)=>captured.push(args.join(' '))
-    };
-    try{
-      const jsPrint2=()=>{throw new ReferenceError("print is not defined — use console.log() in JavaScript");};
-      new Function('console','input','print','alert','confirm','prompt',code)(mockConsole,'',jsPrint2,()=>{},()=>false,()=>'');
-      out.innerHTML=captured.map(l=>`<div class="out-line">${esc(l)}</div>`).join('')||'<div class="out-line" style="color:#64748b;">(no output)</div>';
-    }catch(e){
-      out.innerHTML=`<div class="out-error">Runtime Error: ${esc(e.message)}</div>`;
+  const firstInput=(item?.testCases||[])[0]?.input||'';
+
+  if(lang==='javascript'){
+    const tcs=item?.testCases||[];
+    if(!tcs.length){
+      const captured=[];
+      const mc={log:(...a)=>captured.push(a.map(String).join(' ')),error:(...a)=>captured.push('Error: '+a.join(' ')),warn:(...a)=>captured.push(a.join(' '))};
+      try{
+        new Function('console','input','print','alert','confirm','prompt',code)(mc,'',()=>{throw new ReferenceError("print is not defined")},()=>{},()=>false,()=>'');
+        out.innerHTML=captured.map(l=>`<div class="out-line">${esc(l)}</div>`).join('')||'<div class="out-line" style="color:#64748b;">(no output)</div>';
+      }catch(e){out.innerHTML=`<div class="out-error">Runtime Error: ${esc(e.message)}</div>`;}
+      return;
     }
+    const r=executeJS(code,[tcs[0]])[0];
+    out.innerHTML=r.error?`<div class="out-error">${esc(r.actual)}</div>`:`<div class="out-line">Output: ${esc(r.actual)}</div>`;
     return;
   }
-  // Run first test case for preview
-  const results=executeJS(code,[tcs[0]]);
-  const r=results[0];
-  if(r.error){
-    out.innerHTML=`<div class="out-error">Runtime Error: ${esc(r.actual)}</div>`;
-  } else {
-    out.innerHTML=`<div class="out-line">Output: ${esc(r.actual)}</div>`;
-  }
+  // Non-JS via Piston
+  out.innerHTML='<div class="out-line" style="color:#64748b;">⏳ Running…</div>';
+  setRunning(true);
+  const {stdout,stderr}=await pistonRun(code,lang,firstInput);
+  setRunning(false);
+  if(stderr&&!stdout){out.innerHTML=`<div class="out-error">${esc(stderr)}</div>`;}
+  else{out.innerHTML=`<div class="out-line">${esc(stdout||'(no output)')}</div>`+(stderr?`<div class="out-error">${esc(stderr)}</div>`:'')}
 };
 
-window.checkCode=function(){
-  const code=document.getElementById('code-editor').value;
+window.checkCode=async function(){
+  const code=document.getElementById('code-editor').value.trim();
   const lang=document.getElementById('lang-select').value;
   const out=document.getElementById('output-area');
   const item=currentItems[currentItemIdx];
   const tcs=(item?.testCases||[]).filter(tc=>!tc.hidden);
-  if(lang!=='javascript'){
-    const langLabel=document.getElementById('lang-select').options[document.getElementById('lang-select').selectedIndex].text;
-    out.innerHTML=`<div class="out-line" style="color:#fde68a;">✓ ${langLabel} code saved. Click <strong>Submit All</strong> when you're done — your instructor will review it.</div>`;
-    // Mark all items as manual so they don't block submission
-    itemResults[currentItemIdx]=(item.testCases||[]).map(tc=>({input:tc.input,expected:tc.expected,actual:null,passed:null,manual:true}));
-    if(!itemResults[currentItemIdx].length)itemResults[currentItemIdx]=[{manual:true,passed:null}];
-    // Store code on item for submission
-    currentItems[currentItemIdx]._submittedCode=code;
-    renderItemNav();
+  if(!code){out.innerHTML='<div class="out-line" style="color:#64748b;">Nothing to check.</div>';return;}
+
+  if(lang==='javascript'){
+    if(!tcs.length){out.innerHTML='<div class="out-line" style="color:#64748b;">No test cases to check.</div>';return;}
+    const results=executeJS(code,tcs);
+    itemResults[currentItemIdx]=results;
+    applyTcResults(results);
+    const passed=results.filter(r=>r.passed).length;
+    out.innerHTML=`<div class="${passed===results.length?'out-pass':'out-fail'}">${passed}/${results.length} test cases passed</div>`;
+    renderItemNav();updateSession();
     return;
   }
+
+  // Non-JS via Piston — run each test case
   if(!tcs.length){out.innerHTML='<div class="out-line" style="color:#64748b;">No test cases to check.</div>';return;}
-  const results=executeJS(code,tcs);
+  out.innerHTML=`<div class="out-line" style="color:#64748b;">⏳ Running ${tcs.length} test case${tcs.length>1?'s':''}…</div>`;
+  setRunning(true);
+  const results=[];
+  for(let i=0;i<tcs.length;i++){
+    const tc=tcs[i];
+    out.innerHTML=`<div class="out-line" style="color:#64748b;">⏳ Test ${i+1}/${tcs.length}…</div>`;
+    const {stdout,stderr}=await pistonRun(code,lang,tc.input||'');
+    const actual=stdout.trim();
+    const expected=(tc.expected||'').trim();
+    const passed=!stderr&&actual===expected;
+    results.push({input:tc.input,expected,actual:stderr?('Error: '+stderr):actual,passed:!stderr&&passed,error:!!stderr});
+  }
+  setRunning(false);
   itemResults[currentItemIdx]=results;
-  // Update tc entries
+  applyTcResults(results);
+  const passed=results.filter(r=>r.passed).length;
+  out.innerHTML=`<div class="${passed===results.length?'out-pass':'out-fail'}">${passed}/${results.length} test cases passed</div>`;
+  renderItemNav();updateSession();
+};
+
+function applyTcResults(results){
   results.forEach((r,i)=>{
     const entry=document.getElementById(`tc-${i}`);
     const resEl=document.getElementById(`tc-result-${i}`);
     if(!entry||!resEl)return;
     entry.className='tc-entry '+(r.passed?'pass':'fail');
     resEl.className='tc-result '+(r.passed?'pass':'fail');
-    resEl.textContent=r.passed?'✓ Passed':`✗ Got: ${r.actual}`;
+    resEl.textContent=r.passed?'✓ Passed':`✗ Got: ${esc(r.actual)}`;
   });
-  const passed=results.filter(r=>r.passed).length;
-  out.innerHTML=`<div class="${passed===results.length?'out-pass':'out-fail'}">${passed}/${results.length} test cases passed</div>`;
-  renderItemNav();
-  updateSession();
-};
+}
 
 window.clearOutput=function(){
   document.getElementById('output-area').innerHTML='';
