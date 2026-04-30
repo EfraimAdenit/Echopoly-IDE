@@ -26,11 +26,11 @@
     .screen{display:none;}
     .screen.active{display:block;animation:fadeUp .35s ease;}
     @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-    .back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#64748b;padding:6px 12px;border:1px solid rgba(148,163,184,.15);border-radius:8px;cursor:pointer;margin-bottom:22px;transition:all .2s;background:none;font-family:inherit;text-decoration:none;}
-    .back-link:hover{color:#94a3b8;border-color:rgba(148,163,184,.3);}
+    .back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#94a3b8;padding:6px 12px;border:1px solid rgba(148,163,184,.22);border-radius:8px;cursor:pointer;margin-bottom:22px;transition:all .2s;background:rgba(10,16,35,.7);backdrop-filter:blur(10px);font-family:inherit;text-decoration:none;}
+    .back-link:hover{color:#e2e8f0;border-color:rgba(148,163,184,.4);background:rgba(10,16,35,.85);}
     .sec-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:14px;}
     .sec-title{font-size:26px;font-weight:800;}
-    .sec-sub{font-size:13px;color:#64748b;margin-top:4px;}
+    .sec-sub{font-size:13px;color:#94a3b8;margin-top:4px;}
     .btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:9px;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap;}
     .btn-primary{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;}
     .btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 20px rgba(124,58,237,.35);}
@@ -43,13 +43,13 @@
     .btn-sm{padding:7px 14px;font-size:12px;}
     .btn-xs{padding:5px 10px;font-size:11px;border-radius:7px;}
     .btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
-    .card{background:rgba(15,23,42,.72);backdrop-filter:blur(20px);border:1px solid rgba(148,163,184,.1);border-radius:16px;padding:24px;}
+    .card{background:rgba(10,16,35,.88);backdrop-filter:blur(20px);border:1px solid rgba(148,163,184,.14);border-radius:16px;padding:24px;}
     .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;}
-    .class-card{background:rgba(15,23,42,.7);backdrop-filter:blur(16px);border:1px solid rgba(148,163,184,.1);border-radius:16px;padding:22px;cursor:pointer;transition:all .22s;}
+    .class-card{background:rgba(10,16,35,.85);backdrop-filter:blur(20px);border:1px solid rgba(148,163,184,.14);border-radius:16px;padding:22px;cursor:pointer;transition:all .22s;}
     .class-card:hover{transform:translateY(-4px);border-color:rgba(124,58,237,.4);box-shadow:0 18px 40px rgba(0,0,0,.35);}
     .class-card-icon{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px;}
     .class-card-name{font-size:16px;font-weight:700;margin-bottom:5px;}
-    .class-card-sub{font-size:12px;color:#64748b;}
+    .class-card-sub{font-size:12px;color:#94a3b8;}
     .class-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid rgba(148,163,184,.07);}
     .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
     .badge-draft{background:rgba(100,116,139,.15);color:#94a3b8;border:1px solid rgba(100,116,139,.2);}
@@ -57,7 +57,7 @@
     .badge-closed{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.2);}
     .badge-course{background:rgba(6,182,212,.1);color:#67e8f9;border:1px solid rgba(6,182,212,.25);}
     .tab-bar{display:flex;gap:4px;background:rgba(15,23,42,.6);border:1px solid rgba(148,163,184,.1);border-radius:12px;padding:5px;margin-bottom:28px;width:fit-content;}
-    .tab-btn{padding:8px 22px;border-radius:8px;border:none;background:transparent;color:#64748b;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;}
+    .tab-btn{padding:8px 22px;border-radius:8px;border:none;background:transparent;color:#94a3b8;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;}
     .tab-btn.active{background:rgba(124,58,237,.2);color:#c4b5fd;border:1px solid rgba(124,58,237,.3);}
     .tab-content{display:none;}
     .tab-content.active{display:block;}
@@ -134,7 +134,7 @@
     .rank-score{font-size:12px;font-weight:800;color:#c4b5fd;}
     .empty{text-align:center;padding:44px 20px;color:#94a3b8;}
     .empty-icon{font-size:38px;margin-bottom:10px;opacity:.45;}
-    .empty-title{font-size:15px;font-weight:600;color:#64748b;margin-bottom:5px;}
+    .empty-title{font-size:15px;font-weight:600;color:#94a3b8;margin-bottom:5px;}
     .live-dot{display:inline-block;width:8px;height:8px;background:#22c55e;border-radius:50%;animation:pulse 2s infinite;margin-right:6px;}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
     .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px;}
@@ -144,7 +144,7 @@
     .toast.err{border-color:rgba(239,68,68,.3);color:#fca5a5;}
     .code-box{display:inline-flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.2);border-radius:10px;margin-bottom:22px;}
     .filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-    .filter-btn{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(148,163,184,.2);background:transparent;color:#64748b;font-family:inherit;transition:all .2s;}
+    .filter-btn{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(148,163,184,.2);background:transparent;color:#94a3b8;font-family:inherit;transition:all .2s;}
     .filter-btn:hover{border-color:rgba(148,163,184,.35);color:#94a3b8;}
     .filter-btn.active{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.35);color:#c4b5fd;}
   </style>
@@ -228,7 +228,7 @@
         <button class="btn btn-primary" onclick="startCreateActivity()">＋ Create Activity</button>
       </div>
       <div class="code-box">
-        <span style="font-size:12px;font-weight:600;color:#64748b;">Class Code</span>
+        <span style="font-size:12px;font-weight:600;color:#94a3b8;">Class Code</span>
         <span id="cls-code" style="font-size:18px;font-weight:800;letter-spacing:.18em;color:#67e8f9;font-family:monospace;"></span>
         <button class="btn btn-xs btn-outline" onclick="copyCode()">📋 Copy</button>
       </div>
@@ -257,7 +257,7 @@
               <div style="background:rgba(148,163,184,.1);border-radius:6px;height:6px;overflow:hidden;">
                 <div id="mat-progress-bar" style="height:100%;background:linear-gradient(90deg,#7c3aed,#3b82f6);width:0%;transition:width .2s;"></div>
               </div>
-              <div id="mat-progress-label" style="font-size:11px;color:#64748b;margin-top:4px;">Uploading…</div>
+              <div id="mat-progress-label" style="font-size:11px;color:#94a3b8;margin-top:4px;">Uploading…</div>
             </div>
             <div style="display:flex;gap:8px;margin-top:4px;">
               <button class="btn btn-success btn-sm" onclick="uploadMaterial()">⬆ Upload</button>
@@ -351,8 +351,8 @@
         <div style="display:flex;gap:10px;flex-wrap:wrap;" id="av-controls"></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
-        <div class="card"><div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;">Timeline</div><div id="av-timeline"></div></div>
-        <div class="card"><div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;">Settings</div><div id="av-settings-display"></div></div>
+        <div class="card"><div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;">Timeline</div><div id="av-timeline"></div></div>
+        <div class="card"><div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;">Settings</div><div id="av-settings-display"></div></div>
       </div>
       <div class="card" style="margin-bottom:16px;">
         <div style="font-size:15px;font-weight:700;margin-bottom:12px;">Items</div>
@@ -362,7 +362,7 @@
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
           <span class="live-dot"></span>
           <span style="font-size:15px;font-weight:700;">Live Activity</span>
-          <span id="av-student-count" style="font-size:12px;color:#64748b;background:rgba(30,41,59,.5);padding:2px 10px;border-radius:20px;"></span>
+          <span id="av-student-count" style="font-size:12px;color:#94a3b8;background:rgba(30,41,59,.5);padding:2px 10px;border-radius:20px;"></span>
         </div>
         <div id="av-preview"></div>
         <button class="btn btn-outline btn-sm" style="margin-top:12px;" onclick="openSupervision()">🔍 Full Supervision View →</button>
@@ -384,7 +384,7 @@
       <div class="sup-layout">
         <div>
           <div class="filter-bar">
-            <span style="font-size:12px;font-weight:700;color:#64748b;">Filter:</span>
+            <span style="font-size:12px;font-weight:700;color:#94a3b8;">Filter:</span>
             <button class="filter-btn active" data-f="all" onclick="setFilter('all',this)">All</button>
             <button class="filter-btn" data-f="active" onclick="setFilter('active',this)">Active</button>
             <button class="filter-btn" data-f="idle" onclick="setFilter('idle',this)">Idle</button>
@@ -395,14 +395,14 @@
         </div>
         <div>
           <div class="stats-panel" style="margin-bottom:16px;">
-            <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px;">Session Stats</div>
+            <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px;">Session Stats</div>
             <div class="stat-item"><div class="stat-num" id="ss-active" style="color:#93c5fd;">0</div><div class="stat-lbl">Active Students</div></div>
             <div class="stat-item"><div class="stat-num" id="ss-submitted" style="color:#86efac;">0</div><div class="stat-lbl">Submitted</div></div>
             <div class="stat-item"><div class="stat-num" id="ss-flagged" style="color:#fca5a5;">0</div><div class="stat-lbl">Anti-Cheat Flags</div></div>
             <div class="stat-item"><div class="stat-num" id="ss-avg" style="color:#c4b5fd;">—</div><div class="stat-lbl">Avg Score</div></div>
           </div>
           <div class="stats-panel">
-            <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px;">🏆 Ranking</div>
+            <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px;">🏆 Ranking</div>
             <div id="sup-ranking"><div style="font-size:12px;color:#94a3b8;text-align:center;padding:12px 0;">No submissions yet</div></div>
           </div>
         </div>
@@ -569,7 +569,7 @@
     // ── Classes ───────────────────────────────────────────────────────────────
     async function loadClasses() {
       const grid = document.getElementById('classes-grid');
-      grid.innerHTML = '<div style="color:#64748b;font-size:13px;padding:12px;">Loading…</div>';
+      grid.innerHTML = '<div style="color:#94a3b8;font-size:13px;padding:12px;">Loading…</div>';
       await authReady;
       const q = query(collection(db,'classes'), where('teacherId','==',me.uid));
       const snap = await getDocs(q).catch(e=>{
@@ -650,7 +650,7 @@
     // ── Activities ────────────────────────────────────────────────────────────
     async function loadActivities() {
       const list = document.getElementById('activities-list');
-      list.innerHTML = '<div style="color:#64748b;font-size:13px;padding:8px;">Loading…</div>';
+      list.innerHTML = '<div style="color:#94a3b8;font-size:13px;padding:8px;">Loading…</div>';
       const q = query(collection(db,'activities'), where('classId','==',currentClass.id));
       const snap = await getDocs(q).catch(e=>{
         list.innerHTML=`<div style="color:#fca5a5;padding:12px;font-size:13px;">Error: ${e.message}</div>`;
@@ -692,8 +692,8 @@
       else ctrl.innerHTML = `<button class="btn btn-outline btn-sm" onclick="setStatus('active')">🔓 Reopen</button><button class="btn btn-outline btn-sm" onclick="editActivity()">✏️ Edit</button>`;
       const fmt = ts=>ts?.toDate?ts.toDate().toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
       document.getElementById('av-timeline').innerHTML = `
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:13px;"><span style="color:#64748b;font-size:11px;min-width:48px;">Opens</span><span style="font-weight:600;">${act.openDate?fmt(act.openDate):'Immediately'}</span></div>
-        <div style="display:flex;gap:8px;align-items:center;font-size:13px;"><span style="color:#64748b;font-size:11px;min-width:48px;">Closes</span><span style="font-weight:600;">${act.closeDate?fmt(act.closeDate):'Manual'}</span></div>`;
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:13px;"><span style="color:#94a3b8;font-size:11px;min-width:48px;">Opens</span><span style="font-weight:600;">${act.openDate?fmt(act.openDate):'Immediately'}</span></div>
+        <div style="display:flex;gap:8px;align-items:center;font-size:13px;"><span style="color:#94a3b8;font-size:11px;min-width:48px;">Closes</span><span style="font-weight:600;">${act.closeDate?fmt(act.closeDate):'Manual'}</span></div>`;
       const s=act.settings||{};
       const tags=[];
       if(s.randomize)tags.push('🔀 Randomized');if(s.showAnswers)tags.push('💡 Shows Answers');
@@ -710,9 +710,9 @@
             ?tcs.map((tc,ti)=>`
               <div style="background:rgba(15,23,42,.7);border:1px solid rgba(148,163,184,.1);border-radius:8px;padding:10px 14px;margin-bottom:6px;font-size:12px;font-family:monospace;">
                 <div style="display:flex;gap:20px;flex-wrap:wrap;">
-                  <span style="color:#64748b;">Test ${ti+1}</span>
-                  ${tc.input!==undefined&&tc.input!==''?`<span><span style="color:#64748b;">Input:</span> <code style="color:#a5b4fc;">${esc(String(tc.input))}</code></span>`:''}
-                  <span><span style="color:#64748b;">Expected:</span> <code style="color:#4ade80;">${esc(String(tc.expected||''))}</code></span>
+                  <span style="color:#94a3b8;">Test ${ti+1}</span>
+                  ${tc.input!==undefined&&tc.input!==''?`<span><span style="color:#94a3b8;">Input:</span> <code style="color:#a5b4fc;">${esc(String(tc.input))}</code></span>`:''}
+                  <span><span style="color:#94a3b8;">Expected:</span> <code style="color:#4ade80;">${esc(String(tc.expected||''))}</code></span>
                   ${tc.hidden?'<span style="color:#f59e0b;font-size:11px;">🙈 hidden</span>':''}
                 </div>
               </div>`).join('')
@@ -726,11 +726,11 @@
                 <div style="font-size:13px;font-weight:600;">${esc(item.title)}</div>
                 <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${tcs.length} test case${tcs.length===1?'':'s'} · ${item.points||0} pts · ${esc(item.language||'JS')}</div>
               </div>
-              <span class="item-chevron" style="color:#64748b;font-size:12px;">▼</span>
+              <span class="item-chevron" style="color:#94a3b8;font-size:12px;">▼</span>
             </div>
             <div class="item-details" style="display:none;padding:0 14px 14px 14px;border-top:1px solid rgba(148,163,184,.08);">
               ${desc?`<div style="font-size:12px;color:#94a3b8;padding:10px 0 8px;line-height:1.5;">${esc(desc)}</div>`:''}
-              <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Test Cases</div>
+              <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Test Cases</div>
               ${tcRows}
             </div>
           </div>`;
@@ -789,7 +789,7 @@
           <div style="flex:1;min-width:0;">
             <div style="font-size:13px;font-weight:700;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(m.title)}</div>
             ${m.description?`<div style="font-size:11px;color:#94a3b8;margin-top:2px;">${esc(m.description)}</div>`:''}
-            <div style="font-size:11px;color:#64748b;margin-top:3px;">${m.fileName||''} ${m.fileSize?'· '+formatSize(m.fileSize):''}</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:3px;">${m.fileName||''} ${m.fileSize?'· '+formatSize(m.fileSize):''}</div>
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0;">
             <a href="${esc(m.url)}" target="_blank" class="btn btn-xs btn-outline">👁 View</a>
