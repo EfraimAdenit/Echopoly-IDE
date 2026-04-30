@@ -74,7 +74,7 @@
     .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(148,163,184,.06);}
     .toggle-row:last-child{border-bottom:none;}
     .toggle-label{font-size:13px;font-weight:600;color:#e2e8f0;}
-    .toggle-sub{font-size:11px;color:#475569;margin-top:2px;}
+    .toggle-sub{font-size:11px;color:#94a3b8;margin-top:2px;}
     .toggle{position:relative;width:42px;height:24px;flex-shrink:0;}
     .toggle input{opacity:0;width:0;height:0;position:absolute;}
     .toggle-slider{position:absolute;inset:0;background:rgba(148,163,184,.18);border-radius:12px;cursor:pointer;transition:.28s;}
@@ -89,8 +89,8 @@
     .tc-grid input:focus{border-color:#7c3aed;}
     .btn-rm{width:28px;height:28px;border-radius:7px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:.2s;}
     .btn-rm:hover{background:rgba(239,68,68,.22);}
-    .topic-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(15,23,42,.5);border:1px solid rgba(148,163,184,.08);border-radius:12px;margin-bottom:8px;transition:border .2s;}
-    .topic-item:hover{border-color:rgba(148,163,184,.18);}
+    .topic-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(10,16,35,.82);backdrop-filter:blur(12px);border:1px solid rgba(148,163,184,.14);border-radius:12px;margin-bottom:8px;transition:border .2s;}
+    .topic-item:hover{border-color:rgba(148,163,184,.3);}
     .topic-icon{font-size:22px;width:36px;text-align:center;flex-shrink:0;}
     .lock-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .2s;white-space:nowrap;}
     .lock-btn.locked{background:rgba(100,116,139,.15);color:#94a3b8;border:1px solid rgba(148,163,184,.18);}
@@ -103,27 +103,27 @@
     .act-icon.closed{background:rgba(239,68,68,.1);}
     .sup-layout{display:grid;grid-template-columns:1fr 320px;gap:20px;}
     @media(max-width:880px){.sup-layout{grid-template-columns:1fr;}}
-    .student-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(15,23,42,.5);border:1px solid rgba(148,163,184,.07);border-radius:12px;margin-bottom:8px;transition:border .2s;}
-    .student-row.flagged{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.04);}
-    .student-row.idle-state{border-color:rgba(245,158,11,.2);}
+    .student-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(10,16,35,.82);backdrop-filter:blur(12px);border:1px solid rgba(148,163,184,.13);border-radius:12px;margin-bottom:8px;transition:border .2s;}
+    .student-row.flagged{border-color:rgba(239,68,68,.4);background:rgba(80,10,10,.75);}
+    .student-row.idle-state{border-color:rgba(245,158,11,.3);background:rgba(40,30,5,.8);}
     .s-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
     .s-info{flex:1;min-width:0;}
     .s-name{font-size:13px;font-weight:600;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .s-meta{font-size:11px;color:#475569;margin-top:2px;}
+    .s-meta{font-size:11px;color:#94a3b8;margin-top:2px;}
     .s-prog{flex-shrink:0;width:100px;}
     .prog-track{height:5px;background:rgba(148,163,184,.1);border-radius:3px;overflow:hidden;}
     .prog-fill{height:100%;border-radius:3px;transition:width .5s ease;}
     .prog-fill.go{background:linear-gradient(90deg,#06b6d4,#3b82f6);}
     .prog-fill.done{background:linear-gradient(90deg,#22c55e,#16a34a);}
-    .prog-pct{font-size:10px;font-weight:700;color:#64748b;text-align:right;margin-top:3px;}
+    .prog-pct{font-size:10px;font-weight:700;color:#94a3b8;text-align:right;margin-top:3px;}
     .flag-chip{padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap;}
     .flag-chip.tab{background:rgba(239,68,68,.14);color:#fca5a5;border:1px solid rgba(239,68,68,.25);}
     .flag-chip.idle{background:rgba(245,158,11,.12);color:#fcd34d;border:1px solid rgba(245,158,11,.28);}
-    .stats-panel{background:rgba(15,23,42,.7);border:1px solid rgba(148,163,184,.1);border-radius:16px;padding:20px;}
-    .stat-item{padding:11px 0;border-bottom:1px solid rgba(148,163,184,.06);}
+    .stats-panel{background:rgba(10,16,35,.85);backdrop-filter:blur(16px);border:1px solid rgba(148,163,184,.14);border-radius:16px;padding:20px;}
+    .stat-item{padding:11px 0;border-bottom:1px solid rgba(148,163,184,.08);}
     .stat-item:last-child{border-bottom:none;}
     .stat-num{font-size:28px;font-weight:800;}
-    .stat-lbl{font-size:11px;color:#64748b;margin-top:2px;}
+    .stat-lbl{font-size:11px;color:#94a3b8;margin-top:2px;}
     .rank-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;margin-bottom:6px;}
     .rank-item:nth-child(1){background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);}
     .rank-item:nth-child(2){background:rgba(148,163,184,.06);border:1px solid rgba(148,163,184,.14);}
@@ -132,7 +132,7 @@
     .rank-medal{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
     .rank-name{flex:1;font-size:12px;font-weight:600;color:#e2e8f0;}
     .rank-score{font-size:12px;font-weight:800;color:#c4b5fd;}
-    .empty{text-align:center;padding:44px 20px;color:#475569;}
+    .empty{text-align:center;padding:44px 20px;color:#94a3b8;}
     .empty-icon{font-size:38px;margin-bottom:10px;opacity:.45;}
     .empty-title{font-size:15px;font-weight:600;color:#64748b;margin-bottom:5px;}
     .live-dot{display:inline-block;width:8px;height:8px;background:#22c55e;border-radius:50%;animation:pulse 2s infinite;margin-right:6px;}
@@ -243,7 +243,7 @@
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
             <div>
               <div style="font-size:15px;font-weight:700;color:#e2e8f0;">📎 Course Materials</div>
-              <div style="font-size:12px;color:#475569;margin-top:3px;">Upload PDF files for students to review in their Topics tab</div>
+              <div style="font-size:12px;color:#94a3b8;margin-top:3px;">Upload PDF files for students to review in their Topics tab</div>
             </div>
             <button class="btn btn-sm btn-primary" onclick="document.getElementById('mat-upload-form').style.display=document.getElementById('mat-upload-form').style.display==='none'?'block':'none'">＋ Upload PDF</button>
           </div>
@@ -264,7 +264,7 @@
               <button class="btn btn-outline btn-sm" onclick="document.getElementById('mat-upload-form').style.display='none'">Cancel</button>
             </div>
           </div>
-          <div id="materials-list"><div style="font-size:13px;color:#475569;padding:8px 0;">No materials uploaded yet.</div></div>
+          <div id="materials-list"><div style="font-size:13px;color:#94a3b8;padding:8px 0;">No materials uploaded yet.</div></div>
         </div>
       </div>
     </div>
@@ -342,7 +342,7 @@
       <div class="sec-header">
         <div>
           <div class="sec-title" id="av-title">Activity</div>
-          <div style="font-size:12px;color:#475569;display:flex;gap:6px;align-items:center;margin-top:4px;flex-wrap:wrap;">
+          <div style="font-size:12px;color:#94a3b8;display:flex;gap:6px;align-items:center;margin-top:4px;flex-wrap:wrap;">
             <span id="av-items-count">0 items</span><span>·</span>
             <span id="av-pts">0 pts</span><span>·</span>
             <span id="av-timelimit">No time limit</span>
@@ -403,7 +403,7 @@
           </div>
           <div class="stats-panel">
             <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px;">🏆 Ranking</div>
-            <div id="sup-ranking"><div style="font-size:12px;color:#475569;text-align:center;padding:12px 0;">No submissions yet</div></div>
+            <div id="sup-ranking"><div style="font-size:12px;color:#94a3b8;text-align:center;padding:12px 0;">No submissions yet</div></div>
           </div>
         </div>
       </div>
@@ -592,7 +592,7 @@
           <div class="class-card-sub">${esc(ci.name)} · ${esc(c.section||'')}</div>
           <div class="class-card-foot">
             <span class="badge badge-course">${esc(c.version||'CodeChum')}</span>
-            <span style="font-size:12px;color:#475569;">Code: <strong style="font-family:monospace;letter-spacing:.12em;color:#67e8f9;">${esc(c.code)}</strong></span>
+            <span style="font-size:12px;color:#94a3b8;">Code: <strong style="font-family:monospace;letter-spacing:.12em;color:#67e8f9;">${esc(c.code)}</strong></span>
           </div>`;
         grid.appendChild(el);
       });
@@ -671,7 +671,7 @@
           <div class="act-icon ${a.status}">${a.status==='active'?'▶️':a.status==='closed'?'🔒':'📄'}</div>
           <div style="flex:1;min-width:0;">
             <div style="font-size:14px;font-weight:700;">${esc(a.title)}</div>
-            <div style="font-size:12px;color:#475569;margin-top:3px;">${items.length} item${items.length===1?'':'s'} · ${a.maxScore||0} pts · ${a.timeLimitMin>0?a.timeLimitMin+'min':'No limit'}</div>
+            <div style="font-size:12px;color:#94a3b8;margin-top:3px;">${items.length} item${items.length===1?'':'s'} · ${a.maxScore||0} pts · ${a.timeLimitMin>0?a.timeLimitMin+'min':'No limit'}</div>
           </div>
           <span class="badge badge-${a.status}">${a.status.charAt(0).toUpperCase()+a.status.slice(1)}</span>`;
         list.appendChild(el);
@@ -702,7 +702,7 @@
       if(s.idleDetect)tags.push('⏱ Idle Detect');
       document.getElementById('av-settings-display').innerHTML = tags.length
         ?tags.map(t=>`<span class="badge badge-draft" style="margin:2px 2px 2px 0;">${t}</span>`).join('')
-        :'<span style="font-size:12px;color:#475569;">Default settings</span>';
+        :'<span style="font-size:12px;color:#94a3b8;">Default settings</span>';
       document.getElementById('av-items-list').innerHTML = items.length
         ?items.map((item,i)=>{
           const tcs=item.testCases||[];
@@ -716,7 +716,7 @@
                   ${tc.hidden?'<span style="color:#f59e0b;font-size:11px;">🙈 hidden</span>':''}
                 </div>
               </div>`).join('')
-            :'<div style="font-size:12px;color:#475569;padding:4px 0;">No test cases</div>';
+            :'<div style="font-size:12px;color:#94a3b8;padding:4px 0;">No test cases</div>';
           const desc=item.description||item.prompt||'';
           return `
           <div style="background:rgba(30,41,59,.4);border:1px solid rgba(148,163,184,.1);border-radius:10px;margin-bottom:8px;overflow:hidden;">
@@ -724,7 +724,7 @@
               <div class="item-num">${i+1}</div>
               <div style="flex:1;">
                 <div style="font-size:13px;font-weight:600;">${esc(item.title)}</div>
-                <div style="font-size:11px;color:#475569;margin-top:2px;">${tcs.length} test case${tcs.length===1?'':'s'} · ${item.points||0} pts · ${esc(item.language||'JS')}</div>
+                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${tcs.length} test case${tcs.length===1?'':'s'} · ${item.points||0} pts · ${esc(item.language||'JS')}</div>
               </div>
               <span class="item-chevron" style="color:#64748b;font-size:12px;">▼</span>
             </div>
@@ -735,7 +735,7 @@
             </div>
           </div>`;
         }).join('')
-        :'<div style="font-size:13px;color:#475569;">No items</div>';
+        :'<div style="font-size:13px;color:#94a3b8;">No items</div>';
       startPreview(); goTo('screen-activity');
     }
 
@@ -753,11 +753,11 @@
       const ci = COURSES[currentClass?.course]||{topics:[]};
       const unlocked = new Set(currentClass.unlockedTopics||[]);
       if(!ci.topics.length){list.innerHTML='<div class="empty"><div style="font-size:13px;">No predefined topics for this course.</div></div>';return;}
-      list.innerHTML = `<div style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">Predefined Topics</div>`
+      list.innerHTML = `<div style="font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">Predefined Topics</div>`
         + ci.topics.map(t=>`
         <div class="topic-item">
           <div class="topic-icon">${t.icon}</div>
-          <div style="flex:1;"><div style="font-size:14px;font-weight:600;">${esc(t.name)}</div><div style="font-size:11px;color:#475569;margin-top:2px;">${esc(t.desc)}</div></div>
+          <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#e2e8f0;">${esc(t.name)}</div><div style="font-size:11px;color:#94a3b8;margin-top:2px;">${esc(t.desc)}</div></div>
           <button class="lock-btn ${unlocked.has(t.id)?'unlocked':'locked'}" id="tbtn-${t.id}" onclick="toggleTopic('${t.id}')">
             ${unlocked.has(t.id)?'🔓 Unlocked':'🔒 Locked'}
           </button>
@@ -780,7 +780,7 @@
       const list = document.getElementById('materials-list');
       const q = query(collection(db,'topicMaterials'), where('classId','==',currentClass.id));
       const snap = await getDocs(q).catch(()=>null);
-      if(!snap||snap.empty){list.innerHTML='<div style="font-size:13px;color:#475569;padding:8px 0;">No materials uploaded yet.</div>';return;}
+      if(!snap||snap.empty){list.innerHTML='<div style="font-size:13px;color:#94a3b8;padding:8px 0;">No materials uploaded yet.</div>';return;}
       const mats = snap.docs.map(d=>({id:d.id,...d.data()}))
         .sort((a,b)=>(b.uploadedAt?.seconds||0)-(a.uploadedAt?.seconds||0));
       list.innerHTML = mats.map(m=>`
@@ -788,8 +788,8 @@
           <div style="width:38px;height:38px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.25);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📄</div>
           <div style="flex:1;min-width:0;">
             <div style="font-size:13px;font-weight:700;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(m.title)}</div>
-            ${m.description?`<div style="font-size:11px;color:#475569;margin-top:2px;">${esc(m.description)}</div>`:''}
-            <div style="font-size:11px;color:#334155;margin-top:3px;">${m.fileName||''} ${m.fileSize?'· '+formatSize(m.fileSize):''}</div>
+            ${m.description?`<div style="font-size:11px;color:#94a3b8;margin-top:2px;">${esc(m.description)}</div>`:''}
+            <div style="font-size:11px;color:#64748b;margin-top:3px;">${m.fileName||''} ${m.fileSize?'· '+formatSize(m.fileSize):''}</div>
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0;">
             <a href="${esc(m.url)}" target="_blank" class="btn btn-xs btn-outline">👁 View</a>
@@ -967,13 +967,13 @@
             </div>
             <div style="display:grid;grid-template-columns:20px 1fr 1fr 28px;gap:6px;margin-bottom:5px;">
               <span></span>
-              <span style="font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.05em;">Input (optional)</span>
-              <span style="font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.05em;">Expected Output</span>
+              <span style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Input (optional)</span>
+              <span style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Expected Output</span>
               <span></span>
             </div>
             ${(item.testCases||[]).map((tc,ti)=>`
               <div class="tc-grid">
-                <span style="font-size:11px;font-weight:700;color:#475569;text-align:right;">${ti+1}.</span>
+                <span style="font-size:11px;font-weight:700;color:#94a3b8;text-align:right;">${ti+1}.</span>
                 <input class="tc-in" value="${esc(tc.input)}" placeholder="Input…"/>
                 <input class="tc-out" value="${esc(tc.expected)}" placeholder="Expected output…"/>
                 ${(item.testCases||[]).length>1?`<button class="btn-rm" onclick="syncAll();removeTestCase(${idx},${ti})">✕</button>`:`<span></span>`}
@@ -1029,7 +1029,7 @@
         const sessions=snap.docs.map(d=>({id:d.id,...d.data()}));
         document.getElementById('av-student-count').textContent=
           sessions.filter(s=>s.status!=='submitted').length+' active · '+sessions.filter(s=>s.status==='submitted').length+' submitted';
-        if(!sessions.length){prev.innerHTML='<div style="font-size:13px;color:#475569;padding:8px 0;">No students yet</div>';return;}
+        if(!sessions.length){prev.innerHTML='<div style="font-size:13px;color:#94a3b8;padding:8px 0;">No students yet</div>';return;}
         prev.innerHTML=sessions.slice(0,6).map(s=>`
           <div class="student-row ${(s.antiCheat?.tabSwitches||0)>2?'flagged':''}">
             <div class="s-avatar" style="background:linear-gradient(135deg,#06b6d4,#3b82f6);">${(s.studentName||'S').charAt(0).toUpperCase()}</div>
@@ -1037,7 +1037,7 @@
             <div class="s-meta">${s.status==='submitted'?'Submitted':'Active · '+(s.progress||0)+'%'}</div></div>
             ${(s.antiCheat?.tabSwitches||0)>0?`<span class="flag-chip tab">⚠️ ${s.antiCheat.tabSwitches} tab</span>`:''}
             <div style="font-size:12px;font-weight:700;color:${s.status==='submitted'?'#86efac':'#64748b'};flex-shrink:0;">${s.status==='submitted'?'✅ ':''}${s.score||0} pts</div>
-          </div>`).join('')+(sessions.length>6?`<div style="font-size:11px;color:#475569;text-align:center;padding:8px;">+${sessions.length-6} more…</div>`:'');
+          </div>`).join('')+(sessions.length>6?`<div style="font-size:11px;color:#94a3b8;text-align:center;padding:8px;">+${sessions.length-6} more…</div>`:'');
       });
     }
 
@@ -1114,7 +1114,7 @@
       const medals=['🥇','🥈','🥉'];
       document.getElementById('sup-ranking').innerHTML=done.length
         ?done.slice(0,10).map((s,i)=>`<div class="rank-item"><span class="rank-medal">${medals[i]||i+1}</span><span class="rank-name">${esc(s.studentName||'Student')}</span><span class="rank-score">${s.score||0} pts</span></div>`).join('')
-        :'<div style="font-size:12px;color:#475569;text-align:center;padding:12px 0;">No submissions yet</div>';
+        :'<div style="font-size:12px;color:#94a3b8;text-align:center;padding:12px 0;">No submissions yet</div>';
     }
 
     function timeSince(d) {
