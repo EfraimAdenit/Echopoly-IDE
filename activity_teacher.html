@@ -237,7 +237,36 @@
         <button class="tab-btn" id="tab-btn-topics" onclick="switchTab('topics')">📚 Topics</button>
       </div>
       <div class="tab-content active" id="tc-acts"><div id="activities-list"></div></div>
-      <div class="tab-content" id="tc-topics"><div id="topics-list"></div></div>
+      <div class="tab-content" id="tc-topics">
+        <div id="topics-list"></div>
+        <div style="margin-top:28px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div>
+              <div style="font-size:15px;font-weight:700;color:#e2e8f0;">📎 Course Materials</div>
+              <div style="font-size:12px;color:#475569;margin-top:3px;">Upload PDF files for students to review in their Topics tab</div>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="document.getElementById('mat-upload-form').style.display=document.getElementById('mat-upload-form').style.display==='none'?'block':'none'">＋ Upload PDF</button>
+          </div>
+          <div id="mat-upload-form" style="display:none;background:rgba(15,23,42,.6);border:1px solid rgba(148,163,184,.12);border-radius:12px;padding:18px;margin-bottom:16px;">
+            <div class="form-grid-2" style="margin-bottom:12px;">
+              <div class="field"><label>Title</label><input id="mat-title" placeholder="e.g. Week 3 — Loops Reference"/></div>
+              <div class="field"><label>Description (optional)</label><input id="mat-desc" placeholder="Brief note for students"/></div>
+            </div>
+            <div class="field"><label>PDF File</label><input type="file" id="mat-file" accept=".pdf" style="background:rgba(15,23,42,.8);border:1px solid rgba(148,163,184,.18);color:#94a3b8;padding:9px;border-radius:9px;width:100%;cursor:pointer;font-size:13px;"/></div>
+            <div id="mat-progress" style="display:none;margin:10px 0;">
+              <div style="background:rgba(148,163,184,.1);border-radius:6px;height:6px;overflow:hidden;">
+                <div id="mat-progress-bar" style="height:100%;background:linear-gradient(90deg,#7c3aed,#3b82f6);width:0%;transition:width .2s;"></div>
+              </div>
+              <div id="mat-progress-label" style="font-size:11px;color:#64748b;margin-top:4px;">Uploading…</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:4px;">
+              <button class="btn btn-success btn-sm" onclick="uploadMaterial()">⬆ Upload</button>
+              <button class="btn btn-outline btn-sm" onclick="document.getElementById('mat-upload-form').style.display='none'">Cancel</button>
+            </div>
+          </div>
+          <div id="materials-list"><div style="font-size:13px;color:#475569;padding:8px 0;">No materials uploaded yet.</div></div>
+        </div>
+      </div>
     </div>
 
     <!-- ── CREATE / EDIT ACTIVITY ── -->
@@ -386,7 +415,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-    import { getFirestore, collection, doc, query, where, orderBy, getDocs, addDoc, updateDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, query, where, orderBy, getDocs, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
 
     const app = initializeApp({
       apiKey:"AIzaSyBCcyLy_rNx-riDjmK4SUu-gZbKtDPqEYQ",
@@ -396,8 +426,9 @@
       messagingSenderId:"290647098484",
       appId:"1:290647098484:web:61a9a5503c43d465bdbd21"
     });
-    const auth = getAuth(app);
-    const db   = getFirestore(app);
+    const auth    = getAuth(app);
+    const db      = getFirestore(app);
+    const storage = getStorage(app);
     const authReady = new Promise(r => onAuthStateChanged(auth, r));
 
     let me = null, currentClass = null, currentActivity = null;
@@ -721,8 +752,9 @@
       const list = document.getElementById('topics-list');
       const ci = COURSES[currentClass?.course]||{topics:[]};
       const unlocked = new Set(currentClass.unlockedTopics||[]);
-      if(!ci.topics.length){list.innerHTML='<div class="empty"><div style="font-size:13px;">No topics for this course</div></div>';return;}
-      list.innerHTML = ci.topics.map(t=>`
+      if(!ci.topics.length){list.innerHTML='<div class="empty"><div style="font-size:13px;">No predefined topics for this course.</div></div>';return;}
+      list.innerHTML = `<div style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">Predefined Topics</div>`
+        + ci.topics.map(t=>`
         <div class="topic-item">
           <div class="topic-icon">${t.icon}</div>
           <div style="flex:1;"><div style="font-size:14px;font-weight:600;">${esc(t.name)}</div><div style="font-size:11px;color:#475569;margin-top:2px;">${esc(t.desc)}</div></div>
@@ -730,6 +762,7 @@
             ${unlocked.has(t.id)?'🔓 Unlocked':'🔒 Locked'}
           </button>
         </div>`).join('');
+      await loadMaterials();
     }
 
     window.toggleTopic = async function(id) {
@@ -740,6 +773,87 @@
       const btn=document.getElementById('tbtn-'+id);
       if(btn){btn.className='lock-btn '+(set.has(id)?'unlocked':'locked');btn.textContent=set.has(id)?'🔓 Unlocked':'🔒 Locked';}
       showToast(set.has(id)?'🔓 Topic unlocked!':'🔒 Topic locked.');
+    };
+
+    // ── Materials ─────────────────────────────────────────────────────────────
+    async function loadMaterials() {
+      const list = document.getElementById('materials-list');
+      const q = query(collection(db,'topicMaterials'), where('classId','==',currentClass.id));
+      const snap = await getDocs(q).catch(()=>null);
+      if(!snap||snap.empty){list.innerHTML='<div style="font-size:13px;color:#475569;padding:8px 0;">No materials uploaded yet.</div>';return;}
+      const mats = snap.docs.map(d=>({id:d.id,...d.data()}))
+        .sort((a,b)=>(b.uploadedAt?.seconds||0)-(a.uploadedAt?.seconds||0));
+      list.innerHTML = mats.map(m=>`
+        <div style="display:flex;align-items:center;gap:12px;background:rgba(15,23,42,.5);border:1px solid rgba(148,163,184,.1);border-radius:10px;padding:12px 16px;margin-bottom:8px;">
+          <div style="width:38px;height:38px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.25);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📄</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(m.title)}</div>
+            ${m.description?`<div style="font-size:11px;color:#475569;margin-top:2px;">${esc(m.description)}</div>`:''}
+            <div style="font-size:11px;color:#334155;margin-top:3px;">${m.fileName||''} ${m.fileSize?'· '+formatSize(m.fileSize):''}</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">
+            <a href="${esc(m.url)}" target="_blank" class="btn btn-xs btn-outline">👁 View</a>
+            <button class="btn btn-xs btn-danger" onclick="deleteMaterial('${m.id}','${esc(m.storagePath||'')}')">🗑</button>
+          </div>
+        </div>`).join('');
+    }
+
+    function formatSize(bytes){
+      if(bytes<1024)return bytes+'B';
+      if(bytes<1048576)return (bytes/1024).toFixed(1)+'KB';
+      return (bytes/1048576).toFixed(1)+'MB';
+    }
+
+    window.uploadMaterial = async function(){
+      const title = document.getElementById('mat-title').value.trim();
+      const desc  = document.getElementById('mat-desc').value.trim();
+      const file  = document.getElementById('mat-file').files[0];
+      if(!title){showToast('Please enter a title.',true);return;}
+      if(!file){showToast('Please select a PDF file.',true);return;}
+      if(file.type!=='application/pdf'){showToast('Only PDF files are supported.',true);return;}
+      if(file.size>20*1024*1024){showToast('File too large. Max 20 MB.',true);return;}
+      const progressWrap = document.getElementById('mat-progress');
+      const progressBar  = document.getElementById('mat-progress-bar');
+      const progressLbl  = document.getElementById('mat-progress-label');
+      progressWrap.style.display='block';
+      progressBar.style.width='0%';
+      const storagePath = `topicMaterials/${currentClass.id}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+      const storageRef  = ref(storage, storagePath);
+      const uploadTask  = uploadBytesResumable(storageRef, file);
+      uploadTask.on('state_changed',
+        snap=>{
+          const pct = Math.round(snap.bytesTransferred/snap.totalBytes*100);
+          progressBar.style.width = pct+'%';
+          progressLbl.textContent = `Uploading… ${pct}%`;
+        },
+        err=>{showToast('Upload failed: '+err.message,true);progressWrap.style.display='none';},
+        async()=>{
+          const url = await getDownloadURL(uploadTask.snapshot.ref);
+          await addDoc(collection(db,'topicMaterials'),{
+            classId:currentClass.id, teacherId:me.uid,
+            title, description:desc,
+            fileName:file.name, fileSize:file.size,
+            storagePath, url, uploadedAt:serverTimestamp()
+          });
+          progressWrap.style.display='none';
+          document.getElementById('mat-title').value='';
+          document.getElementById('mat-desc').value='';
+          document.getElementById('mat-file').value='';
+          document.getElementById('mat-upload-form').style.display='none';
+          showToast('✅ Material uploaded!');
+          await loadMaterials();
+        }
+      );
+    };
+
+    window.deleteMaterial = async function(id, storagePath){
+      if(!confirm('Delete this material? Students will lose access to it.'))return;
+      try{
+        await deleteDoc(doc(db,'topicMaterials',id));
+        if(storagePath){await deleteObject(ref(storage,storagePath)).catch(()=>{});}
+        showToast('Material deleted.');
+        await loadMaterials();
+      }catch(e){showToast('Delete failed: '+e.message,true);}
     };
 
     // ── Create / Edit Activity ────────────────────────────────────────────────

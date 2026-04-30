@@ -176,6 +176,49 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
 /* ── Flashcards button ── */
 .btn-flashcards{background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;transition:opacity .2s;}
 .btn-flashcards:hover{opacity:.85;}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:4px;background:#0f172a;border-radius:8px;padding:4px;margin-bottom:16px;width:fit-content;}
+.tab-btn-s{padding:7px 20px;border-radius:6px;cursor:pointer;font-size:.9rem;color:#64748b;transition:all .2s;border:none;background:transparent;font-family:inherit;}
+.tab-btn-s.active{background:#6366f1;color:#fff;}
+.stab-content{display:none;}
+.stab-content.active{display:block;}
+
+/* ── Topics (student) ── */
+.topic-card-s{background:#1e293b;border:1px solid #334155;border-radius:12px;margin-bottom:10px;overflow:hidden;}
+.topic-card-s:hover{border-color:#6366f1;}
+.topic-head-s{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;}
+.topic-ico{width:38px;height:38px;background:linear-gradient(135deg,#6366f1,#4f46e5);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.topic-body-s{display:none;padding:4px 18px 16px;border-top:1px solid #1e293b;}
+.topic-card-s.open .topic-body-s{display:block;}
+.topic-card-s.open .t-chev{transform:rotate(180deg);}
+.t-chev{color:#475569;font-size:.75rem;transition:transform .2s;flex-shrink:0;margin-left:auto;}
+.concept-list{list-style:none;padding:0;margin:10px 0;display:flex;flex-direction:column;gap:6px;}
+.concept-list li{display:flex;gap:8px;font-size:.87rem;color:#94a3b8;line-height:1.5;}
+.concept-list li::before{content:'›';color:#6366f1;font-weight:700;flex-shrink:0;}
+.topic-tip-s{margin-top:10px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:9px 13px;font-size:.84rem;color:#a5b4fc;display:flex;gap:8px;}
+.topic-ex{margin-top:10px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:11px 14px;font-family:'Consolas','Courier New',monospace;font-size:.8rem;color:#a5b4fc;line-height:1.6;white-space:pre;overflow-x:auto;}
+
+/* ── Materials (student) ── */
+.material-card{display:flex;align-items:center;gap:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;padding:13px 16px;margin-bottom:8px;}
+.material-card:hover{border-color:#6366f1;}
+.mat-ico{width:38px;height:38px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.mat-info{flex:1;min-width:0;}
+.mat-title{font-size:.92rem;font-weight:700;color:#e2e8f0;}
+.mat-desc{font-size:.8rem;color:#64748b;margin-top:2px;}
+.mat-meta{font-size:.75rem;color:#334155;margin-top:3px;}
+.btn-view-pdf{background:#6366f1;color:#fff;border:none;padding:7px 14px;border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.btn-view-pdf:hover{background:#4f46e5;}
+
+/* ── PDF Viewer overlay ── */
+#pdf-overlay{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.85);flex-direction:column;}
+#pdf-overlay.show{display:flex;}
+.pdf-header{background:#1e293b;border-bottom:1px solid #334155;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.pdf-title{font-size:1rem;font-weight:700;color:#e2e8f0;}
+.pdf-actions{display:flex;gap:8px;}
+.btn-pdf-open{background:#6366f1;color:#fff;border:none;padding:7px 14px;border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;text-decoration:none;}
+.btn-pdf-close{background:transparent;border:1px solid #475569;color:#94a3b8;padding:7px 14px;border-radius:7px;font-size:.82rem;cursor:pointer;}
+#pdf-frame{flex:1;border:none;background:#fff;}
 </style>
 </head>
 <body>
@@ -229,10 +272,32 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
       <button class="btn-back" onclick="showScreen('screen-landing')">← Back</button>
     </div>
   </div>
-  <div class="section-label">Activities</div>
-  <div id="activities-list" class="activities-list">
-    <div class="loader">Loading activities…</div>
+  <div class="tabs">
+    <button class="tab-btn-s active" id="stab-activities" onclick="switchClassTab('activities')">📝 Activities</button>
+    <button class="tab-btn-s" id="stab-topics" onclick="switchClassTab('topics')">📚 Topics</button>
   </div>
+  <div class="stab-content active" id="stc-activities">
+    <div id="activities-list" class="activities-list"><div class="loader">Loading activities…</div></div>
+  </div>
+  <div class="stab-content" id="stc-topics">
+    <div id="student-topics-list"></div>
+    <div id="student-materials-section" style="margin-top:24px;display:none;">
+      <div style="font-size:.8rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">📎 Course Materials</div>
+      <div id="student-materials-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PDF Viewer Overlay -->
+<div id="pdf-overlay">
+  <div class="pdf-header">
+    <span class="pdf-title" id="pdf-overlay-title">Document</span>
+    <div class="pdf-actions">
+      <a id="pdf-open-link" href="#" target="_blank" class="btn-pdf-open">↗ Open in Tab</a>
+      <button class="btn-pdf-close" onclick="closePdfOverlay()">✕ Close</button>
+    </div>
+  </div>
+  <iframe id="pdf-frame" src=""></iframe>
 </div>
 
 <!-- Screen: Activity Info -->
@@ -409,11 +474,139 @@ window.openClass=async function(jsonStr){
   const courseName=currentClass.course&&COURSE_NAMES[currentClass.course]||currentClass.subject||'Course';
   document.getElementById('class-title').textContent=currentClass.name;
   document.getElementById('class-meta').textContent=`${courseName} • ${currentClass.teacherName||currentClass.teacher||''}`;
+  switchClassTab('activities');
   showScreen('screen-class');
   loadActivities(currentClass.id);
+  loadStudentTopics();
 };
 
 const COURSE_NAMES={prog1:'Programming 1',prog2:'Programming 2',webdev:'Web Development',ds:'Data Structures',algo:'Algorithms',custom:'Custom Course'};
+
+window.switchClassTab=function(tab){
+  ['activities','topics'].forEach(t=>{
+    document.getElementById('stab-'+t).classList.toggle('active',t===tab);
+    document.getElementById('stc-'+t).classList.toggle('active',t===tab);
+  });
+};
+
+// ── Student Topics ─────────────────────────────────────────────────────────
+const TOPICS_DATA={
+  prog1:[
+    {id:'t1',icon:'💡',name:'Programming Fundamentals',desc:'Concepts, variables, I/O',concepts:['A program is a set of instructions executed by a computer','Variables store data: numbers, text, booleans','Input/Output allows programs to communicate with users','Every program has a logical flow: sequence, selection, repetition','Comments explain code and are ignored by the compiler'],tip:'Start every program by identifying: What data do I need? What do I output?',example:'// Variable types\nlet name = "Alice";   // string\nlet age  = 20;        // number\nlet pass = true;      // boolean\nconsole.log("Hello, " + name);'},
+    {id:'t2',icon:'📤',name:'Output Operations',desc:'Print statements and formatting',concepts:['console.log() prints to the browser console in JavaScript','print() in Python; System.out.println() in Java','Concatenate strings with + or use template literals','New lines with \\n inside strings','toFixed(2) formats numbers to 2 decimal places'],tip:'Use backtick template literals in JS: `Hello, ${name}!`',example:'let score = 95.678;\nconsole.log(`Score: ${score.toFixed(2)}`); // Score: 95.68'},
+    {id:'t3',icon:'📦',name:'Variables & Data Types',desc:'int, string, boolean, float',concepts:['Primitive types: number, string, boolean, null, undefined','Use let for mutable variables, const for constants','typeof operator returns the data type as a string','NaN means Not a Number — result of invalid math','Type coercion: JS auto-converts types in some operations'],tip:'Always initialize variables. Uninitialized variables cause hard-to-find bugs.',example:'const PI = 3.14159;\nlet count = 0;\nconsole.log(typeof PI);    // "number"\nconsole.log(typeof "hi");  // "string"'},
+    {id:'t4',icon:'🔀',name:'Conditional Statements',desc:'if/else, switch, ternary',concepts:['if/else executes code based on a true/false condition','else if chains test multiple conditions','switch compares one value against many cases','Ternary: condition ? valueIfTrue : valueIfFalse','Logical operators: && (AND), || (OR), ! (NOT)'],tip:'Use === (strict equality) not == in JavaScript.',example:'let grade = 88;\nif (grade >= 90)       console.log("A");\nelse if (grade >= 80)  console.log("B");\nelse                   console.log("C");'},
+    {id:'t5',icon:'🔁',name:'Loops',desc:'for, while, do-while',concepts:['for loop: best when iterations are known','while loop: repeats while condition is true','do-while: runs at least once before checking','break exits a loop; continue skips to next iteration','Off-by-one errors are the most common loop bug'],tip:'If a loop runs forever, you likely forgot to update the loop variable.',example:'let sum = 0;\nfor (let i = 1; i <= 10; i++) {\n  sum += i;\n}\nconsole.log(sum); // 55'},
+    {id:'t6',icon:'📋',name:'Arrays & Lists',desc:'Creation, access, manipulation',concepts:['Arrays store multiple values in one variable','Index starts at 0 — first element is arr[0]','arr.length returns element count','push() adds to end; pop() removes from end','slice() extracts part; splice() modifies in place'],tip:'Use arr.forEach() or for...of for clean array loops.',example:'let nums = [10, 20, 30, 40];\nnums.push(50);\nconsole.log(nums[0]);     // 10\nconsole.log(nums.length); // 5'},
+    {id:'t7',icon:'⚙️',name:'Functions',desc:'Defining and calling functions',concepts:['Functions group reusable code under a name','Parameters are inputs; return value is the output','Arrow functions: const fn = (x) => x * 2','Functions should do ONE thing — keep them focused','Default parameters: function greet(name = "World")'],tip:'Name functions as verbs: calculateTotal(), getUserName().',example:'function add(a, b) { return a + b; }\nconst square = n => n * n;\nconsole.log(add(3, 4));  // 7\nconsole.log(square(5));  // 25'},
+    {id:'t8',icon:'🔤',name:'Strings',desc:'String operations and methods',concepts:['Strings are immutable — methods return new strings','length gives character count','toUpperCase() / toLowerCase() change case','indexOf() finds position; includes() checks existence','split() turns a string into array; join() reverses'],tip:'trim() removes leading/trailing whitespace — always use on user input.',example:'let s = "  Hello, World!  ";\nconsole.log(s.trim());          // "Hello, World!"\nconsole.log(s.includes("World")); // true'}
+  ],
+  prog2:[
+    {id:'t1',icon:'🏗️',name:'Object-Oriented Programming',desc:'Classes, objects, encapsulation',concepts:['A class is a blueprint; an object is an instance','Encapsulation hides internal state','Constructor initializes object properties','this keyword refers to the current object','Properties hold state; methods define behavior'],tip:'Think of a class as a cookie cutter — it defines the shape, objects are the cookies.',example:'class Student {\n  constructor(name, grade) {\n    this.name = name; this.grade = grade;\n  }\n  describe() { return `${this.name}: ${this.grade}`; }\n}\nconst s = new Student("Ana", 92);'},
+    {id:'t2',icon:'🧬',name:'Inheritance & Polymorphism',desc:'Extends, overriding, interfaces',concepts:['Inheritance lets a child class reuse parent code','extends keyword creates a subclass','super() calls the parent constructor','Method overriding replaces a parent method','Polymorphism: same method name, different behavior'],tip:'Prefer composition over deep inheritance chains.',example:'class Animal { speak() { return "..."; } }\nclass Dog extends Animal {\n  speak() { return "Woof!"; }\n}\nconsole.log(new Dog().speak()); // Woof!'},
+    {id:'t3',icon:'🛡️',name:'Exception Handling',desc:'try/catch, error types',concepts:['try block contains code that might throw','catch handles the error gracefully','finally always runs, error or not','throw creates a custom error','Common errors: TypeError, ReferenceError, SyntaxError'],tip:'Never swallow errors silently — at least log them.',example:'try {\n  let x = JSON.parse("bad json");\n} catch (e) {\n  console.log("Error:", e.message);\n} finally {\n  console.log("Done");\n}'},
+    {id:'t4',icon:'🔄',name:'Recursion',desc:'Recursive functions and base cases',concepts:['Recursion: a function that calls itself','Every recursive function MUST have a base case','Call stack depth is limited','Get the base case right first','Tail recursion optimizes memory in some languages'],tip:'Trace through small inputs by hand before coding.',example:'function factorial(n) {\n  if (n <= 1) return 1;         // base case\n  return n * factorial(n - 1); // recursive\n}\nconsole.log(factorial(5)); // 120'},
+    {id:'t5',icon:'📊',name:'Sorting Algorithms',desc:'Bubble, selection, merge sort',concepts:['Bubble sort: swap adjacent elements — O(n²)','Selection sort: find minimum, place at front — O(n²)','Merge sort: divide and conquer — O(n log n)','Built-in sort() uses an optimized algorithm','Stable sort preserves order of equal elements'],tip:'For tasks, use built-in sort. Implement manual sorts to understand concepts.',example:'let nums = [5, 2, 8, 1, 9];\nnums.sort((a, b) => a - b);\nconsole.log(nums); // [1, 2, 5, 8, 9]'},
+    {id:'t6',icon:'🗂️',name:'Data Structures',desc:'Stacks, queues, linked lists',concepts:['Stack: LIFO — Last In First Out (push/pop)','Queue: FIFO — First In First Out','Linked list: nodes connected by pointers','Arrays have O(1) access; linked lists O(n)','Choose structure based on how you use the data'],tip:'A JavaScript array can act as a stack (push/pop) or queue (push/shift).',example:'const stack = [];\nstack.push(1); stack.push(2); stack.push(3);\nconsole.log(stack.pop()); // 3 (LIFO)'},
+    {id:'t7',icon:'🔍',name:'Searching Algorithms',desc:'Linear and binary search',concepts:['Linear search: check each element — O(n)','Binary search: divide sorted array in half — O(log n)','Binary search REQUIRES a sorted array','indexOf() performs linear search','Hash maps give O(1) average search'],tip:'Binary search on 1M items: ~20 steps vs 1M steps for linear.',example:'function binarySearch(arr, target) {\n  let lo = 0, hi = arr.length - 1;\n  while (lo <= hi) {\n    const mid = lo + hi >> 1;\n    if (arr[mid] === target) return mid;\n    arr[mid] < target ? lo=mid+1 : hi=mid-1;\n  }\n  return -1;\n}'},
+    {id:'t8',icon:'📁',name:'File I/O',desc:'Reading and writing files',concepts:['File I/O reads from and writes to files','In Python: open("file.txt","r") to read','Files should always be closed after use','Use with statement in Python for auto-close','Errors like "file not found" must be caught'],tip:'In Python, with open("file.txt") as f: auto-closes even on error.',example:'# Python\nwith open("data.txt", "r") as f:\n    content = f.read()\nprint(content)'}
+  ],
+  webdev:[
+    {id:'t1',icon:'🌐',name:'HTML Fundamentals',desc:'Elements, attributes, structure',concepts:['HTML defines structure and content of a web page','Tags come in pairs or self-closing: <img/>','Semantic elements improve accessibility','Attributes provide extra info: class, id, href','The DOM is the browser\'s object model of HTML'],tip:'Use semantic HTML — it helps screen readers and search engines.',example:'<!DOCTYPE html>\n<html>\n  <body>\n    <h1>Hello!</h1>\n    <p>Welcome to <strong>my site</strong>.</p>\n  </body>\n</html>'},
+    {id:'t2',icon:'🎨',name:'CSS Styling',desc:'Selectors, box model, flexbox',concepts:['Select elements by tag, class (.), or id (#)','Box model: content → padding → border → margin','Flexbox makes 1D layouts easy: display:flex','Specificity: inline > id > class > tag','rem units are relative to root font size'],tip:'Flexbox gap is cleaner than using margins on each child.',example:'.card {\n  display: flex;\n  gap: 16px;\n  padding: 20px;\n  border-radius: 8px;\n}'},
+    {id:'t3',icon:'⚡',name:'JavaScript Basics',desc:'Variables, functions, events',concepts:['JS makes pages interactive','addEventListener() attaches event handlers','querySelector() selects the first matching element','Event object has info about what happened','Async code doesn\'t block the page'],tip:'Use addEventListener instead of onclick attributes.',example:'document.querySelector("#btn")\n  .addEventListener("click", () => {\n    console.log("Clicked!");\n  });'},
+    {id:'t4',icon:'🔧',name:'DOM Manipulation',desc:'querySelector, innerHTML',concepts:['DOM manipulation changes display without reload','textContent sets plain text safely','createElement() builds elements programmatically','classList.add/remove/toggle manages CSS classes','dataset stores custom data on elements'],tip:'Prefer textContent over innerHTML for user data — prevents XSS.',example:'const el = document.createElement("li");\nel.textContent = "New item";\ndocument.querySelector("ul").appendChild(el);'},
+    {id:'t5',icon:'📱',name:'Responsive Design',desc:'Media queries, fluid layouts',concepts:['Responsive design adapts to any screen size','Media queries apply CSS at certain widths','Mobile-first: style small screens first','Viewport meta tag required for mobile','CSS Grid is ideal for 2D; Flexbox for 1D'],tip:'Test at 320px, 768px, and 1280px — covers most devices.',example:'/* Mobile first */\n.grid { grid-template-columns: 1fr; }\n\n@media (min-width: 768px) {\n  .grid { grid-template-columns: repeat(3, 1fr); }\n}'},
+    {id:'t6',icon:'🔗',name:'Fetch API & AJAX',desc:'HTTP requests, async/await',concepts:['fetch() makes HTTP requests from browser','async/await makes async code readable','Always handle errors with try/catch','Response must be parsed: res.json()','CORS restricts which origins make requests'],tip:'Always check res.ok before parsing — 404 doesn\'t throw automatically.',example:'async function getData(url) {\n  const res = await fetch(url);\n  if (!res.ok) throw new Error(res.status);\n  return await res.json();\n}'}
+  ],
+  ds:[
+    {id:'t1',icon:'📋',name:'Arrays & Linked Lists',desc:'Linear structures',concepts:['Arrays: O(1) random access, O(n) insert/delete','Linked lists: O(1) insert, O(n) access','Doubly linked lists have prev and next pointers','Arrays are cache-friendly','Dynamic arrays resize automatically'],tip:'Arrays win for access; linked lists win for frequent front insert/delete.',example:'class Node {\n  constructor(val) {\n    this.val = val; this.next = null;\n  }\n}'},
+    {id:'t2',icon:'📚',name:'Stacks & Queues',desc:'LIFO and FIFO',concepts:['Stack: LIFO — push/pop from top','Queue: FIFO — enqueue at back, dequeue from front','The call stack in programming IS a stack','BFS uses a queue; DFS uses a stack','Deque supports insert/remove from both ends'],tip:'Undo/redo, browser history, and function calls all use stacks.',example:'class Stack {\n  #d=[];\n  push(v){this.#d.push(v);}\n  pop(){return this.#d.pop();}\n  peek(){return this.#d.at(-1);}\n}'},
+    {id:'t3',icon:'🌳',name:'Trees',desc:'BST, traversal',concepts:['Tree: hierarchical structure with a root node','Binary tree: at most 2 children per node','BST: left < node < right — O(log n) search','Traversals: inorder (sorted), preorder, postorder','Balanced trees keep height O(log n)'],tip:'Inorder traversal of a BST gives elements in sorted order.',example:'function insert(root, val) {\n  if (!root) return {val,left:null,right:null};\n  if (val < root.val) root.left  = insert(root.left,  val);\n  else               root.right = insert(root.right, val);\n  return root;\n}'},
+    {id:'t4',icon:'🕸️',name:'Graphs',desc:'DFS, BFS',concepts:['Graph: nodes connected by edges','Directed vs undirected; weighted vs unweighted','Adjacency list: memory-efficient for sparse graphs','BFS: shortest path (unweighted), uses queue','DFS: explores deep first, uses stack/recursion'],tip:'Most real-world problems (maps, social networks) are graph problems.',example:'function bfs(graph, start) {\n  const visited = new Set([start]);\n  const queue = [start];\n  while (queue.length) {\n    const node = queue.shift();\n    for (const nb of graph[node])\n      if (!visited.has(nb)){visited.add(nb);queue.push(nb);}\n  }\n}'},
+    {id:'t5',icon:'🔑',name:'Hashing',desc:'Hash tables, collision resolution',concepts:['Hash function maps keys to array indices','Collisions: two keys map to same index','Chaining: linked list at each index','Open addressing: probe for next empty slot','JS objects and Map are O(1) average lookup'],tip:'JavaScript Map is a hash table — use it for fast key-value lookup.',example:'const map = new Map();\nmap.set("alice", 95);\nconsole.log(map.get("alice")); // 95\nconsole.log(map.has("carol")); // false'}
+  ],
+  algo:[
+    {id:'t1',icon:'📈',name:'Complexity Analysis',desc:'Big O notation',concepts:['Big O describes how runtime grows with input','O(1) constant, O(log n) log, O(n) linear, O(n²) quadratic','Drop constants: O(2n) → O(n)','Space complexity measures memory usage','Big O usually means worst case'],tip:'If doubling input makes it 4x slower, that\'s O(n²).',example:'// O(n²) — nested loops\nfor (let i = 0; i < n; i++)\n  for (let j = 0; j < n; j++) { /* ... */ }\n\n// O(n log n) — merge sort'},
+    {id:'t2',icon:'📊',name:'Sorting',desc:'Quicksort, mergesort',concepts:['Mergesort: stable, O(n log n) always, needs extra space','Quicksort: O(n log n) average, O(n²) worst, in-place','Heapsort: O(n log n) always, in-place','Timsort (Python/Java default): hybrid sort','Counting/Radix: O(n) for bounded integer keys'],tip:'In practice, quicksort beats mergesort due to better cache behavior.',example:'function mergeSort(arr) {\n  if (arr.length <= 1) return arr;\n  const mid = arr.length >> 1;\n  return merge(mergeSort(arr.slice(0,mid)), mergeSort(arr.slice(mid)));\n}'},
+    {id:'t3',icon:'🧩',name:'Dynamic Programming',desc:'Memoization, tabulation',concepts:['DP breaks problems into overlapping subproblems','Memoization (top-down): cache recursive results','Tabulation (bottom-up): fill table iteratively','Optimal substructure: use optimal sub-solutions','Overlapping subproblems: same sub-problem solved many times'],tip:'Identify the "state" — what uniquely defines each subproblem.',example:'const memo = {};\nfunction fib(n) {\n  if (n <= 1) return n;\n  if (memo[n]) return memo[n];\n  return memo[n] = fib(n-1) + fib(n-2);\n}'},
+    {id:'t4',icon:'💰',name:'Greedy Algorithms',desc:'Optimal substructure',concepts:['Greedy: always pick locally best option','Works when local choice leads to global optimum','Faster than DP but not always optimal','Classic: coin change, activity selection','Proof often uses exchange argument'],tip:'Test greedy on small examples — if counterexample exists, use DP instead.',example:'function coins(amount, denoms) {\n  let count = 0;\n  for (const d of denoms.sort((a,b)=>b-a)) {\n    count += Math.floor(amount/d);\n    amount %= d;\n  }\n  return count;\n}'},
+    {id:'t5',icon:'🗺️',name:'Graph Algorithms',desc:'Dijkstra, Floyd-Warshall',concepts:['Dijkstra: shortest path, non-negative weights, O((V+E)log V)','Bellman-Ford: handles negative weights, O(VE)','Floyd-Warshall: all-pairs shortest path, O(V³)','MST: Kruskal (sort edges) or Prim (grow from node)','Topological sort: ordering a DAG'],tip:'Dijkstra fails with negative weights — use Bellman-Ford then.',example:'// Dijkstra skeleton\nfunction dijkstra(graph, src) {\n  const dist = {}; dist[src] = 0;\n  // use min-priority queue\n  // relax edges...\n  return dist;\n}'}
+  ],
+  custom:[]
+};
+
+async function loadStudentTopics(){
+  const topicList = document.getElementById('student-topics-list');
+  const ci = TOPICS_DATA[currentClass?.course]||[];
+  const unlocked = new Set(currentClass?.unlockedTopics||[]);
+  const unlockedTopics = ci.filter(t=>unlocked.has(t.id));
+
+  if(!unlockedTopics.length){
+    topicList.innerHTML=`<div style="text-align:center;padding:40px;color:#475569;">
+      <div style="font-size:2rem;margin-bottom:10px;">🔒</div>
+      <div style="font-size:.95rem;font-weight:600;color:#64748b;">No topics unlocked yet</div>
+      <div style="font-size:.82rem;margin-top:6px;">Your instructor will unlock topics as the course progresses.</div>
+    </div>`;
+  } else {
+    topicList.innerHTML=unlockedTopics.map(t=>{
+      const concepts=t.concepts.map(c=>`<li>${esc(c)}</li>`).join('');
+      const tip=t.tip?`<div class="topic-tip-s"><span>💡</span><span>${esc(t.tip)}</span></div>`:'';
+      const ex=t.example?`<pre class="topic-ex">${esc(t.example)}</pre>`:'';
+      return `<div class="topic-card-s" id="stopic-${t.id}">
+        <div class="topic-head-s" onclick="toggleStudentTopic('${t.id}')">
+          <div class="topic-ico">${t.icon}</div>
+          <div style="flex:1;">
+            <div style="font-size:.95rem;font-weight:700;color:#e2e8f0;">${esc(t.name)}</div>
+            <div style="font-size:.8rem;color:#64748b;margin-top:2px;">${esc(t.desc)}</div>
+          </div>
+          <span class="t-chev">▼</span>
+        </div>
+        <div class="topic-body-s">
+          <ul class="concept-list">${concepts}</ul>
+          ${tip}${ex}
+        </div>
+      </div>`;
+    }).join('');
+  }
+  await loadStudentMaterials();
+}
+
+window.toggleStudentTopic=function(id){
+  document.getElementById('stopic-'+id)?.classList.toggle('open');
+};
+
+async function loadStudentMaterials(){
+  const section = document.getElementById('student-materials-section');
+  const list    = document.getElementById('student-materials-list');
+  const q = query(collection(db,'topicMaterials'),where('classId','==',currentClass.id));
+  const snap = await getDocs(q).catch(()=>null);
+  if(!snap||snap.empty){section.style.display='none';return;}
+  section.style.display='block';
+  const mats = snap.docs.map(d=>({id:d.id,...d.data()}))
+    .sort((a,b)=>(b.uploadedAt?.seconds||0)-(a.uploadedAt?.seconds||0));
+  list.innerHTML = mats.map(m=>`
+    <div class="material-card">
+      <div class="mat-ico">📄</div>
+      <div class="mat-info">
+        <div class="mat-title">${esc(m.title)}</div>
+        ${m.description?`<div class="mat-desc">${esc(m.description)}</div>`:''}
+        <div class="mat-meta">${m.fileName||''}</div>
+      </div>
+      <button class="btn-view-pdf" onclick="openPdfOverlay('${esc(m.url)}','${esc(m.title)}')">📄 View PDF</button>
+    </div>`).join('');
+}
+
+window.openPdfOverlay=function(url,title){
+  document.getElementById('pdf-overlay-title').textContent=title;
+  document.getElementById('pdf-open-link').href=url;
+  document.getElementById('pdf-frame').src=url;
+  document.getElementById('pdf-overlay').classList.add('show');
+};
+window.closePdfOverlay=function(){
+  document.getElementById('pdf-overlay').classList.remove('show');
+  document.getElementById('pdf-frame').src='';
+};
 
 // ── Join Class ──
 window.joinClass=async()=>{
