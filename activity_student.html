@@ -174,9 +174,34 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
 .loader{text-align:center;color:#64748b;padding:40px;font-size:.95rem;}
 
 /* ── Tabs ── */
-.tabs{display:flex;gap:4px;background:#0f172a;border-radius:8px;padding:4px;margin-bottom:16px;}
+.tabs{display:flex;gap:4px;background:#0f172a;border-radius:8px;padding:4px;margin-bottom:16px;width:fit-content;}
 .tab{padding:7px 18px;border-radius:6px;cursor:pointer;font-size:.9rem;color:#64748b;transition:all .2s;border:none;background:transparent;}
 .tab.active{background:#6366f1;color:#fff;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ── Topics ── */
+.topic-card{background:#1e293b;border:1px solid #334155;border-radius:12px;margin-bottom:10px;overflow:hidden;transition:border-color .2s;}
+.topic-card:hover{border-color:#6366f1;}
+.topic-card.locked{opacity:.45;pointer-events:none;}
+.topic-header{display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer;user-select:none;}
+.topic-icon-wrap{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.topic-icon-wrap.locked{background:rgba(71,85,105,.3);}
+.topic-info{flex:1;}
+.topic-name{font-size:.95rem;font-weight:700;color:#e2e8f0;}
+.topic-desc{font-size:.8rem;color:#64748b;margin-top:2px;}
+.topic-chevron{color:#475569;font-size:.75rem;transition:transform .2s;flex-shrink:0;}
+.topic-card.open .topic-chevron{transform:rotate(180deg);}
+.topic-body{display:none;padding:0 18px 18px 18px;border-top:1px solid #334155;}
+.topic-card.open .topic-body{display:block;}
+.concept-list{list-style:none;padding:0;margin:12px 0 0 0;display:flex;flex-direction:column;gap:7px;}
+.concept-list li{display:flex;align-items:flex-start;gap:8px;font-size:.88rem;color:#94a3b8;line-height:1.5;}
+.concept-list li::before{content:'›';color:#6366f1;font-weight:700;flex-shrink:0;margin-top:1px;}
+.topic-example{margin-top:14px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:12px 14px;font-family:'Consolas','Courier New',monospace;font-size:.82rem;color:#a5b4fc;line-height:1.6;white-space:pre;}
+.topic-tip{margin-top:12px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.25);border-radius:8px;padding:10px 14px;font-size:.85rem;color:#a5b4fc;display:flex;gap:8px;align-items:flex-start;}
+.topic-tip-icon{flex-shrink:0;font-size:1rem;}
+.locked-notice{text-align:center;padding:32px;color:#475569;font-size:.9rem;}
+.locked-notice .lock-icon{font-size:2rem;margin-bottom:8px;}
 </style>
 </head>
 <body>
@@ -227,9 +252,17 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
     </div>
     <button class="btn-back" onclick="showScreen('screen-landing')">← Back</button>
   </div>
-  <div class="section-label">Activities</div>
-  <div id="activities-list" class="activities-list">
-    <div class="loader">Loading activities…</div>
+  <div class="tabs">
+    <button class="tab active" id="tab-activities" onclick="switchClassTab('activities')">📝 Activities</button>
+    <button class="tab" id="tab-topics" onclick="switchClassTab('topics')">📚 Topics</button>
+  </div>
+  <div class="tab-content active" id="tc-activities">
+    <div id="activities-list" class="activities-list">
+      <div class="loader">Loading activities…</div>
+    </div>
+  </div>
+  <div class="tab-content" id="tc-topics">
+    <div id="topics-list"></div>
   </div>
 </div>
 
@@ -335,6 +368,149 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
+// ── Courses & Topics ──
+const COURSES={
+  prog1:{name:'Programming 1',topics:[
+    {id:'t1',icon:'💡',name:'Programming Fundamentals',desc:'Concepts, variables, I/O',
+      concepts:['A program is a set of instructions executed by a computer','Variables store data: numbers, text, booleans','Input/Output allows programs to communicate with users','Every program has a logical flow: sequence, selection, repetition','Comments explain code and are ignored by the compiler'],
+      tip:'Start every program by identifying: What data do I need? What do I output? What steps get me there.',
+      example:'// Variable types\nlet name = "Alice";   // string\nlet age  = 20;        // number\nlet pass = true;      // boolean\nconsole.log("Hello, " + name);'},
+    {id:'t2',icon:'📤',name:'Output Operations',desc:'Print statements and formatting',
+      concepts:['console.log() prints to the browser console in JavaScript','print() is used in Python; System.out.println() in Java','You can concatenate strings with + or use template literals','New lines can be created with \\n inside strings','Formatting numbers: toFixed(2) for 2 decimal places'],
+      tip:'Use template literals (backticks) in JS for cleaner output: `` `Hello, ${name}!` ``',
+      example:'let score = 95.678;\nconsole.log(`Score: ${score.toFixed(2)}`); // Score: 95.68\nconsole.log("Line 1\\nLine 2");'},
+    {id:'t3',icon:'📦',name:'Variables & Data Types',desc:'int, string, boolean, float',
+      concepts:['Primitive types: number, string, boolean, null, undefined','Use let for mutable variables, const for constants','Type coercion: JavaScript auto-converts types in some operations','NaN means "Not a Number" — result of invalid math','typeof operator returns the data type as a string'],
+      tip:'Always initialize variables. Uninitialized variables cause hard-to-find bugs.',
+      example:'const PI = 3.14159;\nlet count = 0;\ncount += 1;\nconsole.log(typeof PI);    // "number"\nconsole.log(typeof "hi");  // "string"'},
+    {id:'t4',icon:'🔀',name:'Conditional Statements',desc:'if/else, switch, ternary',
+      concepts:['if/else executes code based on a true/false condition','else if chains allow multiple conditions to be tested','switch compares one value against many cases efficiently','Ternary operator: condition ? valueIfTrue : valueIfFalse','Logical operators: && (AND), || (OR), ! (NOT)'],
+      tip:'Use === (strict equality) not == in JavaScript to avoid type coercion surprises.',
+      example:'let grade = 88;\nif (grade >= 90)       console.log("A");\nelse if (grade >= 80)  console.log("B");\nelse if (grade >= 70)  console.log("C");\nelse                   console.log("F");'},
+    {id:'t5',icon:'🔁',name:'Loops',desc:'for, while, do-while',
+      concepts:['for loop: best when number of iterations is known','while loop: repeats while condition is true','do-while: runs at least once before checking condition','break exits a loop; continue skips to the next iteration','Off-by-one errors are the most common loop bug — check your bounds'],
+      tip:'If a loop runs forever, you likely forgot to update the loop variable.',
+      example:'// Sum 1 to 10\nlet sum = 0;\nfor (let i = 1; i <= 10; i++) {\n  sum += i;\n}\nconsole.log(sum); // 55'},
+    {id:'t6',icon:'📋',name:'Arrays & Lists',desc:'Creation, access, manipulation',
+      concepts:['Arrays store multiple values in a single variable','Index starts at 0 — the first element is arr[0]','arr.length returns the number of elements','push() adds to end; pop() removes from end','slice() extracts part of an array; splice() modifies in place'],
+      tip:'Use arr.forEach() or for...of to loop through arrays cleanly.',
+      example:'let nums = [10, 20, 30, 40];\nnums.push(50);\nconsole.log(nums[0]);      // 10\nconsole.log(nums.length);  // 5\nnums.forEach(n => console.log(n));'},
+    {id:'t7',icon:'⚙️',name:'Functions',desc:'Defining and calling functions',
+      concepts:['Functions group reusable code under a name','Parameters are inputs; the return value is the output','Arrow functions: const fn = (x) => x * 2','Functions should do ONE thing — keep them small and focused','Default parameters: function greet(name = "World")'],
+      tip:'Name functions as verbs: calculateTotal(), getUserName(), printReport().',
+      example:'function add(a, b) {\n  return a + b;\n}\nconst square = n => n * n;\nconsole.log(add(3, 4));   // 7\nconsole.log(square(5));   // 25'},
+    {id:'t8',icon:'🔤',name:'Strings',desc:'String operations and methods',
+      concepts:['Strings are immutable — methods return new strings, not modified originals','length property gives character count','toUpperCase() / toLowerCase() change case','indexOf() finds position; includes() checks existence','split() turns a string into an array; join() does the reverse'],
+      tip:'trim() removes leading and trailing whitespace — always use it on user input.',
+      example:'let s = "  Hello, World!  ";\nconsole.log(s.trim());          // "Hello, World!"\nconsole.log(s.trim().length);   // 13\nconsole.log(s.includes("World")); // true'}
+  ]},
+  prog2:{name:'Programming 2',topics:[
+    {id:'t1',icon:'🏗️',name:'Object-Oriented Programming',desc:'Classes, objects, encapsulation',
+      concepts:['A class is a blueprint; an object is an instance of that blueprint','Encapsulation hides internal state — expose only what is needed','Constructor initializes object properties when created','this keyword refers to the current object instance','Properties hold state; methods define behavior'],
+      tip:'Think of a class like a cookie cutter — it defines the shape, objects are the cookies.',
+      example:'class Student {\n  constructor(name, grade) {\n    this.name  = name;\n    this.grade = grade;\n  }\n  describe() {\n    return `${this.name}: ${this.grade}`;\n  }\n}\nconst s = new Student("Ana", 92);\nconsole.log(s.describe());'},
+    {id:'t2',icon:'🧬',name:'Inheritance & Polymorphism',desc:'Extends, overriding, interfaces',
+      concepts:['Inheritance lets a child class reuse parent class code','extends keyword creates a subclass','super() calls the parent constructor','Method overriding replaces a parent method in the child','Polymorphism: different classes, same method name, different behavior'],
+      tip:'Prefer composition over deep inheritance chains — it keeps code flexible.',
+      example:'class Animal {\n  speak() { return "..."; }\n}\nclass Dog extends Animal {\n  speak() { return "Woof!"; }\n}\nconst d = new Dog();\nconsole.log(d.speak()); // Woof!'},
+    {id:'t3',icon:'🛡️',name:'Exception Handling',desc:'try/catch, error types',
+      concepts:['try block contains code that might throw an error','catch block handles the error gracefully','finally block always runs, error or not','throw creates a custom error','Common errors: TypeError, ReferenceError, SyntaxError'],
+      tip:'Never swallow errors silently in an empty catch block — at least log them.',
+      example:'try {\n  let x = JSON.parse("bad json");\n} catch (e) {\n  console.log("Error:", e.message);\n} finally {\n  console.log("Done");\n}'},
+    {id:'t4',icon:'📁',name:'File I/O',desc:'Reading and writing files',
+      concepts:['File I/O is the process of reading from and writing to files','In Node.js: fs.readFileSync() / fs.writeFileSync()','Files should always be closed after use (or use with-statement in Python)','Errors like "file not found" must be caught with try/catch','Binary vs text files: text files store readable characters'],
+      tip:'In Python, use with open("file.txt") as f: — it auto-closes the file even if an error occurs.',
+      example:'# Python example\nwith open("data.txt", "r") as f:\n    content = f.read()\nprint(content)'},
+    {id:'t5',icon:'🔄',name:'Recursion',desc:'Recursive functions and base cases',
+      concepts:['Recursion: a function that calls itself','Every recursive function MUST have a base case to stop','Call stack depth is limited — deep recursion can crash','Recursive solutions are elegant but can be slower than loops','Tail recursion optimizes memory usage in some languages'],
+      tip:'Trace through small inputs by hand before coding. Get the base case right first.',
+      example:'function factorial(n) {\n  if (n <= 1) return 1;      // base case\n  return n * factorial(n - 1); // recursive case\n}\nconsole.log(factorial(5)); // 120'},
+    {id:'t6',icon:'📊',name:'Sorting Algorithms',desc:'Bubble, selection, merge sort',
+      concepts:['Bubble sort: repeatedly swap adjacent elements if in wrong order — O(n²)','Selection sort: find minimum, place at front — O(n²)','Merge sort: divide and conquer — O(n log n)','Built-in sort() in JavaScript uses an optimized algorithm','Stable sort preserves the relative order of equal elements'],
+      tip:'For coding tasks, use the built-in sort. Implement manual sorts to understand the concepts.',
+      example:'// Built-in sort\nlet nums = [5, 2, 8, 1, 9];\nnums.sort((a, b) => a - b);\nconsole.log(nums); // [1, 2, 5, 8, 9]'},
+    {id:'t7',icon:'🗂️',name:'Data Structures',desc:'Stacks, queues, linked lists',
+      concepts:['Stack: LIFO — Last In First Out (push/pop)','Queue: FIFO — First In First Out (enqueue/dequeue)','Linked list: nodes connected by pointers, flexible size','Arrays have O(1) access; linked lists have O(n) access','Choose the structure based on how you will use the data'],
+      tip:'A JavaScript array can act as a stack (push/pop) or queue (push/shift).',
+      example:'// Stack using array\nconst stack = [];\nstack.push(1); stack.push(2); stack.push(3);\nconsole.log(stack.pop()); // 3 (LIFO)'},
+    {id:'t8',icon:'🔍',name:'Searching Algorithms',desc:'Linear and binary search',
+      concepts:['Linear search: check each element one by one — O(n)','Binary search: divide sorted array in half each step — O(log n)','Binary search REQUIRES the array to be sorted','indexOf() performs linear search in JavaScript arrays','Hash maps give O(1) average search time'],
+      tip:'Binary search is dramatically faster: searching 1 million items takes ~20 steps vs 1 million.',
+      example:'function binarySearch(arr, target) {\n  let lo = 0, hi = arr.length - 1;\n  while (lo <= hi) {\n    const mid = Math.floor((lo + hi) / 2);\n    if (arr[mid] === target) return mid;\n    arr[mid] < target ? lo = mid+1 : hi = mid-1;\n  }\n  return -1;\n}'}
+  ]},
+  webdev:{name:'Web Development',topics:[
+    {id:'t1',icon:'🌐',name:'HTML Fundamentals',desc:'Elements, attributes, structure',
+      concepts:['HTML defines the structure and content of a web page','Tags come in pairs: <tag>content</tag>, or self-closing: <img/>','Semantic elements (header, nav, main, footer) improve accessibility','Attributes provide extra information: class, id, href, src','The DOM is the browser\'s object model of the HTML page'],
+      tip:'Use semantic HTML — it helps screen readers, search engines, and other developers.',
+      example:'<!DOCTYPE html>\n<html>\n  <head><title>My Page</title></head>\n  <body>\n    <h1>Hello!</h1>\n    <p>Welcome to <strong>my site</strong>.</p>\n  </body>\n</html>'},
+    {id:'t2',icon:'🎨',name:'CSS Styling',desc:'Selectors, box model, flexbox',
+      concepts:['CSS selects elements by tag, class (.), or id (#)','Box model: content → padding → border → margin','Flexbox makes 1D layouts easy: display:flex','CSS specificity: inline > id > class > tag','rem units are relative to the root font size — prefer over px'],
+      tip:'Flexbox gap property is cleaner than using margins on each child element.',
+      example:'.card {\n  display: flex;\n  gap: 16px;\n  padding: 20px;\n  border-radius: 8px;\n  background: #1e293b;\n}'},
+    {id:'t3',icon:'⚡',name:'JavaScript Basics',desc:'Variables, functions, events',
+      concepts:['JS makes pages interactive by responding to user events','addEventListener() attaches event handlers to elements','querySelector() selects the first matching element','Event object contains info about what happened','Async code (setTimeout, fetch) doesn\'t block the page'],
+      tip:'Use addEventListener instead of onclick attributes — it keeps JS and HTML separated.',
+      example:'document.querySelector("#btn")\n  .addEventListener("click", () => {\n    alert("Clicked!");\n  });'},
+    {id:'t4',icon:'🔧',name:'DOM Manipulation',desc:'querySelector, innerHTML',
+      concepts:['DOM manipulation changes what is displayed without reloading','innerHTML sets HTML content (use textContent for plain text — safer)','createElement() + appendChild() builds elements programmatically','classList.add/remove/toggle manages CSS classes','dataset attributes store custom data on elements'],
+      tip:'Prefer textContent over innerHTML when inserting user-provided data to prevent XSS.',
+      example:'const el = document.createElement("li");\nel.textContent = "New item";\nel.classList.add("highlight");\ndocument.querySelector("ul").appendChild(el);'},
+    {id:'t5',icon:'📱',name:'Responsive Design',desc:'Media queries, fluid layouts',
+      concepts:['Responsive design adapts to any screen size','Media queries apply CSS only at certain viewport widths','Mobile-first: style for small screens, then override for larger','Viewport meta tag is required for mobile responsiveness','CSS Grid is ideal for 2D layouts; Flexbox for 1D'],
+      tip:'Test your layout at 320px, 768px, and 1280px — covers most device sizes.',
+      example:'/* Mobile first */\n.grid { grid-template-columns: 1fr; }\n\n@media (min-width: 768px) {\n  .grid { grid-template-columns: repeat(3, 1fr); }\n}'},
+    {id:'t6',icon:'🔗',name:'Fetch API & AJAX',desc:'HTTP requests, async/await',
+      concepts:['fetch() makes HTTP requests from the browser','async/await makes async code look synchronous','Always handle errors with try/catch around fetch','Response must be parsed: res.json() or res.text()','CORS policies restrict which origins can make requests'],
+      tip:'Always check res.ok before parsing — a 404 response doesn\'t throw automatically.',
+      example:'async function getData(url) {\n  try {\n    const res = await fetch(url);\n    if (!res.ok) throw new Error(res.status);\n    return await res.json();\n  } catch (e) {\n    console.error("Fetch failed:", e);\n  }\n}'}
+  ]},
+  ds:{name:'Data Structures',topics:[
+    {id:'t1',icon:'📋',name:'Arrays & Linked Lists',desc:'Linear structures',
+      concepts:['Arrays: contiguous memory, O(1) random access, O(n) insert/delete','Linked lists: nodes with data + pointer, O(1) insert, O(n) access','Doubly linked lists have prev and next pointers','Arrays are cache-friendly — prefer them when access pattern matters','Dynamic arrays (ArrayList, Vector) resize automatically'],
+      tip:'Arrays win for access; linked lists win for frequent insert/delete at the front.',
+      example:'// Linked list node\nclass Node {\n  constructor(val) {\n    this.val  = val;\n    this.next = null;\n  }\n}'},
+    {id:'t2',icon:'📚',name:'Stacks & Queues',desc:'LIFO and FIFO',
+      concepts:['Stack uses LIFO — push to top, pop from top','Queue uses FIFO — enqueue at back, dequeue from front','Call stack in programming IS a stack data structure','BFS graph traversal uses a queue; DFS uses a stack','Deque supports insert/remove from both ends'],
+      tip:'Undo/redo, browser history, and function calls all use stacks.',
+      example:'class Stack {\n  #data = [];\n  push(v)  { this.#data.push(v); }\n  pop()    { return this.#data.pop(); }\n  peek()   { return this.#data.at(-1); }\n  isEmpty(){ return !this.#data.length; }\n}'},
+    {id:'t3',icon:'🌳',name:'Trees',desc:'BST, traversal',
+      concepts:['Tree: hierarchical structure with a root node and children','Binary tree: each node has at most 2 children','BST property: left < node < right — enables O(log n) search','Traversals: inorder (sorted), preorder, postorder','Height of tree affects performance — balanced trees are O(log n)'],
+      tip:'Inorder traversal of a BST gives elements in sorted order.',
+      example:'// BST insert\nfunction insert(root, val) {\n  if (!root) return { val, left:null, right:null };\n  if (val < root.val) root.left  = insert(root.left,  val);\n  else               root.right = insert(root.right, val);\n  return root;\n}'},
+    {id:'t4',icon:'🕸️',name:'Graphs',desc:'DFS, BFS',
+      concepts:['Graph: nodes (vertices) connected by edges','Directed vs undirected; weighted vs unweighted','Adjacency list is memory-efficient for sparse graphs','BFS finds shortest path (unweighted); uses queue','DFS explores as deep as possible first; uses stack/recursion'],
+      tip:'Most real-world problems (maps, social networks, dependencies) are graph problems.',
+      example:'// BFS\nfunction bfs(graph, start) {\n  const visited = new Set([start]);\n  const queue   = [start];\n  while (queue.length) {\n    const node = queue.shift();\n    for (const nb of graph[node]) {\n      if (!visited.has(nb)) {\n        visited.add(nb); queue.push(nb);\n      }\n    }\n  }\n}'},
+    {id:'t5',icon:'🔑',name:'Hashing',desc:'Hash tables, collision resolution',
+      concepts:['Hash function maps keys to array indices','Ideal hash function: fast, uniform distribution, deterministic','Collision: two keys map to the same index','Chaining: store collisions as a linked list at the index','Open addressing: probe for next empty slot on collision'],
+      tip:'JavaScript objects and Map are hash tables — O(1) average lookup.',
+      example:'const map = new Map();\nmap.set("alice", 95);\nmap.set("bob",   88);\nconsole.log(map.get("alice")); // 95\nconsole.log(map.has("carol")); // false'}
+  ]},
+  algo:{name:'Algorithms',topics:[
+    {id:'t1',icon:'📈',name:'Complexity Analysis',desc:'Big O notation',
+      concepts:['Big O describes how runtime grows as input grows','O(1) constant, O(log n) logarithmic, O(n) linear, O(n²) quadratic','Drop constants and lower-order terms: O(2n) → O(n)','Space complexity measures memory usage, not just time','Best/average/worst case can differ — Big O usually means worst'],
+      tip:'If you double the input and your program takes 4x longer, that\'s O(n²).',
+      example:'// O(n²) — nested loops over same array\nfor (let i = 0; i < n; i++)\n  for (let j = 0; j < n; j++)\n    // ...\n\n// O(n log n) — merge sort, built-in sort'},
+    {id:'t2',icon:'📊',name:'Sorting',desc:'Quicksort, mergesort',
+      concepts:['Mergesort: stable, O(n log n) always, needs O(n) extra space','Quicksort: O(n log n) average, O(n²) worst, in-place','Heapsort: O(n log n) always, in-place, not stable','Timsort (Python/Java default): hybrid merge+insertion sort','Counting/Radix sort: O(n) for integer keys in bounded range'],
+      tip:'In practice, quicksort beats mergesort due to better cache behavior.',
+      example:'// Merge sort\nfunction mergeSort(arr) {\n  if (arr.length <= 1) return arr;\n  const mid = arr.length >> 1;\n  const L   = mergeSort(arr.slice(0, mid));\n  const R   = mergeSort(arr.slice(mid));\n  return merge(L, R);\n}'},
+    {id:'t3',icon:'🧩',name:'Dynamic Programming',desc:'Memoization, tabulation',
+      concepts:['DP solves problems by breaking them into overlapping subproblems','Memoization (top-down): cache recursive results','Tabulation (bottom-up): fill a table iteratively','Optimal substructure: optimal solution uses optimal sub-solutions','Overlapping subproblems: same sub-problems solved multiple times'],
+      tip:'Identify the "state" — what variables uniquely define each subproblem.',
+      example:'// Fibonacci with memoization\nconst memo = {};\nfunction fib(n) {\n  if (n <= 1) return n;\n  if (memo[n]) return memo[n];\n  return memo[n] = fib(n-1) + fib(n-2);\n}'},
+    {id:'t4',icon:'💰',name:'Greedy Algorithms',desc:'Optimal substructure',
+      concepts:['Greedy: always pick the locally best option at each step','Works when greedy choice leads to globally optimal solution','Faster than DP but doesn\'t always give optimal solution','Classic examples: coin change (certain denominations), activity selection','Proof of correctness often uses exchange argument'],
+      tip:'Test greedy on small examples — if a counterexample exists, you need DP instead.',
+      example:'// Coin change (greedy — works for standard coins)\nfunction coins(amount, denoms) {\n  let count = 0;\n  for (const d of denoms.sort((a,b)=>b-a)) {\n    count  += Math.floor(amount / d);\n    amount %= d;\n  }\n  return count;\n}'},
+    {id:'t5',icon:'🗺️',name:'Graph Algorithms',desc:'Dijkstra, Floyd-Warshall',
+      concepts:['Dijkstra: shortest path from one source, non-negative weights, O((V+E) log V)','Bellman-Ford: handles negative weights, O(VE)','Floyd-Warshall: all-pairs shortest path, O(V³)','Minimum Spanning Tree: Kruskal (sort edges) or Prim (grow from node)','Topological sort: ordering of a DAG — used in build systems, scheduling'],
+      tip:'Dijkstra fails with negative edge weights — use Bellman-Ford in that case.',
+      example:'// Dijkstra skeleton\nfunction dijkstra(graph, src) {\n  const dist = {}; // dist[node] = shortest distance\n  const pq   = new MinHeap();\n  dist[src] = 0; pq.push([0, src]);\n  while (!pq.isEmpty()) {\n    const [d, u] = pq.pop();\n    // relax neighbors...\n  }\n  return dist;\n}'}
+  ]},
+  custom:{name:'Custom Course',topics:[]}
+};
+
 // ── Auth ──
 const authReady=new Promise(res=>onAuthStateChanged(auth,user=>{
   if(user){
@@ -396,13 +572,71 @@ function loadJoinedClasses(){
   list.innerHTML=classes.map(c=>`<span class="joined-class-chip" onclick="openClass(${JSON.stringify(JSON.stringify(c))})">${c.name}</span>`).join('');
 }
 
-window.openClass=function(jsonStr){
+window.openClass=async function(jsonStr){
   const c=JSON.parse(jsonStr);
-  currentClass=c;
-  document.getElementById('class-title').textContent=c.name;
-  document.getElementById('class-meta').textContent=`${c.subject||''} • ${c.teacher||''}`;
+  // Re-fetch latest class data (unlockedTopics may have changed)
+  try{
+    const snap=await getDocs(query(collection(db,'classes'),where('code','==',c.code)));
+    if(!snap.empty) currentClass={id:snap.docs[0].id,...snap.docs[0].data()};
+    else currentClass=c;
+  }catch{currentClass=c;}
+  const ci=COURSES[currentClass.course]||{name:currentClass.subject||'Course'};
+  document.getElementById('class-title').textContent=currentClass.name;
+  document.getElementById('class-meta').textContent=`${ci.name} • ${currentClass.teacherName||currentClass.teacher||''}`;
+  switchClassTab('activities');
   showScreen('screen-class');
-  loadActivities(c.id);
+  loadActivities(currentClass.id);
+  loadTopics();
+};
+
+window.switchClassTab=function(tab){
+  document.getElementById('tc-activities').classList.toggle('active',tab==='activities');
+  document.getElementById('tc-topics').classList.toggle('active',tab==='topics');
+  document.getElementById('tab-activities').classList.toggle('active',tab==='activities');
+  document.getElementById('tab-topics').classList.toggle('active',tab==='topics');
+};
+
+function loadTopics(){
+  const list=document.getElementById('topics-list');
+  const ci=COURSES[currentClass?.course]||{topics:[]};
+  const unlocked=new Set(currentClass?.unlockedTopics||[]);
+  if(!ci.topics.length){
+    list.innerHTML='<div class="locked-notice"><div class="lock-icon">📚</div>No topics defined for this course.</div>';
+    return;
+  }
+  const hasAny=ci.topics.some(t=>unlocked.has(t.id));
+  if(!hasAny){
+    list.innerHTML='<div class="locked-notice"><div class="lock-icon">🔒</div>No topics have been unlocked by your instructor yet.<br><span style="font-size:.82rem;color:#475569;margin-top:4px;display:block;">Check back after your next class session.</span></div>';
+    return;
+  }
+  list.innerHTML=ci.topics.map(t=>{
+    const isUnlocked=unlocked.has(t.id);
+    if(!isUnlocked)return''; // hide locked topics entirely on student side
+    const concepts=(t.concepts||[]).map(c=>`<li>${esc(c)}</li>`).join('');
+    const example=t.example?`<pre class="topic-example">${esc(t.example)}</pre>`:'';
+    const tip=t.tip?`<div class="topic-tip"><span class="topic-tip-icon">💡</span><span>${esc(t.tip)}</span></div>`:'';
+    return `
+    <div class="topic-card" id="topic-${t.id}">
+      <div class="topic-header" onclick="toggleTopic('${t.id}')">
+        <div class="topic-icon-wrap">${t.icon}</div>
+        <div class="topic-info">
+          <div class="topic-name">${esc(t.name)}</div>
+          <div class="topic-desc">${esc(t.desc)}</div>
+        </div>
+        <span class="topic-chevron">▼</span>
+      </div>
+      <div class="topic-body">
+        <ul class="concept-list">${concepts}</ul>
+        ${tip}
+        ${example}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.toggleTopic=function(id){
+  const card=document.getElementById('topic-'+id);
+  if(card)card.classList.toggle('open');
 };
 
 // ── Join Class ──
