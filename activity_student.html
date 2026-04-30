@@ -291,14 +291,17 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
     </div>
     <div class="editor-panel">
       <div class="lang-bar">
-        <select id="lang-select" class="lang-select" onchange="onLangChange()">
+        <select id="lang-select" class="lang-select" disabled>
           <option value="javascript">JavaScript</option>
           <option value="python">Python</option>
           <option value="java">Java</option>
           <option value="c">C</option>
           <option value="cpp">C++</option>
         </select>
-        <span class="lang-hint" id="lang-hint">Ctrl+Enter to Run</span>
+        <span id="lang-hint" class="lang-hint">Ctrl+Enter to Run</span>
+        <span id="nonjs-notice" style="display:none;background:#451a03;color:#fde68a;border:1px solid #92400e;padding:4px 12px;border-radius:6px;font-size:.8rem;">
+          ⚠ In-browser execution not available for this language — write your solution and click <strong>Submit All</strong> for teacher review.
+        </span>
       </div>
       <textarea id="code-editor" spellcheck="false" placeholder="// Write your code here"></textarea>
       <div class="output-panel">
@@ -563,7 +566,7 @@ window.startActivity=async function(){
 function showCodingScreen(){
   document.getElementById('screen-coding').classList.add('active');
   loadItem(currentItemIdx);
-  // Set language
+  // Lock language to what the activity specifies
   const lang=(currentActivity.language||'javascript').toLowerCase();
   const sel=document.getElementById('lang-select');
   const opt=[...sel.options].find(o=>o.value===lang);
@@ -616,11 +619,13 @@ window.navigateItem=function(idx){
   loadItem(idx);
 };
 
-window.onLangChange=function(){updateLangHint();};
 function updateLangHint(){
   const lang=document.getElementById('lang-select').value;
-  const hint=lang==='javascript'?'Ctrl+Enter to Run':'Submit only (auto-graded server-side)';
-  document.getElementById('lang-hint').textContent=hint;
+  const isJS=lang==='javascript';
+  document.getElementById('lang-hint').style.display=isJS?'':'none';
+  document.getElementById('nonjs-notice').style.display=isJS?'none':'';
+  // Hide Run button for non-JS (no point running Java/Python in-browser)
+  document.querySelector('.btn-run').style.display=isJS?'':'none';
 }
 
 // ── Code execution (JS only) ──
@@ -687,9 +692,13 @@ window.checkCode=function(){
   const item=currentItems[currentItemIdx];
   const tcs=(item?.testCases||[]).filter(tc=>!tc.hidden);
   if(lang!=='javascript'){
-    out.innerHTML='<div class="out-line" style="color:#f59e0b;">Non-JS code will be evaluated upon final submission.</div>';
-    // Store as pending
+    const langLabel=document.getElementById('lang-select').options[document.getElementById('lang-select').selectedIndex].text;
+    out.innerHTML=`<div class="out-line" style="color:#fde68a;">✓ ${langLabel} code saved. Click <strong>Submit All</strong> when you're done — your instructor will review it.</div>`;
+    // Mark all items as manual so they don't block submission
     itemResults[currentItemIdx]=(item.testCases||[]).map(tc=>({input:tc.input,expected:tc.expected,actual:null,passed:null,manual:true}));
+    if(!itemResults[currentItemIdx].length)itemResults[currentItemIdx]=[{manual:true,passed:null}];
+    // Store code on item for submission
+    currentItems[currentItemIdx]._submittedCode=code;
     renderItemNav();
     return;
   }
