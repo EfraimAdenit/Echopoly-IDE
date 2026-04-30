@@ -263,6 +263,13 @@
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
               <div class="form-section-title" style="margin-bottom:0;">Coding Items</div>
               <div style="display:flex;gap:8px;">
+                <select id="preset-lang" style="background:rgba(30,41,59,.8);border:1px solid rgba(148,163,184,.2);color:#94a3b8;padding:5px 8px;border-radius:7px;font-size:12px;cursor:pointer;">
+                  <option>JavaScript</option>
+                  <option>Python</option>
+                  <option>Java</option>
+                  <option>C++</option>
+                  <option>C</option>
+                </select>
                 <button class="btn btn-xs btn-outline" onclick="addPresets()">📦 Presets</button>
                 <button class="btn btn-xs btn-primary" onclick="addItem()">＋ Add Item</button>
               </div>
@@ -443,12 +450,62 @@
       custom:{ name:'Custom Course', topics:[] }
     };
 
-    const PRESETS = [
-      { title:'Hello World', description:'Write a program that prints "Hello, World!" to the console.', language:'JavaScript', starterCode:'// Print Hello, World!\n', testCases:[{input:'',expected:'Hello, World!'}], points:5 },
-      { title:'Sum of Two Numbers', description:'Given two numbers a=5 and b=3, print their sum.', language:'JavaScript', starterCode:'const a = 5, b = 3;\n// Print the sum\n', testCases:[{input:'5 3',expected:'8'}], points:10 },
-      { title:'Even or Odd', description:'Given n=7, print "Even" if even, "Odd" if odd.', language:'JavaScript', starterCode:'const n = 7;\n// Check even or odd\n', testCases:[{input:'4',expected:'Even'},{input:'7',expected:'Odd'}], points:10 },
-      { title:'FizzBuzz (1–15)', description:'Print 1–15. Multiples of 3 → "Fizz", of 5 → "Buzz", of both → "FizzBuzz".', language:'JavaScript', starterCode:'// FizzBuzz from 1 to 15\n', testCases:[{input:'',expected:'1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz'}], points:20 },
-      { title:'Factorial', description:'Compute the factorial of n=5 and print the result.', language:'JavaScript', starterCode:'const n = 5;\n// Print factorial of n\n', testCases:[{input:'5',expected:'120'},{input:'3',expected:'6'}], points:15 }
+    const PRESET_TEMPLATES = [
+      {
+        title:'Hello World', description:'Write a program that prints "Hello, World!".',
+        testCases:[{input:'',expected:'Hello, World!'}], points:5,
+        starter:{
+          JavaScript:'// Print Hello, World!\n',
+          Python:'# Print Hello, World!\n',
+          Java:'public class Main {\n  public static void main(String[] args) {\n    // Print Hello, World!\n  }\n}\n',
+          'C++':'#include <iostream>\nusing namespace std;\nint main() {\n  // Print Hello, World!\n  return 0;\n}\n',
+          C:'#include <stdio.h>\nint main() {\n  // Print Hello, World!\n  return 0;\n}\n'
+        }
+      },
+      {
+        title:'Sum of Two Numbers', description:'Given two numbers a=5 and b=3, print their sum.',
+        testCases:[{input:'5 3',expected:'8'}], points:10,
+        starter:{
+          JavaScript:'const a = 5, b = 3;\n// Print the sum\n',
+          Python:'a = 5\nb = 3\n# Print the sum\n',
+          Java:'public class Main {\n  public static void main(String[] args) {\n    int a = 5, b = 3;\n    // Print the sum\n  }\n}\n',
+          'C++':'#include <iostream>\nusing namespace std;\nint main() {\n  int a = 5, b = 3;\n  // Print the sum\n  return 0;\n}\n',
+          C:'#include <stdio.h>\nint main() {\n  int a = 5, b = 3;\n  // Print the sum\n  return 0;\n}\n'
+        }
+      },
+      {
+        title:'Even or Odd', description:'Given n=7, print "Even" if even, "Odd" if odd.',
+        testCases:[{input:'4',expected:'Even'},{input:'7',expected:'Odd'}], points:10,
+        starter:{
+          JavaScript:'const n = 7;\n// Check even or odd\n',
+          Python:'n = 7\n# Check even or odd\n',
+          Java:'public class Main {\n  public static void main(String[] args) {\n    int n = 7;\n    // Check even or odd\n  }\n}\n',
+          'C++':'#include <iostream>\nusing namespace std;\nint main() {\n  int n = 7;\n  // Check even or odd\n  return 0;\n}\n',
+          C:'#include <stdio.h>\nint main() {\n  int n = 7;\n  // Check even or odd\n  return 0;\n}\n'
+        }
+      },
+      {
+        title:'FizzBuzz (1–15)', description:'Print 1–15. Multiples of 3 → "Fizz", of 5 → "Buzz", of both → "FizzBuzz".',
+        testCases:[{input:'',expected:'1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz'}], points:20,
+        starter:{
+          JavaScript:'// FizzBuzz from 1 to 15\n',
+          Python:'# FizzBuzz from 1 to 15\n',
+          Java:'public class Main {\n  public static void main(String[] args) {\n    // FizzBuzz from 1 to 15\n  }\n}\n',
+          'C++':'#include <iostream>\nusing namespace std;\nint main() {\n  // FizzBuzz from 1 to 15\n  return 0;\n}\n',
+          C:'#include <stdio.h>\nint main() {\n  // FizzBuzz from 1 to 15\n  return 0;\n}\n'
+        }
+      },
+      {
+        title:'Factorial', description:'Compute the factorial of n=5 and print the result.',
+        testCases:[{input:'5',expected:'120'},{input:'3',expected:'6'}], points:15,
+        starter:{
+          JavaScript:'const n = 5;\n// Print factorial of n\n',
+          Python:'n = 5\n# Print factorial of n\n',
+          Java:'public class Main {\n  public static void main(String[] args) {\n    int n = 5;\n    // Print factorial of n\n  }\n}\n',
+          'C++':'#include <iostream>\nusing namespace std;\nint main() {\n  int n = 5;\n  // Print factorial of n\n  return 0;\n}\n',
+          C:'#include <stdio.h>\nint main() {\n  int n = 5;\n  // Print factorial of n\n  return 0;\n}\n'
+        }
+      }
     ];
 
     // ── Auth ──────────────────────────────────────────────────────────────────
@@ -729,8 +786,19 @@
       renderItems();
     };
     window.addPresets = function() {
-      PRESETS.forEach(p=>actItems.push({id:'item_'+Date.now()+Math.random().toString(36).slice(2),...JSON.parse(JSON.stringify(p))}));
-      renderItems(); showToast('📦 5 preset items added!');
+      const lang=document.getElementById('preset-lang').value;
+      PRESET_TEMPLATES.forEach(p=>{
+        actItems.push({
+          id:'item_'+Date.now()+Math.random().toString(36).slice(2),
+          title:p.title,
+          description:p.description,
+          language:lang,
+          starterCode:p.starter[lang]||p.starter['JavaScript'],
+          testCases:JSON.parse(JSON.stringify(p.testCases)),
+          points:p.points
+        });
+      });
+      renderItems(); showToast(`📦 5 preset items added (${lang})!`);
     };
     window.removeItem = function(idx){syncAll();actItems.splice(idx,1);renderItems();};
     window.addTestCase = function(idx){syncAll();(actItems[idx].testCases=actItems[idx].testCases||[]).push({input:'',expected:''});renderItems();};
