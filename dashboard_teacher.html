@@ -407,6 +407,9 @@
     .dashboard-card.flash-card .card-icon { background: linear-gradient(135deg, #0891b2, #0e7490); }
     .dashboard-card.flash-card:hover       { border-color: rgba(8, 145, 178, 0.4); }
 
+    .dashboard-card.activity-card .card-icon { background: linear-gradient(135deg, #16a34a, #15803d); }
+    .dashboard-card.activity-card:hover       { border-color: rgba(22, 163, 74, 0.4); }
+
     /* Session list real data */
     .session-empty {
       text-align: center;
@@ -492,6 +495,12 @@
         <div class="card-icon">🃏</div>
         <h3 class="card-title">Create Flashcards</h3>
         <p class="card-description">Build interactive flashcard decks for students to review and study key concepts at their own pace.</p>
+      </div>
+
+      <div class="dashboard-card activity-card" onclick="window.location.href='activity_teacher.html'">
+        <div class="card-icon">💻</div>
+        <h3 class="card-title">Create Activity</h3>
+        <p class="card-description">Build coding activities with test cases, real-time supervision, anti-cheat detection, and live student progress tracking.</p>
       </div>
 
       <div class="dashboard-card" onclick="window.location.href='projects.html'">

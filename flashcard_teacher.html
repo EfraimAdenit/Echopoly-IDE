@@ -371,6 +371,7 @@
         code: currentCode,
         cards: validCards,
         cardCount: validCards.length,
+        studyMode: setStudyMode,
         createdBy: uid,
         createdByName: name,
         updatedAt: serverTimestamp()
@@ -451,6 +452,7 @@
         <div class="set-meta">
           <span class="meta-pill">📄 ${s.cardCount || 0} cards</span>
           <span class="meta-pill">📅 ${formatDate(s.updatedAt)}</span>
+          ${s.studyMode === 'flashcard' ? '<span class="meta-pill">🃏 Flashcard Only</span>' : s.studyMode === 'mc' ? '<span class="meta-pill">🧠 MC Only</span>' : '<span class="meta-pill">🃏🧠 Both</span>'}
         </div>
         <div class="set-code-row">
           <span class="set-code-label">Code</span>
@@ -486,6 +488,11 @@
         document.getElementById('code-display').textContent = currentCode;
         document.getElementById('create-heading').textContent = 'Edit Flashcard Set';
         document.getElementById('save-btn').textContent = '💾 Update Set';
+        // Restore study mode
+        setStudyMode = s.studyMode || 'both';
+        document.querySelectorAll('.set-mode-opt').forEach(el => {
+          el.classList.toggle('selected', el.dataset.mode === setStudyMode);
+        });
         renderCards();
         switchTab('create');
       } catch(e) { showToast('Error loading set: ' + e.message, 'error'); }
