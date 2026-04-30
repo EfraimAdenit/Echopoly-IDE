@@ -410,7 +410,7 @@ window.joinClass=async()=>{
   errEl.style.display='none';
   if(code.length<4){errEl.textContent='Please enter a valid join code.';errEl.style.display='block';return;}
   try{
-    const q=query(collection(db,'classes'),where('joinCode','==',code));
+    const q=query(collection(db,'classes'),where('code','==',code));
     const snap=await getDocs(q);
     if(snap.empty){errEl.textContent='No class found with that code.';errEl.style.display='block';return;}
     const classDoc=snap.docs[0];
