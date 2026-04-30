@@ -16,8 +16,9 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
 .btn-signout:hover{border-color:#6366f1;color:#6366f1;}
 
 /* ── Anti-cheat banner ── */
-#ac-banner{display:none;position:fixed;top:60px;left:0;right:0;z-index:200;background:#dc2626;color:#fff;text-align:center;padding:8px;font-size:.9rem;font-weight:600;}
+#ac-banner{display:none;position:fixed;top:60px;left:0;right:0;z-index:200;background:#dc2626;color:#fff;text-align:center;padding:8px 48px 8px 8px;font-size:.9rem;font-weight:600;}
 #ac-banner.show{display:block;}
+#ac-banner-close{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.25);border:none;color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;}
 
 /* ── Sup badge ── */
 #sup-badge{display:none;position:fixed;bottom:16px;left:16px;z-index:200;background:#1e293b;border:1px solid #6366f1;color:#6366f1;padding:6px 12px;border-radius:20px;font-size:.8rem;}
@@ -188,7 +189,7 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
   </div>
 </header>
 
-<div id="ac-banner">⚠ Tab switch detected! Your instructor has been notified.</div>
+<div id="ac-banner" style="position:relative;">⚠ Tab switch detected! Your instructor has been notified.<button id="ac-banner-close" onclick="document.getElementById('ac-banner').classList.remove('show')">✕</button></div>
 
 <div id="sup-badge">
   <span class="sup-dot"></span> Supervision Active
@@ -860,6 +861,8 @@ function handleVisChange(){
     antiCheat.tabSwitches++;
     antiCheat.flags.push({type:'tabSwitch',ts:new Date().toISOString()});
     document.getElementById('ac-banner').classList.add('show');
+    clearTimeout(window._acBannerTimer);
+    window._acBannerTimer=setTimeout(()=>document.getElementById('ac-banner').classList.remove('show'),5000);
     document.getElementById('ac-overlay').classList.add('show');
     updateSession();
   }
