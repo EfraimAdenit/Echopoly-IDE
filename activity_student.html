@@ -567,12 +567,16 @@ window.startActivity=async function(){
 function showCodingScreen(){
   document.getElementById('screen-coding').classList.add('active');
   loadItem(currentItemIdx);
-  // Lock language to what the activity specifies
-  const lang=(currentActivity.language||'javascript').toLowerCase();
-  const sel=document.getElementById('lang-select');
-  const opt=[...sel.options].find(o=>o.value===lang);
-  if(opt)sel.value=lang;
-  updateLangHint();
+}
+
+function getItemLang(item){
+  // Normalise item language to match <option> values
+  const raw=(item?.language||'javascript').toLowerCase().trim();
+  if(raw==='c++' || raw==='cpp') return 'cpp';
+  if(raw==='c')   return 'c';
+  if(raw==='java') return 'java';
+  if(raw==='python') return 'python';
+  return 'javascript';
 }
 
 function loadItem(idx){
@@ -581,6 +585,12 @@ function loadItem(idx){
   document.getElementById('coding-title').textContent=`Item ${idx+1} of ${currentItems.length}: ${esc(item.title||item.name||'')} (${item.points||0} pts)`;
   document.getElementById('problem-title').textContent=item.title||item.name||'Problem';
   document.getElementById('problem-desc').textContent=item.description||item.prompt||'';
+  // Set language from THIS item
+  const lang=getItemLang(item);
+  const sel=document.getElementById('lang-select');
+  const opt=[...sel.options].find(o=>o.value===lang);
+  if(opt) sel.value=lang;
+  updateLangHint();
   // Test cases
   const tcList=document.getElementById('tc-list');
   const tcs=(item.testCases||[]).filter(tc=>!tc.hidden);
@@ -597,9 +607,9 @@ function loadItem(idx){
   }
   // Item nav
   renderItemNav();
-  // Clear output, reset editor
+  // Clear output and reset editor to starter code for this item
   clearOutput();
-  document.getElementById('code-editor').value='';
+  document.getElementById('code-editor').value=item.starterCode||'';
   document.getElementById('code-editor').focus();
 }
 
