@@ -978,9 +978,13 @@
         return show.map(l=>`
           <div class="level-section">
             <div class="level-badge ${l}">${labels[l]}</div>
-            <ul class="outcome-list">
-              ${(t.levels[l]||[]).map(o=>`<li>${esc(o)}</li>`).join('')}
-            </ul>
+            <div class="outcome-list">
+              ${(t.levels[l]||[]).map(o=>`
+                <div style="display:flex;gap:8px;font-size:12px;color:#cbd5e1;line-height:1.6;padding:6px 0;border-bottom:1px solid rgba(148,163,184,.05);align-items:flex-start;">
+                  <span style="color:#7c3aed;font-weight:800;flex-shrink:0;margin-top:1px;">→</span>
+                  <span style="flex:1;">${esc(o)}</span>
+                </div>`).join('')}
+            </div>
           </div>`).join('');
       }
 

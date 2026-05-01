@@ -577,9 +577,11 @@ async function loadStudentTopics(){
 
   let activeLevel = 'all';
   const expanded = new Set();
+  const expandedOutcomes = new Set();
   const labels = {basic:'🟢 Basic', intermediate:'🟡 Intermediate', hard:'🔴 Hard'};
 
   const course = currentClass?.course||'';
+  const OUTCOME_DETAILS = {};
 
   function levelHTML(t){
     if(!t.levels) return '';
@@ -587,16 +589,16 @@ async function loadStudentTopics(){
     return show.map(l=>{
       const outcomes = t.levels[l]||[];
       const items = outcomes.map((o,i)=>{
-        const key = `${course}|${t.id}|${l}|${i}`;
-        const det = OUTCOME_DETAILS[key];
-        const safeKey = key.replace(/[|]/g,'_');
+        const safeKey = `${course}_${t.id}_${l}_${i}`;
+        const det = OUTCOME_DETAILS[safeKey];
+        const isOpen = expandedOutcomes.has(safeKey);
         return `
           <div class="s-outcome-item" onclick="toggleOD('${safeKey}')">
             <span class="s-out-arrow">→</span>
             <span class="s-out-text">${esc(o)}</span>
-            <span class="s-out-chev" id="ochev_${safeKey}">›</span>
+            ${det?`<span class="s-out-chev ${isOpen?'open':''}" id="ochev_${safeKey}">›</span>`:''}
           </div>
-          ${det?`<div class="s-outcome-detail" id="od_${safeKey}">
+          ${det&&isOpen?`<div class="s-outcome-detail" id="od_${safeKey}">
             <div class="s-od-text">${esc(det.d)}</div>
             <pre class="s-od-code">${esc(det.c)}</pre>
           </div>`:''}`;
@@ -610,12 +612,8 @@ async function loadStudentTopics(){
   }
 
   window.toggleOD = function(safeKey){
-    const el = document.getElementById('od_'+safeKey);
-    const ch = document.getElementById('ochev_'+safeKey);
-    if(!el) return;
-    const open = el.style.display==='block';
-    el.style.display = open?'none':'block';
-    if(ch) ch.classList.toggle('open',!open);
+    expandedOutcomes.has(safeKey)?expandedOutcomes.delete(safeKey):expandedOutcomes.add(safeKey);
+    render();
   };
 
   function render(){
