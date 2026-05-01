@@ -202,9 +202,10 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
 .s-level-badge.intermediate{background:rgba(251,191,36,.12);color:#fde68a;border:1px solid rgba(251,191,36,.28);}
 .s-level-badge.hard{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.25);}
 .s-outcome-list{list-style:none;padding:0;margin:0;}
-.s-outcome-item{display:flex;align-items:flex-start;gap:8px;font-size:.84rem;color:#cbd5e1;padding:7px 8px;border-radius:7px;cursor:pointer;transition:background .15s;border-bottom:1px solid rgba(148,163,184,.05);}
+.s-outcome-item{display:flex;align-items:flex-start;gap:8px;font-size:.84rem;color:#cbd5e1;padding:7px 8px;border-radius:7px;cursor:default;transition:background .15s;border-bottom:1px solid rgba(148,163,184,.05);}
+.s-outcome-item.clickable{cursor:pointer;}
+.s-outcome-item.clickable:hover{background:rgba(99,102,241,.08);color:#e2e8f0;}
 .s-outcome-item:last-of-type{border-bottom:none;}
-.s-outcome-item:hover{background:rgba(99,102,241,.08);color:#e2e8f0;}
 .s-out-arrow{color:#6366f1;font-weight:800;flex-shrink:0;margin-top:1px;}
 .s-out-text{flex:1;line-height:1.55;}
 .s-out-chev{font-size:10px;color:#64748b;transition:transform .2s;flex-shrink:0;margin-top:3px;}
@@ -577,7 +578,6 @@ async function loadStudentTopics(){
 
   let activeLevel = 'all';
   const expanded = new Set();
-  const expandedOutcomes = new Set();
   const labels = {basic:'🟢 Basic', intermediate:'🟡 Intermediate', hard:'🔴 Hard'};
 
   const course = currentClass?.course||'';
@@ -591,14 +591,13 @@ async function loadStudentTopics(){
       const items = outcomes.map((o,i)=>{
         const safeKey = `${course}_${t.id}_${l}_${i}`;
         const det = OUTCOME_DETAILS[safeKey];
-        const isOpen = expandedOutcomes.has(safeKey);
         return `
-          <div class="s-outcome-item" onclick="toggleOD('${safeKey}')">
+          <div class="s-outcome-item${det?' clickable':''}" ${det?`onclick="toggleOD('${safeKey}')"`:''}>
             <span class="s-out-arrow">→</span>
             <span class="s-out-text">${esc(o)}</span>
-            ${det?`<span class="s-out-chev ${isOpen?'open':''}" id="ochev_${safeKey}">›</span>`:''}
+            ${det?`<span class="s-out-chev" id="ochev_${safeKey}">›</span>`:''}
           </div>
-          ${det&&isOpen?`<div class="s-outcome-detail" id="od_${safeKey}">
+          ${det?`<div class="s-outcome-detail" id="od_${safeKey}" style="display:none;">
             <div class="s-od-text">${esc(det.d)}</div>
             <pre class="s-od-code">${esc(det.c)}</pre>
           </div>`:''}`;
@@ -612,8 +611,12 @@ async function loadStudentTopics(){
   }
 
   window.toggleOD = function(safeKey){
-    expandedOutcomes.has(safeKey)?expandedOutcomes.delete(safeKey):expandedOutcomes.add(safeKey);
-    render();
+    const el = document.getElementById('od_'+safeKey);
+    const ch = document.getElementById('ochev_'+safeKey);
+    if(!el) return;
+    const isOpen = el.style.display === 'block';
+    el.style.display = isOpen ? 'none' : 'block';
+    if(ch) ch.classList.toggle('open', !isOpen);
   };
 
   function render(){
