@@ -202,9 +202,16 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
 .s-level-badge.intermediate{background:rgba(251,191,36,.12);color:#fde68a;border:1px solid rgba(251,191,36,.28);}
 .s-level-badge.hard{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.25);}
 .s-outcome-list{list-style:none;padding:0;margin:0;}
-.s-outcome-list li{display:flex;gap:8px;font-size:.84rem;color:#cbd5e1;line-height:1.6;padding:5px 0;border-bottom:1px solid rgba(148,163,184,.05);}
-.s-outcome-list li:last-child{border-bottom:none;}
-.s-outcome-list li::before{content:"→";color:#6366f1;flex-shrink:0;font-weight:800;}
+.s-outcome-item{display:flex;align-items:flex-start;gap:8px;font-size:.84rem;color:#cbd5e1;padding:7px 8px;border-radius:7px;cursor:pointer;transition:background .15s;border-bottom:1px solid rgba(148,163,184,.05);}
+.s-outcome-item:last-of-type{border-bottom:none;}
+.s-outcome-item:hover{background:rgba(99,102,241,.08);color:#e2e8f0;}
+.s-out-arrow{color:#6366f1;font-weight:800;flex-shrink:0;margin-top:1px;}
+.s-out-text{flex:1;line-height:1.55;}
+.s-out-chev{font-size:10px;color:#64748b;transition:transform .2s;flex-shrink:0;margin-top:3px;}
+.s-out-chev.open{transform:rotate(90deg);}
+.s-outcome-detail{display:none;margin:2px 0 8px 28px;border-left:2px solid rgba(99,102,241,.3);padding:10px 14px;border-radius:0 8px 8px 0;background:rgba(99,102,241,.04);}
+.s-od-text{font-size:.82rem;color:#94a3b8;line-height:1.65;margin-bottom:10px;}
+.s-od-code{font-family:'Consolas','Courier New',monospace;font-size:.78rem;color:#a5b4fc;background:#0a1020;border:1px solid rgba(99,102,241,.2);border-radius:7px;padding:10px 13px;white-space:pre;overflow-x:auto;margin:0;line-height:1.6;}
 .topic-ico{width:38px;height:38px;background:linear-gradient(135deg,#6366f1,#4f46e5);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
 .topic-body-s{display:none;padding:4px 18px 16px;border-top:1px solid #1e293b;}
 .topic-card-s.open .topic-body-s{display:block;}
@@ -572,17 +579,44 @@ async function loadStudentTopics(){
   const expanded = new Set();
   const labels = {basic:'🟢 Basic', intermediate:'🟡 Intermediate', hard:'🔴 Hard'};
 
+  const course = currentClass?.course||'';
+
   function levelHTML(t){
     if(!t.levels) return '';
     const show = activeLevel==='all' ? ['basic','intermediate','hard'] : [activeLevel];
-    return show.map(l=>`
+    return show.map(l=>{
+      const outcomes = t.levels[l]||[];
+      const items = outcomes.map((o,i)=>{
+        const key = `${course}|${t.id}|${l}|${i}`;
+        const det = OUTCOME_DETAILS[key];
+        const safeKey = key.replace(/[|]/g,'_');
+        return `
+          <div class="s-outcome-item" onclick="toggleOD('${safeKey}')">
+            <span class="s-out-arrow">→</span>
+            <span class="s-out-text">${esc(o)}</span>
+            <span class="s-out-chev" id="ochev_${safeKey}">›</span>
+          </div>
+          ${det?`<div class="s-outcome-detail" id="od_${safeKey}">
+            <div class="s-od-text">${esc(det.d)}</div>
+            <pre class="s-od-code">${esc(det.c)}</pre>
+          </div>`:''}`;
+      }).join('');
+      return `
       <div class="s-level-section">
         <div class="s-level-badge ${l}">${labels[l]}</div>
-        <ul class="s-outcome-list">
-          ${(t.levels[l]||[]).map(o=>`<li>${esc(o)}</li>`).join('')}
-        </ul>
-      </div>`).join('');
+        <div class="s-outcome-list">${items}</div>
+      </div>`;
+    }).join('');
   }
+
+  window.toggleOD = function(safeKey){
+    const el = document.getElementById('od_'+safeKey);
+    const ch = document.getElementById('ochev_'+safeKey);
+    if(!el) return;
+    const open = el.style.display==='block';
+    el.style.display = open?'none':'block';
+    if(ch) ch.classList.toggle('open',!open);
+  };
 
   function render(){
     const lvlBtns = ['all','basic','intermediate','hard'].map(l=>
