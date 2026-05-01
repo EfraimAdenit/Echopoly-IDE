@@ -576,19 +576,52 @@ async function loadStudentTopics(){
     await loadStudentMaterials(); return;
   }
 
-  let activeLevel = 'all';
+  const activeLevel = currentClass.topicDifficulty || 'all';
+  const activeLang  = currentClass.topicLanguage   || 'python';
   const expanded = new Set();
   const labels = {basic:'🟢 Basic', intermediate:'🟡 Intermediate', hard:'🔴 Hard'};
+  const LANG_LABELS = {python:'🐍 Python',javascript:'⚡ JavaScript',java:'☕ Java',c:'🔵 C',cpp:'🟣 C++'};
 
   const course = currentClass?.course||'';
+  function mkLangs(py,js,java,c,cpp){return{python:py,javascript:js,java:java,c:c,cpp:cpp};}
   const OUTCOME_DETAILS = {
 /* ── prog1 · t1 Programming Fundamentals ── */
-'prog1_t1_basic_0':{d:'A program is an ordered list of instructions a CPU executes line by line, from top to bottom.',c:`# Python executes each line in sequence:\nprint('Step 1: Start')\nprint('Step 2: Process')\nprint('Step 3: Done')\n# Output:\n# Step 1: Start\n# Step 2: Process\n# Step 3: Done`},
-'prog1_t1_basic_1':{d:'A programming language provides precise syntax so humans can express instructions a computer can understand.',c:`# English intent: "Calculate and show total price"\n# Python translation:\nprice    = 9.99\nquantity = 3\ntotal    = price * quantity\nprint('Total:', total)   # Total: 29.97`},
-'prog1_t1_basic_2':{d:'Every program follows the IPO model: accept Input, Process it, then produce Output.',c:`# Input\nname = input('Enter your name: ')\n# Processing\ngreeting = 'Hello, ' + name + '!'\n# Output\nprint(greeting)`},
-'prog1_t1_basic_3':{d:'The classic first program — confirms your environment is set up and prints one line to the screen.',c:`print('Hello, World!')`},
-'prog1_t1_basic_4':{d:'Syntax: bad grammar caught before running. Runtime: valid code that crashes. Logic: runs but gives wrong answer.',c:`# Syntax error (missing closing parenthesis):\n# print('Hi'\n\n# Runtime error (invalid conversion):\n# x = int('abc')   # ValueError\n\n# Logic error (wrong formula but no crash):\narea = 4 + 5     # Bug: should be 4 * 5\nprint(area)      # Prints 9, not 20`},
-'prog1_t1_intermediate_0':{d:'Pseudocode sketches your solution in plain English before you commit to any language syntax.',c:`# PSEUDOCODE:\n# GET number\n# IF number >= 0 THEN print "non-negative"\n# ELSE print "negative"\n\n# Python:\nnum = int(input('Number: '))\nif num >= 0:\n    print('non-negative')\nelse:\n    print('negative')`},
+'prog1_t1_basic_0':{d:'A program is an ordered list of instructions a CPU executes line by line, from top to bottom.',langs:mkLangs(
+`# Executes line by line:\nprint('Step 1: Start')\nprint('Step 2: Process')\nprint('Step 3: Done')`,
+`// Executes line by line:\nconsole.log('Step 1: Start');\nconsole.log('Step 2: Process');\nconsole.log('Step 3: Done');`,
+`// Inside main():\nSystem.out.println("Step 1: Start");\nSystem.out.println("Step 2: Process");\nSystem.out.println("Step 3: Done");`,
+`// Inside main():\nprintf("Step 1: Start\\n");\nprintf("Step 2: Process\\n");\nprintf("Step 3: Done\\n");`,
+`// Inside main():\ncout << "Step 1: Start" << endl;\ncout << "Step 2: Process" << endl;\ncout << "Step 3: Done" << endl;`)},
+'prog1_t1_basic_1':{d:'A programming language provides precise syntax so humans can express instructions a computer can understand.',langs:mkLangs(
+`price = 9.99; quantity = 3\ntotal = price * quantity\nprint('Total:', total)   # 29.97`,
+`const price = 9.99, quantity = 3;\nconst total = price * quantity;\nconsole.log('Total:', total); // 29.97`,
+`double price = 9.99; int qty = 3;\ndouble total = price * qty;\nSystem.out.println("Total: " + total);`,
+`double price = 9.99; int qty = 3;\nprintf("Total: %.2f\\n", price * qty);`,
+`double price = 9.99; int qty = 3;\ncout << "Total: " << price*qty << endl;`)},
+'prog1_t1_basic_2':{d:'Every program follows the IPO model: accept Input, Process it, then produce Output.',langs:mkLangs(
+`name = input('Your name: ')  # Input\ngreeting = 'Hello, ' + name  # Process\nprint(greeting)              # Output`,
+`const name = prompt('Your name: ');       // Input\nconst greeting = 'Hello, ' + name;        // Process\nconsole.log(greeting);                    // Output`,
+`Scanner sc = new Scanner(System.in);\nString name = sc.nextLine();             // Input\nString greeting = "Hello, " + name;     // Process\nSystem.out.println(greeting);           // Output`,
+`char name[50]; scanf("%s", name);       // Input\nprintf("Hello, %s\\n", name);           // Process+Output`,
+`string name; cin >> name;              // Input\nstring g = "Hello, " + name;           // Process\ncout << g << endl;                      // Output`)},
+'prog1_t1_basic_3':{d:'The classic first program — confirms your environment is set up and prints one line to the screen.',langs:mkLangs(
+`print('Hello, World!')`,
+`console.log('Hello, World!');`,
+`System.out.println("Hello, World!");`,
+`printf("Hello, World!\\n");`,
+`cout << "Hello, World!" << endl;`)},
+'prog1_t1_basic_4':{d:'Syntax: bad grammar caught before running. Runtime: valid code that crashes. Logic: runs but gives wrong answer.',langs:mkLangs(
+`# Syntax error:  print('Hi'  ← missing )\n# Runtime error: int('abc')  ← crashes\n# Logic error (runs but wrong):\narea = 4 + 5   # Bug: should be 4 * 5\nprint(area)    # 9, not 20`,
+`// Syntax: console.log('Hi'   ← missing )\n// Runtime: null.toString()   ← TypeError\n// Logic (wrong result):\nlet area = 4 + 5;  // Bug: should be 4 * 5\nconsole.log(area); // 9, not 20`,
+`// Syntax: System.out.println("Hi"  ← missing )\n// Runtime: Integer.parseInt("abc") ← exception\n// Logic:\nint area = 4 + 5;  // Bug: should be 4 * 5\nSystem.out.println(area); // 9`,
+`// Syntax: printf("Hi"  ← missing )\n// Runtime: int x = 1/0; ← undefined behavior\n// Logic:\nint area = 4 + 5;  /* Bug: should be 4*5 */\nprintf("%d\\n", area); // 9`,
+`// Logic error example:\nint area = 4 + 5;  // Bug: should be 4 * 5\ncout << area << endl; // 9, not 20`)},
+'prog1_t1_intermediate_0':{d:'Pseudocode sketches your solution in plain English before you commit to any language syntax.',langs:mkLangs(
+`# GET number, check sign:\nnum = int(input('Number: '))\nif num >= 0: print('non-negative')\nelse: print('negative')`,
+`const num = parseInt(prompt('Number: '));\nif (num >= 0) console.log('non-negative');\nelse console.log('negative');`,
+`Scanner sc = new Scanner(System.in);\nint num = sc.nextInt();\nif (num >= 0) System.out.println("non-negative");\nelse System.out.println("negative");`,
+`int num; scanf("%d", &num);\nif (num >= 0) printf("non-negative\\n");\nelse printf("negative\\n");`,
+`int num; cin >> num;\nif (num >= 0) cout << "non-negative" << endl;\nelse cout << "negative" << endl;`)},
 'prog1_t1_intermediate_1':{d:'Manual tracing means recording each variable\'s value after every line — like a human debugger.',c:`a = 10       # a=10\nb = a + 5    # b=15\na = b - 3    # a=12\nprint(a, b)  # 12 15\n# Trace table:\n# Line | a  | b\n#   1  | 10 | —\n#   2  | 10 | 15\n#   3  | 12 | 15`},
 'prog1_t1_intermediate_2':{d:'Primitive values sit on the stack; objects/collections live on the heap and are reached via a reference.',c:`# Stack — small value stored directly\nage = 25\n\n# Heap — list lives on heap, 'scores' holds a reference\nscores = [90, 85]\nscores.append(92)   # modifies heap in-place\nprint(scores)       # [90, 85, 92]`},
 'prog1_t1_intermediate_3':{d:'Compiled languages translate to machine code once for speed; interpreted languages translate at runtime each run.',c:`# Python (interpreted) — run directly:\nprint('Hello')\n\n# C (compiled) — must compile first:\n# gcc hello.c -o hello\n# ./hello\n#\n# #include <stdio.h>\n# int main() { printf("Hello\\n"); return 0; }`},
@@ -712,6 +745,48 @@ async function loadStudentTopics(){
 'prog1_t8_hard_4':{d:'Build and validate a string character by character when you need full control over the output.',c:`def encode_rle(s):\n    \"\"\"Run-length encoding without built-ins.\"\"\"\n    if not s: return ''\n    result, count, prev = '', 1, s[0]\n    for ch in s[1:]:\n        if ch == prev: count += 1\n        else:\n            result += (str(count) if count>1 else '') + prev\n            prev, count = ch, 1\n    return result + (str(count) if count>1 else '') + prev\n\nprint(encode_rle('aaabbc'))   # 3a2bc`},
 };
 
+  // Auto-generate language variants for entries that only have Python code
+  (function addLangs(){
+    function toJS(py){
+      return py
+        .replace(/^# (.*)/gm,'// $1')
+        .replace(/print\(f`([^`]+)`\)/g,(_,s)=>'console.log(`'+s+'`);')
+        .replace(/print\(f'([^']+)'\)/g,(_,s)=>'console.log(`'+s.replace(/\{/g,'${')+'`);')
+        .replace(/print\(f"([^"]+)"\)/g,(_,s)=>'console.log(`'+s.replace(/\{/g,'${')+'`);')
+        .replace(/print\(([^)]+)\)/g,'console.log($1);')
+        .replace(/input\(([^)]+)\)/g,'prompt($1)')
+        .replace(/\bTrue\b/g,'true').replace(/\bFalse\b/g,'false').replace(/\bNone\b/g,'null')
+        .replace(/def (\w+)\((.*?)\):/g,'function $1($2) {')
+        .replace(/elif (.+?):/g,'} else if ($1) {')
+        .replace(/else:/g,'} else {')
+        .replace(/for (\w+) in range\((\w+), (\w+)\):/g,'for (let $1 = $2; $1 < $3; $1++) {')
+        .replace(/for (\w+) in range\((\w+)\):/g,'for (let $1 = 0; $1 < $2; $1++) {')
+        .replace(/for (\w+) in (.+?):/g,'for (const $1 of $2) {')
+        .replace(/while (.+?):/g,'while ($1) {')
+        .replace(/if (.+?):/g,'if ($1) {')
+        .replace(/\blen\((\w+)\)/g,'$1.length')
+        .replace(/\.append\(/g,'.push(')
+        .replace(/str\(([^)]+)\)/g,'String($1)')
+        .replace(/int\(([^)]+)\)/g,'parseInt($1)')
+        .replace(/float\(([^)]+)\)/g,'parseFloat($1)');
+    }
+    const javaHdr  = '// Java — inside main() method:\n// Types: int, double, String, boolean\n// Output: System.out.println()\n// Input:  Scanner sc = new Scanner(System.in);\n\n';
+    const cHdr     = '// C — inside main():\n// #include <stdio.h>\n// Output: printf("...\\n")\n// Input:  scanf("%d", &x)\n\n';
+    const cppHdr   = '// C++ — inside main():\n// #include <iostream>  using namespace std;\n// Output: cout << x << endl\n// Input:  cin >> x\n\n';
+    Object.values(OUTCOME_DETAILS).forEach(e=>{
+      if(!e.langs){
+        const py = e.c||'';
+        e.langs = {
+          python:     py,
+          javascript: toJS(py),
+          java:       javaHdr + py.replace(/^#/gm,'//'),
+          c:          cHdr    + py.replace(/^#/gm,'//'),
+          cpp:        cppHdr  + py.replace(/^#/gm,'//')
+        };
+      }
+    });
+  })();
+
   function levelHTML(t){
     if(!t.levels) return '';
     const show = activeLevel==='all' ? ['basic','intermediate','hard'] : [activeLevel];
@@ -720,6 +795,7 @@ async function loadStudentTopics(){
       const items = outcomes.map((o,i)=>{
         const safeKey = `${course}_${t.id}_${l}_${i}`;
         const det = OUTCOME_DETAILS[safeKey];
+        const code = det ? (det.langs?.[activeLang] ?? det.langs?.python ?? det.c ?? '') : '';
         return `
           <div class="s-outcome-item${det?' clickable':''}" ${det?`onclick="toggleOD('${safeKey}')"`:''}>
             <span class="s-out-arrow">→</span>
@@ -728,7 +804,7 @@ async function loadStudentTopics(){
           </div>
           ${det?`<div class="s-outcome-detail" id="od_${safeKey}" style="display:none;">
             <div class="s-od-text">${esc(det.d)}</div>
-            <pre class="s-od-code">${esc(det.c)}</pre>
+            <pre class="s-od-code">${esc(code)}</pre>
           </div>`:''}`;
       }).join('');
       return `
@@ -748,12 +824,14 @@ async function loadStudentTopics(){
     if(ch) ch.classList.toggle('open', !isOpen);
   };
 
+  const langLabel = LANG_LABELS[activeLang] || activeLang;
+
   function render(){
-    const lvlBtns = ['all','basic','intermediate','hard'].map(l=>
-      `<button class="s-diff-tab ${activeLevel===l?'active-'+l:''}" onclick="sSetLevel('${l}')">${l==='all'?'All':l[0].toUpperCase()+l.slice(1)}</button>`
-    ).join('');
     topicList.innerHTML = `
-      <div class="s-diff-tabs">${lvlBtns}</div>
+      <div style="font-size:.75rem;color:#64748b;margin-bottom:14px;display:flex;align-items:center;gap:6px;">
+        <span style="background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;padding:3px 10px;border-radius:20px;font-weight:700;">${langLabel}</span>
+        <span>${activeLevel==='all'?'All levels':'<strong>'+labels[activeLevel]+'</strong> only'}</span>
+      </div>
       ${unlockedTopics.map(t=>{
         const open = expanded.has(t.id);
         return `
@@ -771,7 +849,6 @@ async function loadStudentTopics(){
       }).join('')}`;
   }
 
-  window.sSetLevel    = lv => { activeLevel=lv; render(); };
   window.sExpandTopic = id => { expanded.has(id)?expanded.delete(id):expanded.add(id); render(); };
 
   render();

@@ -259,6 +259,31 @@
       </div>
       <div class="tab-content active" id="tc-acts"><div id="activities-list"></div></div>
       <div class="tab-content" id="tc-topics">
+        <div class="card" style="margin-bottom:20px;">
+          <div style="font-size:14px;font-weight:700;color:#e2e8f0;margin-bottom:14px;">📡 Student Display Settings</div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;">
+            <div class="field" style="min-width:190px;margin-bottom:0;">
+              <label>Difficulty shown to students</label>
+              <select id="topic-difficulty-sel">
+                <option value="all">All Levels</option>
+                <option value="basic">Basic Only</option>
+                <option value="intermediate">Intermediate Only</option>
+                <option value="hard">Hard Only</option>
+              </select>
+            </div>
+            <div class="field" style="min-width:190px;margin-bottom:0;">
+              <label>Code language for examples</label>
+              <select id="topic-lang-sel">
+                <option value="python">Python</option>
+                <option value="javascript">JavaScript</option>
+                <option value="java">Java</option>
+                <option value="c">C</option>
+                <option value="cpp">C++</option>
+              </select>
+            </div>
+            <span id="topic-settings-saved" style="font-size:12px;color:#86efac;display:none;">✓ Saved</span>
+          </div>
+        </div>
         <div id="topics-list"></div>
         <div style="margin-top:28px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
@@ -968,8 +993,28 @@
         list.innerHTML='<div class="empty"><div style="font-size:13px;">No predefined topics for this course.</div></div>';
         await loadMaterials(); return;
       }
-      let activeLevel = 'all';
+      let activeLevel = currentClass.topicDifficulty || 'all';
       const expanded = new Set();
+
+      // Init selectors
+      const diffSel = document.getElementById('topic-difficulty-sel');
+      const langSel = document.getElementById('topic-lang-sel');
+      if(diffSel) diffSel.value = activeLevel;
+      if(langSel) langSel.value = currentClass.topicLanguage || 'python';
+
+      async function saveTopicSettings(){
+        const diff = diffSel.value;
+        const lang = langSel.value;
+        await updateDoc(doc(db,'classes',currentClass.id),{topicDifficulty:diff,topicLanguage:lang}).catch(()=>{});
+        currentClass.topicDifficulty = diff;
+        currentClass.topicLanguage   = lang;
+        activeLevel = diff;
+        const saved = document.getElementById('topic-settings-saved');
+        if(saved){ saved.style.display='inline'; setTimeout(()=>saved.style.display='none',2000); }
+        render();
+      }
+      if(diffSel) diffSel.addEventListener('change', saveTopicSettings);
+      if(langSel) langSel.addEventListener('change', saveTopicSettings);
 
       function levelHTML(t) {
         if(!t.levels) return '<div style="font-size:12px;color:#94a3b8;padding:4px 0;">No content available.</div>';
@@ -1020,7 +1065,7 @@
           }).join('')}`;
       }
 
-      window.setTopicLevel = function(lv) { activeLevel=lv; render(); };
+      window.setTopicLevel = function(lv) { activeLevel=lv; render(); }; // kept for legacy calls
       window.expandTopic  = function(id) { expanded.has(id)?expanded.delete(id):expanded.add(id); render(); };
       window.toggleTopic  = async function(id) {
         const set = new Set(currentClass.unlockedTopics||[]);
