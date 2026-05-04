@@ -163,8 +163,13 @@ header{position:fixed;top:0;left:0;right:0;height:64px;background:rgba(15,23,42,
 .lang-select{background:rgba(15,23,42,.9);border:1px solid rgba(51,65,85,.6);color:#e2e8f0;padding:5px 10px;border-radius:7px;font-size:.84rem;cursor:pointer;font-family:inherit;}
 .lang-select:focus{outline:none;border-color:#6366f1;}
 .lang-hint{font-size:.78rem;color:#64748b;}
-#code-editor{flex:1;background:#060d1a;color:#e2e8f0;border:none;outline:none;resize:none;padding:16px;font-family:'Consolas','Courier New',monospace;font-size:.9rem;line-height:1.65;tab-size:2;}
-.output-panel{height:180px;flex-shrink:0;background:#020617;border-top:1px solid rgba(51,65,85,.5);display:flex;flex-direction:column;}
+#monaco-editor{flex:1;min-height:0;overflow:hidden;}
+.bottom-panel{height:210px;flex-shrink:0;display:flex;border-top:1px solid rgba(51,65,85,.5);}
+.stdin-wrap{width:230px;flex-shrink:0;background:#060d1a;border-right:1px solid rgba(51,65,85,.4);display:flex;flex-direction:column;padding:7px 10px 7px 12px;}
+.stdin-label{font-size:.7rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;}
+.act-stdin-ta{flex:1;background:transparent;color:#cbd5e1;border:none;outline:none;resize:none;font-family:'Consolas','Courier New',monospace;font-size:.82rem;line-height:1.55;}
+.act-stdin-ta::placeholder{color:#334155;}
+.output-panel{flex:1;background:#020617;display:flex;flex-direction:column;}
 .output-header{background:rgba(15,23,42,.95);padding:6px 16px;font-size:.78rem;color:#64748b;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;text-transform:uppercase;letter-spacing:.08em;font-weight:700;}
 .btn-clear-output{background:transparent;border:none;color:#64748b;cursor:pointer;font-size:.8rem;font-family:inherit;}
 .btn-clear-output:hover{color:#e2e8f0;}
@@ -425,13 +430,19 @@ header{position:fixed;top:0;left:0;right:0;height:64px;background:rgba(15,23,42,
           ☁ Runs via Piston API — requires internet
         </span>
       </div>
-      <textarea id="code-editor" spellcheck="false" placeholder="// Write your code here"></textarea>
-      <div class="output-panel">
-        <div class="output-header">
-          Output
-          <button class="btn-clear-output" onclick="clearOutput()">Clear</button>
+      <div id="monaco-editor"></div>
+      <div class="bottom-panel">
+        <div class="stdin-wrap">
+          <div class="stdin-label">📥 stdin (input)</div>
+          <textarea id="act-stdin" class="act-stdin-ta" placeholder="Program input here&#10;e.g. for Scanner/input():&#10;5&#10;3"></textarea>
         </div>
-        <div id="output-area"></div>
+        <div class="output-panel">
+          <div class="output-header">
+            Output
+            <button class="btn-clear-output" onclick="clearOutput()">Clear</button>
+          </div>
+          <div id="output-area"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -439,6 +450,8 @@ header{position:fixed;top:0;left:0;right:0;height:64px;background:rgba(15,23,42,
 
 <div class="toast" id="toast"></div>
 
+<!-- Monaco AMD loader must be a regular script (not module) to expose window.require -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
 import{getAuth,onAuthStateChanged,signOut}from'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
@@ -498,6 +511,8 @@ let timerRemaining=0;
 let idleTimer=null;
 let antiCheat={tabSwitches:0,idleWarnings:0,flags:[]};
 let sessionUpdateInterval=null;
+let _monacoEditor=null;
+let _monacoReady=false;
 
 // ── Screen management ──
 window.showScreen=function(id){
@@ -1674,9 +1689,46 @@ window.startActivity=async function(){
   sessionUpdateInterval=setInterval(updateSession,20000);
 };
 
+// ── Monaco helpers ──
+function monacoLang(l){
+  return{python:'python',javascript:'javascript',java:'java',cpp:'cpp',c:'c'}[l]||'plaintext';
+}
+function initMonaco(code,lang){
+  return new Promise(resolve=>{
+    const container=document.getElementById('monaco-editor');
+    if(!container)return resolve(null);
+    const loader=window.require;
+    if(!loader){console.warn('Monaco loader not found');return resolve(null);}
+    loader.config({paths:{vs:'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs'}});
+    loader(['vs/editor/editor.main'],()=>{
+      if(_monacoEditor){_monacoEditor.dispose();_monacoEditor=null;}
+      _monacoEditor=window.monaco.editor.create(container,{
+        value:code,
+        language:monacoLang(lang),
+        theme:'vs-dark',
+        automaticLayout:true,
+        minimap:{enabled:false},
+        fontSize:14,
+        lineNumbers:'on',
+        scrollBeyondLastLine:false,
+        fontFamily:"'Consolas','Courier New',monospace",
+        wordWrap:'on',
+        padding:{top:8,bottom:8}
+      });
+      _monacoReady=true;
+      _monacoEditor.addCommand(window.monaco.KeyMod.CtrlCmd|window.monaco.KeyCode.Enter,()=>runCode());
+      resolve(_monacoEditor);
+    });
+  });
+}
+
 // ── Coding Screen ──
-function showCodingScreen(){
+async function showCodingScreen(){
   document.getElementById('screen-coding').classList.add('active');
+  const firstItem=currentItems[currentItemIdx];
+  const firstLang=getItemLang(firstItem);
+  const firstCode=studentCode[currentItemIdx]||(firstItem?.starterCode||'');
+  if(!_monacoReady) await initMonaco(firstCode,firstLang);
   loadItem(currentItemIdx);
 }
 
@@ -1691,7 +1743,6 @@ function getItemLang(item){
 }
 
 function loadItem(idx){
-  const editor=document.getElementById('code-editor');
   const item=currentItems[idx];
   if(!item)return;
   document.getElementById('coding-title').textContent=`Item ${idx+1} of ${currentItems.length}: ${esc(item.title||item.name||'')} (${item.points||0} pts)`;
@@ -1721,8 +1772,11 @@ function loadItem(idx){
   renderItemNav();
   // Clear output and restore saved code (or starter if never touched)
   clearOutput();
-  editor.value=studentCode[idx]??(item.starterCode||'');
-  editor.focus();
+  if(_monacoEditor&&_monacoReady){
+    window.monaco?.editor.setModelLanguage(_monacoEditor.getModel(),monacoLang(lang));
+    _monacoEditor.setValue(studentCode[idx]??(item.starterCode||''));
+    _monacoEditor.focus();
+  }
 }
 
 function renderItemNav(){
@@ -1739,8 +1793,7 @@ function renderItemNav(){
 
 window.navigateItem=function(idx){
   if(idx===currentItemIdx)return;
-  const editor=document.getElementById('code-editor');
-  if(editor&&currentItems[currentItemIdx])studentCode[currentItemIdx]=editor.value;
+  if(_monacoEditor&&_monacoReady&&currentItems[currentItemIdx])studentCode[currentItemIdx]=_monacoEditor.getValue();
   currentItemIdx=idx;
   loadItem(idx);
 };
@@ -1816,12 +1869,12 @@ function setRunning(on){
 }
 
 window.runCode=async function(){
-  const code=document.getElementById('code-editor').value.trim();
+  const code=(_monacoEditor?.getValue()||'').trim();
   const lang=document.getElementById('lang-select').value;
   const out=document.getElementById('output-area');
+  const stdin=document.getElementById('act-stdin')?.value||'';
   if(!code){out.innerHTML='<div class="out-line" style="color:#64748b;">Nothing to run.</div>';return;}
   const item=currentItems[currentItemIdx];
-  const firstInput=(item?.testCases||[])[0]?.input||'';
 
   if(lang==='javascript'){
     const tcs=item?.testCases||[];
@@ -1838,17 +1891,17 @@ window.runCode=async function(){
     out.innerHTML=r.error?`<div class="out-error">${esc(r.actual)}</div>`:`<div class="out-line">Output: ${esc(r.actual)}</div>`;
     return;
   }
-  // Non-JS via Piston
+  // Non-JS via Judge0 with stdin
   out.innerHTML='<div class="out-line" style="color:#64748b;">⏳ Running…</div>';
   setRunning(true);
-  const {stdout,stderr}=await pistonRun(code,lang,firstInput);
+  const {stdout,stderr}=await pistonRun(code,lang,stdin);
   setRunning(false);
   if(stderr&&!stdout){out.innerHTML=`<div class="out-error">${esc(stderr)}</div>`;}
   else{out.innerHTML=`<div class="out-line">${esc(stdout||'(no output)')}</div>`+(stderr?`<div class="out-error">${esc(stderr)}</div>`:'')}
 };
 
 window.checkCode=async function(){
-  const code=document.getElementById('code-editor').value.trim();
+  const code=(_monacoEditor?.getValue()||'').trim();
   const lang=document.getElementById('lang-select').value;
   const out=document.getElementById('output-area');
   const item=currentItems[currentItemIdx];
@@ -2029,10 +2082,8 @@ function initAntiCheat(){
 }
 
 function initPasteDetect(){
-  const editor=document.getElementById('code-editor');
-  if(!editor)return;
-  editor.removeEventListener('paste',handlePaste);
-  editor.addEventListener('paste',handlePaste);
+  document.removeEventListener('paste',handlePaste);
+  document.addEventListener('paste',handlePaste);
 }
 
 function handlePaste(e){
@@ -2096,8 +2147,7 @@ function stopAntiCheat(){
   document.removeEventListener('keydown',resetIdle);
   document.removeEventListener('click',resetIdle);
   clearIdleTimer();
-  const editor=document.getElementById('code-editor');
-  if(editor)editor.removeEventListener('paste',handlePaste);
+  document.removeEventListener('paste',handlePaste);
 }
 
 function handleVisChange(){
@@ -2156,22 +2206,6 @@ async function updateSession(){
   } catch(e){/* ignore */}
 }
 
-// ── Editor enhancements ──
-document.addEventListener('DOMContentLoaded',()=>{
-  const editor=document.getElementById('code-editor');
-  editor.addEventListener('keydown',e=>{
-    if(e.key==='Tab'){
-      e.preventDefault();
-      const start=editor.selectionStart,end=editor.selectionEnd;
-      editor.value=editor.value.substring(0,start)+'  '+editor.value.substring(end);
-      editor.selectionStart=editor.selectionEnd=start+2;
-    }
-    if(e.ctrlKey&&e.key==='Enter'){
-      e.preventDefault();
-      runCode();
-    }
-  });
-});
 
 // ── Utility ──
 function esc(s){
