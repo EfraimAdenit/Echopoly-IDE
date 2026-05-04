@@ -490,6 +490,7 @@ let currentActivity=null;
 let currentItems=[];
 let currentItemIdx=0;
 let itemResults=[];
+let studentCode=[];
 let sessionDocId=null;
 let activityActive=false;
 let timerInterval=null;
@@ -1634,6 +1635,7 @@ window.startActivity=async function(){
   if(!currentItems.length){showToast('No items in this activity','error');return;}
   currentItemIdx=0;
   itemResults=currentItems.map(()=>null);
+  studentCode=currentItems.map(item=>item.starterCode||'');
   antiCheat={tabSwitches:0,idleWarnings:0,pasteCount:0,aiSuspectCount:0,flags:[]};
   activityActive=true;
   // Create session doc
@@ -1689,6 +1691,9 @@ function getItemLang(item){
 }
 
 function loadItem(idx){
+  // Save the current editor content before switching away
+  const editor=document.getElementById('code-editor');
+  if(editor&&currentItems[currentItemIdx])studentCode[currentItemIdx]=editor.value;
   const item=currentItems[idx];
   if(!item)return;
   document.getElementById('coding-title').textContent=`Item ${idx+1} of ${currentItems.length}: ${esc(item.title||item.name||'')} (${item.points||0} pts)`;
@@ -1716,10 +1721,10 @@ function loadItem(idx){
   }
   // Item nav
   renderItemNav();
-  // Clear output and reset editor to starter code for this item
+  // Clear output and restore saved code (or starter if never touched)
   clearOutput();
-  document.getElementById('code-editor').value=item.starterCode||'';
-  document.getElementById('code-editor').focus();
+  editor.value=studentCode[idx]??item.starterCode||'';
+  editor.focus();
 }
 
 function renderItemNav(){
