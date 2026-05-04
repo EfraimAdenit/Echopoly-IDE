@@ -164,7 +164,11 @@ textarea.form-input{resize:vertical;min-height:66px;line-height:1.5;}
 .btn-close-exec:hover{border-color:#94a3b8;}
 .exec-code-wrap{background:rgba(6,13,26,.8);border-bottom:1px solid rgba(51,65,85,.4);padding:14px 18px;max-height:200px;overflow-y:auto;flex-shrink:0;}
 .exec-code-pre{font-family:'Consolas','Courier New',monospace;font-size:.8rem;color:#818cf8;white-space:pre;line-height:1.55;}
-.exec-out-wrap{flex:1;min-height:120px;padding:14px 18px;overflow-y:auto;background:#060d1a;display:flex;flex-direction:column;gap:6px;}
+.exec-stdin-wrap{padding:10px 18px;border-bottom:1px solid rgba(51,65,85,.4);background:rgba(10,16,30,.5);flex-shrink:0;}
+.exec-stdin-ta{width:100%;background:rgba(15,23,42,.85);border:1px solid rgba(51,65,85,.5);color:#e2e8f0;padding:7px 10px;border-radius:7px;font-family:'Consolas','Courier New',monospace;font-size:.82rem;resize:vertical;min-height:56px;max-height:110px;line-height:1.55;margin-top:6px;}
+.exec-stdin-ta:focus{outline:none;border-color:#6366f1;}
+.exec-stdin-ta::placeholder{color:#334155;font-style:italic;}
+.exec-out-wrap{flex:1;min-height:100px;padding:14px 18px;overflow-y:auto;background:#060d1a;display:flex;flex-direction:column;gap:6px;}
 .exec-out-label{font-size:.7rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.1em;}
 .exec-out-pre{font-family:'Consolas','Courier New',monospace;font-size:.86rem;color:#4ade80;white-space:pre-wrap;word-break:break-all;line-height:1.6;min-height:60px;}
 .exec-out-pre.has-err{color:#f87171;}
@@ -392,8 +396,12 @@ textarea.form-input{resize:vertical;min-height:66px;line-height:1.5;}
     <div class="exec-code-wrap">
       <pre class="exec-code-pre" id="exec-code-pre">(empty)</pre>
     </div>
+    <div class="exec-stdin-wrap">
+      <div class="exec-out-label">📥 Program Input (stdin) <span style="font-weight:400;color:#475569;font-size:.75rem;">— one value per line for multiple inputs</span></div>
+      <textarea id="exec-stdin" class="exec-stdin-ta" placeholder="Leave empty if the program needs no input.&#10;&#10;Example for Scanner code asking two numbers:&#10;10&#10;20"></textarea>
+    </div>
     <div class="exec-out-wrap">
-      <div class="exec-out-label">Output</div>
+      <div class="exec-out-label">▶ Output</div>
       <pre class="exec-out-pre idle" id="exec-out-pre">Click ▶ Run to execute…</pre>
     </div>
   </div>
@@ -878,6 +886,7 @@ window.openExecModal=(gid)=>{
   document.getElementById('exec-out-pre').textContent='Click ▶ Run to execute…';
   document.getElementById('exec-out-pre').className='exec-out-pre idle';
   document.getElementById('exec-exit-badge').style.display='none';
+  document.getElementById('exec-stdin').value='';
   document.getElementById('exec-modal').style.display='flex';
 };
 window.closeExecModal=()=>{
@@ -900,7 +909,8 @@ window.runExecCode=async()=>{
   document.getElementById('exec-code-pre').textContent=gc.code||'(empty)';
   document.getElementById('exec-glang').textContent=gc.language||'python';
   try{
-    const r=await pistonRun(gc.code||'',gc.language||'python');
+    const stdin=document.getElementById('exec-stdin')?.value||'';
+    const r=await pistonRun(gc.code||'',gc.language||'python',stdin);
     const combined=(r.stdout+(r.stderr?'\n─── stderr ───\n'+r.stderr:'')).trim();
     out.textContent=combined||'(no output)';
     out.className='exec-out-pre'+(r.stderr?' has-err':'')+((!combined)?' idle':'');
@@ -925,7 +935,7 @@ window.runExecCode=async()=>{
 const RAPIDAPI_KEY='b9158a2036mshf68f113a2877b35p1bc747jsnab019f69613e';
 // ──────────────────────────────────────────────────────────────────────────
 
-async function pistonRun(code,language){
+async function pistonRun(code,language,stdin=''){
   if(!RAPIDAPI_KEY){
     throw new Error(
       'Code execution needs a free API key.\n\n'+
@@ -942,7 +952,7 @@ async function pistonRun(code,language){
   const res=await fetch('https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true',{
     method:'POST',
     headers:{'Content-Type':'application/json','X-RapidAPI-Key':RAPIDAPI_KEY,'X-RapidAPI-Host':'judge0-ce.p.rapidapi.com'},
-    body:JSON.stringify({source_code:src,language_id:langIds[language]||71,stdin:''})
+    body:JSON.stringify({source_code:src,language_id:langIds[language]||71,stdin:stdin||''})
   });
   if(!res.ok)throw new Error('API error '+res.status);
   const d=await res.json();

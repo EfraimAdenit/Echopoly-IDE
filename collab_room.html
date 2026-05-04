@@ -156,7 +156,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif
 .btn-run-code:disabled{opacity:.5;cursor:not-allowed;}
 .run-spin{display:inline-block;width:11px;height:11px;border:2px solid rgba(34,197,94,.3);border-top-color:#22c55e;border-radius:50%;animation:spin .65s linear infinite;}
 /* Output panel */
-.output-panel{position:fixed;bottom:0;left:0;right:0;z-index:350;background:rgba(6,13,26,.98);border-top:2px solid rgba(99,102,241,.35);transform:translateY(100%);transition:transform .28s ease;display:flex;flex-direction:column;max-height:260px;}
+.output-panel{position:fixed;bottom:0;left:0;right:0;z-index:350;background:rgba(6,13,26,.98);border-top:2px solid rgba(99,102,241,.35);transform:translateY(100%);transition:transform .28s ease;display:flex;flex-direction:column;max-height:300px;}
 .output-panel.open{transform:translateY(0);}
 .out-hdr{padding:7px 14px;border-bottom:1px solid rgba(51,65,85,.45);display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .out-hdr-title{font-size:.86rem;font-weight:700;color:#e2e8f0;flex:1;}
@@ -165,7 +165,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif
 .out-exit.err{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3);}
 .btn-close-out{background:none;border:none;color:#475569;cursor:pointer;font-size:17px;line-height:1;padding:2px;}
 .btn-close-out:hover{color:#e2e8f0;}
-.out-body{flex:1;padding:10px 14px;font-family:'Consolas','Courier New',monospace;font-size:.86rem;white-space:pre-wrap;word-break:break-all;color:#4ade80;line-height:1.6;overflow-y:auto;}
+/* Two-column body: stdin left, output right */
+.out-panel-body{display:grid;grid-template-columns:280px 1fr;flex:1;overflow:hidden;min-height:0;}
+.out-stdin-wrap{padding:10px 14px;border-right:1px solid rgba(51,65,85,.45);display:flex;flex-direction:column;gap:6px;background:rgba(10,16,30,.4);}
+.out-section-label{font-size:.67rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.1em;flex-shrink:0;}
+.out-stdin-ta{flex:1;background:rgba(15,23,42,.85);border:1px solid rgba(51,65,85,.5);color:#e2e8f0;padding:7px 10px;border-radius:7px;font-family:'Consolas','Courier New',monospace;font-size:.84rem;resize:none;line-height:1.55;min-height:0;}
+.out-stdin-ta:focus{outline:none;border-color:#6366f1;}
+.out-stdin-ta::placeholder{color:#334155;font-style:italic;}
+.out-output-wrap{display:flex;flex-direction:column;overflow:hidden;padding:10px 0 0;}
+.out-body{flex:1;padding:4px 14px 10px;font-family:'Consolas','Courier New',monospace;font-size:.86rem;white-space:pre-wrap;word-break:break-all;color:#4ade80;line-height:1.6;overflow-y:auto;}
 .out-body.has-err{color:#f87171;}
 .out-body.idle{color:#475569;font-style:italic;}
 /* Misc */
@@ -316,7 +324,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif
     <span id="out-exit" class="out-exit" style="display:none;"></span>
     <button class="btn-close-out" onclick="closeOutput()" title="Close">✕</button>
   </div>
-  <div id="out-body" class="out-body idle">Click ▶ Run to execute your code…</div>
+  <div class="out-panel-body">
+    <div class="out-stdin-wrap">
+      <div class="out-section-label">📥 Program Input (stdin)</div>
+      <textarea id="out-stdin" class="out-stdin-ta" placeholder="Type input values here…&#10;One value per line for multiple inputs.&#10;&#10;Example:&#10;10&#10;20"></textarea>
+    </div>
+    <div class="out-output-wrap">
+      <div class="out-section-label" style="padding:0 14px;">▶ Output</div>
+      <div id="out-body" class="out-body idle">Click ▶ Run to execute your code…</div>
+    </div>
+  </div>
 </div>
 
 <!-- ENDED -->
@@ -798,8 +815,9 @@ window.runCode=async()=>{
   panel.classList.add('open');
   const code=_monacoEditor.getValue();
   const lang=document.getElementById('c-lang-sel').value;
+  const stdin=document.getElementById('out-stdin')?.value||'';
   try{
-    const r=await pistonRun(code,lang);
+    const r=await pistonRun(code,lang,stdin);
     const combined=(r.stdout+(r.stderr?'\n─── stderr ───\n'+r.stderr:'')).trim();
     body.textContent=combined||'(no output)';
     body.className='out-body'+(r.stderr?' has-err':'')+((!combined)?' idle':'');
@@ -825,7 +843,7 @@ window.closeOutput=()=>{ document.getElementById('output-panel').classList.remov
 const RAPIDAPI_KEY='b9158a2036mshf68f113a2877b35p1bc747jsnab019f69613e';
 // ──────────────────────────────────────────────────────────────────────────
 
-async function pistonRun(code,language){
+async function pistonRun(code,language,stdin=''){
   if(!RAPIDAPI_KEY){
     throw new Error(
       'Code execution needs a free API key.\n\n'+
@@ -842,7 +860,7 @@ async function pistonRun(code,language){
   const res=await fetch('https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true',{
     method:'POST',
     headers:{'Content-Type':'application/json','X-RapidAPI-Key':RAPIDAPI_KEY,'X-RapidAPI-Host':'judge0-ce.p.rapidapi.com'},
-    body:JSON.stringify({source_code:src,language_id:langIds[language]||71,stdin:''})
+    body:JSON.stringify({source_code:src,language_id:langIds[language]||71,stdin:stdin||''})
   });
   if(!res.ok)throw new Error('API error '+res.status);
   const d=await res.json();
