@@ -377,6 +377,7 @@ let _sessionUnsub=null;
 let _groupUnsub=null;
 let _chatUnsub=null;
 let _membersUnsub=null;
+let _memberDocUnsub=null;
 let _editorDebounce=null;
 let _timerInt=null;
 let _isRemote=false;
@@ -390,6 +391,14 @@ onAuthStateChanged(auth,u=>{
     me=u;
     const av=document.getElementById('user-avatar');
     if(av)av.textContent=(u.displayName||u.email||'S').charAt(0).toUpperCase();
+    // Try to auto-rejoin a saved session (survives page refresh)
+    const saved=localStorage.getItem('echopoly_session');
+    if(saved){
+      try{
+        const {sessionId}=JSON.parse(saved);
+        if(sessionId){autoRejoin(sessionId);return;}
+      }catch{localStorage.removeItem('echopoly_session');}
+    }
     const params=new URLSearchParams(location.search);
     const code=params.get('code');
     if(code){
@@ -401,6 +410,7 @@ onAuthStateChanged(auth,u=>{
 });
 
 window.doSignOut=async()=>{
+  localStorage.removeItem('echopoly_session');
   await goOffline();
   await signOut(auth);
   window.location.href='index.html';
@@ -429,9 +439,16 @@ window.joinSession=async(preCode)=>{
     if(s.status==='ended'){errEl.textContent='This session has already ended.';btn.disabled=false;btn.textContent='Join Session';return;}
     _sessionId=sdoc.id;
     _session=s;
-    // Create/update member presence
+    // Create/update member presence — preserve existing groupId on rejoin
     const mref=doc(db,'collabSessions',_sessionId,'members',me.uid);
-    await setDoc(mref,{uid:me.uid,name:me.displayName||me.email?.split('@')[0]||'Student',email:me.email||'',groupId:null,joinedAt:serverTimestamp(),isOnline:true},{merge:true});
+    const existingSnap=await getDoc(mref);
+    if(!existingSnap.exists()){
+      await setDoc(mref,{uid:me.uid,name:me.displayName||me.email?.split('@')[0]||'Student',email:me.email||'',groupId:null,joinedAt:serverTimestamp(),isOnline:true});
+    }else{
+      await updateDoc(mref,{isOnline:true,name:me.displayName||me.email?.split('@')[0]||'Student'});
+    }
+    // Persist session so page refresh auto-rejoins
+    localStorage.setItem('echopoly_session',JSON.stringify({sessionId:_sessionId}));
     // RTDB presence
     const pref=ref(rtdb,`collabPresence/${_sessionId}/${me.uid}`);
     await set(pref,{isOnline:true,name:me.displayName||me.email?.split('@')[0]||'Student'});
@@ -448,6 +465,44 @@ window.joinSession=async(preCode)=>{
     console.error(e);
   }
 };
+
+// ── Auto-Rejoin on Page Refresh ──
+async function autoRejoin(sessionId){
+  try{
+    const sSnap=await getDoc(doc(db,'collabSessions',sessionId));
+    if(!sSnap.exists()){localStorage.removeItem('echopoly_session');return;}
+    const s=sSnap.data();
+    if(s.status==='ended'){localStorage.removeItem('echopoly_session');return;}
+    _sessionId=sessionId;
+    _session=s;
+    document.getElementById('hdr-mid').textContent=s.title||'Collaborative Coding';
+    // Mark online
+    const mref=doc(db,'collabSessions',sessionId,'members',me.uid);
+    await setDoc(mref,{isOnline:true},{merge:true});
+    // RTDB presence
+    const pref=ref(rtdb,`collabPresence/${sessionId}/${me.uid}`);
+    await set(pref,{isOnline:true,name:me.displayName||me.email?.split('@')[0]||'Student'});
+    onDisconnect(pref).set({isOnline:false});
+    if(s.status==='waiting'){
+      showWaiting(s);
+      startSessionListener(sessionId);
+      startChatListener(sessionId);
+      startMembersListener(sessionId);
+    }else if(s.status==='active'){
+      const mSnap=await getDoc(mref);
+      let gId=mSnap.data()?.groupId||null;
+      if(!gId)gId=await assignToGroup(sessionId,s);
+      if(gId){
+        _groupId=gId;
+        await showCodingScreen(s,sessionId,gId);
+        startSessionListener(sessionId);
+      }
+    }
+  }catch(e){
+    localStorage.removeItem('echopoly_session');
+    console.error('Auto-rejoin failed:',e);
+  }
+}
 
 // ── Waiting Room ──
 function showWaiting(s){
@@ -537,6 +592,9 @@ async function showCodingScreen(s,sessionId,groupId){
   // Sync group code changes
   startGroupListener(sessionId,groupId);
 
+  // Listen for teacher-initiated group reassignment
+  startMemberDocListener(sessionId);
+
   // Coding-screen chat
   startCodingChatListener(sessionId);
 
@@ -617,6 +675,41 @@ function startGroupListener(sessionId,groupId){
     if(pos)_monacoEditor.setPosition(pos);
     if(sel)_monacoEditor.setSelection(sel);
     _isRemote=false;
+  });
+}
+
+// ── Live group reassignment listener ──
+function startMemberDocListener(sessionId){
+  if(_memberDocUnsub){_memberDocUnsub();_memberDocUnsub=null;}
+  _memberDocUnsub=onSnapshot(doc(db,'collabSessions',sessionId,'members',me.uid),async snap=>{
+    if(!snap.exists()||_currentScreen!=='screen-coding')return;
+    const m=snap.data();
+    const newGid=m.groupId;
+    if(!newGid||newGid===_groupId)return;
+    // Teacher moved us — switch groups without page reload
+    _groupId=newGid;
+    if(_groupUnsub){_groupUnsub();_groupUnsub=null;}
+    try{
+      const gSnap=await getDoc(doc(db,'collabSessions',sessionId,'groups',newGid));
+      if(!gSnap.exists())return;
+      const g=gSnap.data();
+      const lang=g.language||'python';
+      // Update header
+      document.getElementById('c-group-badge').textContent=g.name||'Group';
+      document.getElementById('c-lang-sel').value=lang;
+      const mems=g.memberNames||[];
+      document.getElementById('c-members').innerHTML=mems.slice(0,5).map(n=>`<div class="c-member-dot" title="${esc(n)}">${n.charAt(0).toUpperCase()}</div>`).join('')+(mems.length>5?`<div class="c-member-dot">+${mems.length-5}</div>`:'');
+      document.getElementById('c-group-members').innerHTML=mems.map(n=>`<div class="gml-item"><div class="gml-av">${n.charAt(0).toUpperCase()}</div><span>${esc(n)}</span></div>`).join('');
+      // Switch editor to new group code
+      if(_monacoEditor&&_monacoReady){
+        _isRemote=true;
+        window.monaco?.editor.setModelLanguage(_monacoEditor.getModel(),monacoLang(lang));
+        _monacoEditor.setValue(g.code||defaultCode(lang));
+        _isRemote=false;
+      }
+      startGroupListener(sessionId,newGid);
+      showToast(`You were moved to ${g.name||'a new group'}!`,'success');
+    }catch(e){console.error('Group switch error:',e);}
   });
 }
 
@@ -739,6 +832,8 @@ function startMembersListener(sessionId){
 
 // ── Ended Screen ──
 async function showEndedScreen(sessionId){
+  localStorage.removeItem('echopoly_session');
+  if(_memberDocUnsub){_memberDocUnsub();_memberDocUnsub=null;}
   if(_timerInt){clearInterval(_timerInt);_timerInt=null;}
   ['bg-layer','glow1','glow2','glow3'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='';});
   document.getElementById('main-header').style.display='';
