@@ -1691,9 +1691,7 @@ function getItemLang(item){
 }
 
 function loadItem(idx){
-  // Save the current editor content before switching away
   const editor=document.getElementById('code-editor');
-  if(editor&&currentItems[currentItemIdx])studentCode[currentItemIdx]=editor.value;
   const item=currentItems[idx];
   if(!item)return;
   document.getElementById('coding-title').textContent=`Item ${idx+1} of ${currentItems.length}: ${esc(item.title||item.name||'')} (${item.points||0} pts)`;
@@ -1740,6 +1738,9 @@ function renderItemNav(){
 }
 
 window.navigateItem=function(idx){
+  if(idx===currentItemIdx)return;
+  const editor=document.getElementById('code-editor');
+  if(editor&&currentItems[currentItemIdx])studentCode[currentItemIdx]=editor.value;
   currentItemIdx=idx;
   loadItem(idx);
 };
