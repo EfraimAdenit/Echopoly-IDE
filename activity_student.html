@@ -1723,7 +1723,7 @@ function loadItem(idx){
   renderItemNav();
   // Clear output and restore saved code (or starter if never touched)
   clearOutput();
-  editor.value=studentCode[idx]??item.starterCode||'';
+  editor.value=studentCode[idx]??(item.starterCode||'');
   editor.focus();
 }
 
