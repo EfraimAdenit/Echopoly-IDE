@@ -6,14 +6,25 @@
 <title>EchoPoly – Activity (Student)</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#1a1f35 100%);color:#f1f5f9;min-height:100vh;overflow-x:hidden;}
+
+/* ── Animated BG ── */
+.bg-gradient{position:fixed;inset:0;background:linear-gradient(-45deg,#1e3c72,#2a5298,#0f172a,#1e293b);background-size:400% 400%;animation:bgAnim 15s ease infinite;z-index:0;}
+@keyframes bgAnim{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.glow-blob{position:fixed;border-radius:50%;filter:blur(60px);opacity:.09;pointer-events:none;z-index:0;}
+.glow-blob-1{width:360px;height:360px;background:#3b82f6;top:-120px;right:-80px;animation:float 20s ease-in-out infinite;}
+.glow-blob-2{width:280px;height:280px;background:#06b6d4;bottom:-80px;left:-60px;animation:float 16s ease-in-out infinite reverse;}
+.glow-blob-3{width:240px;height:240px;background:#6366f1;top:40%;left:5%;animation:float 24s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(30px)}}
 
 /* ── Header ── */
-header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.logo{font-size:1.3rem;font-weight:700;color:#6366f1;letter-spacing:1px;}
-.header-user{display:flex;align-items:center;gap:12px;font-size:.9rem;color:#94a3b8;}
-.btn-signout{background:transparent;border:1px solid #475569;color:#94a3b8;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.85rem;transition:all .2s;}
-.btn-signout:hover{border-color:#6366f1;color:#6366f1;}
+header{position:fixed;top:0;left:0;right:0;height:64px;background:rgba(15,23,42,.93);backdrop-filter:blur(20px);border-bottom:1px solid rgba(148,163,184,.1);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;z-index:200;}
+.logo{font-size:20px;font-weight:800;background:linear-gradient(135deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;letter-spacing:-.5px;}
+.header-center{font-size:14px;font-weight:700;color:#e2e8f0;}
+.user-info{display:flex;align-items:center;gap:10px;}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;}
+.logout-btn{padding:6px 14px;background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.3);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;transition:background .2s;font-family:inherit;}
+.logout-btn:hover{background:rgba(239,68,68,.22);}
 
 /* ── Anti-cheat banner ── */
 #ac-banner{display:none;position:fixed;top:60px;left:0;right:0;z-index:200;background:#dc2626;color:#fff;text-align:center;padding:8px 48px 8px 8px;font-size:.9rem;font-weight:600;}
@@ -36,151 +47,151 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
 .btn-ac-dismiss:hover{background:#b91c1c;}
 
 /* ── Screens ── */
-.screen{display:none;padding:28px 20px;max-width:860px;margin:0 auto;}
+.screen{display:none;padding:88px 24px 40px;max-width:880px;margin:0 auto;position:relative;z-index:1;}
 .screen.active{display:block;}
 
 /* ── Landing / Join ── */
-.join-card{background:#1e293b;border:1px solid #334155;border-radius:16px;padding:40px;max-width:460px;margin:60px auto;text-align:center;}
-.join-card h1{font-size:1.8rem;color:#6366f1;margin-bottom:8px;}
-.join-card p{color:#94a3b8;margin-bottom:28px;}
-.join-input{width:100%;background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:12px 16px;border-radius:8px;font-size:1.1rem;text-align:center;letter-spacing:4px;text-transform:uppercase;}
-.join-input:focus{outline:none;border-color:#6366f1;}
-.btn-join{width:100%;margin-top:14px;background:#6366f1;color:#fff;border:none;padding:13px;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s;}
-.btn-join:hover{background:#4f46e5;}
-.join-error{color:#f87171;font-size:.9rem;margin-top:10px;display:none;}
+.join-card{background:rgba(30,41,59,.85);backdrop-filter:blur(18px);border:1px solid rgba(148,163,184,.12);border-radius:18px;padding:44px 40px;max-width:460px;margin:24px auto 0;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.35);}
+.join-card h1{font-size:1.75rem;font-weight:800;background:linear-gradient(135deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.join-card p{color:#94a3b8;margin-bottom:28px;font-size:.95rem;}
+.join-input{width:100%;background:rgba(15,23,42,.7);border:1px solid rgba(99,102,241,.3);color:#e2e8f0;padding:13px 16px;border-radius:10px;font-size:1.15rem;text-align:center;letter-spacing:5px;text-transform:uppercase;transition:border-color .2s;font-family:inherit;}
+.join-input:focus{outline:none;border-color:#6366f1;background:rgba(15,23,42,.9);}
+.btn-join{width:100%;margin-top:14px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;padding:13px;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .2s;font-family:inherit;}
+.btn-join:hover{opacity:.88;}
+.join-error{color:#f87171;font-size:.88rem;margin-top:10px;display:none;}
 .joined-classes{margin-top:28px;text-align:left;}
-.joined-classes h3{font-size:.9rem;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
-.joined-class-chip{background:#1e3a5f;border:1px solid #2563eb;color:#93c5fd;padding:6px 14px;border-radius:20px;font-size:.85rem;cursor:pointer;display:inline-block;margin:4px;transition:background .2s;}
-.joined-class-chip:hover{background:#1e40af;}
+.joined-classes h3{font-size:.8rem;color:#64748b;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;font-weight:700;}
+.joined-class-chip{background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.35);color:#93c5fd;padding:6px 14px;border-radius:20px;font-size:.84rem;cursor:pointer;display:inline-block;margin:4px;transition:all .2s;}
+.joined-class-chip:hover{background:rgba(37,99,235,.28);border-color:#3b82f6;}
 
 /* ── Class screen ── */
-.class-header{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
-.class-header h2{font-size:1.3rem;color:#e2e8f0;}
-.class-meta{font-size:.85rem;color:#64748b;}
-.btn-back{background:transparent;border:1px solid #475569;color:#94a3b8;padding:7px 16px;border-radius:6px;cursor:pointer;font-size:.85rem;transition:all .2s;}
-.btn-back:hover{border-color:#6366f1;color:#6366f1;}
+.class-header{background:rgba(30,41,59,.82);backdrop-filter:blur(16px);border:1px solid rgba(148,163,184,.12);border-radius:14px;padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 16px rgba(0,0,0,.25);}
+.class-header h2{font-size:1.3rem;font-weight:700;color:#e2e8f0;}
+.class-meta{font-size:.84rem;color:#64748b;margin-top:2px;}
+.btn-back{background:rgba(71,85,105,.15);border:1px solid rgba(71,85,105,.35);color:#94a3b8;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s;font-family:inherit;}
+.btn-back:hover{border-color:rgba(99,102,241,.5);color:#a5b4fc;background:rgba(99,102,241,.1);}
 
-.section-label{font-size:.85rem;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
-.activities-list{display:flex;flex-direction:column;gap:12px;}
-.activity-item{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:border-color .2s;}
-.activity-item:hover{border-color:#6366f1;}
-.activity-item.locked{opacity:.5;cursor:not-allowed;}
-.ai-info h3{font-size:1rem;color:#e2e8f0;margin-bottom:4px;}
+.section-label{font-size:.8rem;color:#64748b;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;font-weight:700;}
+.activities-list{display:flex;flex-direction:column;gap:10px;}
+.activity-item{background:rgba(30,41,59,.8);backdrop-filter:blur(12px);border:1px solid rgba(148,163,184,.1);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .2s;}
+.activity-item:hover{border-color:rgba(99,102,241,.45);background:rgba(30,41,59,.95);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,.3);}
+.activity-item.locked{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
+.ai-info h3{font-size:1rem;font-weight:700;color:#e2e8f0;margin-bottom:4px;}
 .ai-info .ai-meta{font-size:.82rem;color:#64748b;display:flex;gap:12px;}
-.ai-status{padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:600;}
-.ai-status.active{background:#14532d;color:#4ade80;}
-.ai-status.done{background:#1e3a5f;color:#93c5fd;}
-.ai-status.locked{background:#1c1917;color:#78716c;}
-.empty-msg{text-align:center;color:#475569;padding:40px;font-size:.95rem;}
+.ai-status{padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:700;}
+.ai-status.active{background:rgba(20,83,45,.7);color:#4ade80;border:1px solid rgba(34,197,94,.3);}
+.ai-status.done{background:rgba(30,58,95,.7);color:#93c5fd;border:1px solid rgba(37,99,235,.3);}
+.ai-status.locked{background:rgba(28,25,23,.7);color:#78716c;border:1px solid rgba(120,113,108,.2);}
+.empty-msg{text-align:center;color:#475569;padding:48px;font-size:.95rem;}
 
 /* ── Activity info screen ── */
-.info-card{background:#1e293b;border:1px solid #334155;border-radius:14px;padding:28px;margin-bottom:20px;}
-.info-card h2{font-size:1.4rem;color:#6366f1;margin-bottom:6px;}
-.info-card .info-meta{font-size:.9rem;color:#64748b;margin-bottom:16px;}
+.info-card{background:rgba(30,41,59,.82);backdrop-filter:blur(16px);border:1px solid rgba(148,163,184,.12);border-radius:16px;padding:28px 32px;margin-bottom:20px;box-shadow:0 4px 24px rgba(0,0,0,.3);}
+.info-card h2{font-size:1.45rem;font-weight:800;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.info-card .info-meta{font-size:.9rem;color:#64748b;margin-bottom:18px;}
 .info-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
-.badge{padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:600;}
-.badge-lang{background:#312e81;color:#a5b4fc;}
-.badge-time{background:#7c2d12;color:#fdba74;}
-.badge-pts{background:#14532d;color:#4ade80;}
-.info-desc{color:#94a3b8;font-size:.95rem;margin-bottom:18px;line-height:1.5;}
-.info-section{margin-bottom:14px;}
-.info-section h4{font-size:.85rem;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.badge{padding:4px 12px;border-radius:20px;font-size:.78rem;font-weight:700;}
+.badge-lang{background:rgba(49,46,129,.7);color:#a5b4fc;border:1px solid rgba(99,102,241,.3);}
+.badge-time{background:rgba(124,45,18,.7);color:#fdba74;border:1px solid rgba(251,146,60,.3);}
+.badge-pts{background:rgba(20,83,45,.7);color:#4ade80;border:1px solid rgba(34,197,94,.3);}
+.info-desc{color:#94a3b8;font-size:.95rem;margin-bottom:18px;line-height:1.6;}
+.info-section{margin-bottom:16px;}
+.info-section h4{font-size:.8rem;color:#64748b;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px;font-weight:700;}
 .test-cases-preview{display:flex;flex-direction:column;gap:6px;}
-.tc-row{background:#0f172a;border:1px solid #1e293b;border-radius:6px;padding:8px 12px;font-size:.85rem;display:flex;gap:16px;}
+.tc-row{background:rgba(15,23,42,.7);border:1px solid rgba(30,41,59,.8);border-radius:8px;padding:9px 13px;font-size:.84rem;display:flex;gap:16px;}
 .tc-row span{color:#64748b;}
 .tc-row code{color:#a5b4fc;}
-.btn-start{background:#6366f1;color:#fff;border:none;padding:13px 32px;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s;}
-.btn-start:hover{background:#4f46e5;}
-.btn-start:disabled{background:#334155;color:#64748b;cursor:not-allowed;}
-.already-done-notice{background:#14532d;border:1px solid #16a34a;border-radius:8px;padding:12px 16px;color:#4ade80;font-size:.9rem;margin-bottom:14px;}
+.btn-start{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;padding:13px 36px;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .2s;font-family:inherit;}
+.btn-start:hover{opacity:.88;}
+.btn-start:disabled{background:rgba(51,65,85,.7);color:#64748b;cursor:not-allowed;opacity:1;}
+.already-done-notice{background:rgba(20,83,45,.5);border:1px solid rgba(22,163,74,.4);border-radius:10px;padding:12px 16px;color:#4ade80;font-size:.9rem;margin-bottom:16px;}
 
 /* ── Results screen ── */
 .results-header{text-align:center;padding:28px 20px;margin-bottom:20px;}
-.results-header h2{font-size:1.6rem;color:#6366f1;margin-bottom:6px;}
-.results-header .score-big{font-size:3rem;font-weight:700;color:#4ade80;margin:12px 0;}
+.results-header h2{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.results-header .score-big{font-size:3.2rem;font-weight:800;color:#4ade80;margin:12px 0;}
 .results-header p{color:#94a3b8;}
-.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px;}
-.result-item{background:#1e293b;border-radius:10px;padding:16px;}
+.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:24px;}
+.result-item{background:rgba(30,41,59,.82);backdrop-filter:blur(12px);border-radius:12px;padding:16px;border:1px solid rgba(148,163,184,.08);}
 .result-item.pass{border-left:4px solid #22c55e;}
 .result-item.fail{border-left:4px solid #ef4444;}
 .result-item.manual{border-left:4px solid #f59e0b;}
 .ri-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-.ri-name{font-size:.9rem;color:#e2e8f0;font-weight:600;}
-.ri-badge{font-size:.75rem;padding:2px 8px;border-radius:10px;}
-.ri-badge.pass{background:#14532d;color:#4ade80;}
-.ri-badge.fail{background:#450a0a;color:#fca5a5;}
-.ri-badge.manual{background:#451a03;color:#fde68a;}
+.ri-name{font-size:.9rem;color:#e2e8f0;font-weight:700;}
+.ri-badge{font-size:.74rem;padding:2px 9px;border-radius:10px;font-weight:700;}
+.ri-badge.pass{background:rgba(20,83,45,.7);color:#4ade80;}
+.ri-badge.fail{background:rgba(69,10,10,.7);color:#fca5a5;}
+.ri-badge.manual{background:rgba(69,26,3,.7);color:#fde68a;}
 .ri-detail{font-size:.8rem;color:#64748b;display:flex;flex-direction:column;gap:4px;}
 .ri-detail code{color:#a5b4fc;font-size:.82rem;}
-.btn-done{background:#6366f1;color:#fff;border:none;padding:12px 32px;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;display:block;margin:0 auto;}
-.btn-done:hover{background:#4f46e5;}
+.btn-done{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;padding:12px 36px;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;display:block;margin:0 auto;font-family:inherit;}
+.btn-done:hover{opacity:.88;}
 
 /* ── Coding overlay (full-page) ── */
-#screen-coding{display:none;position:fixed;inset:0;z-index:300;background:#0f172a;flex-direction:column;}
+#screen-coding{display:none;position:fixed;inset:0;z-index:300;background:#060d1a;flex-direction:column;}
 #screen-coding.active{display:flex;}
-.coding-header{background:#1e293b;border-bottom:2px solid #6366f1;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.coding-title{font-size:1rem;font-weight:600;color:#e2e8f0;}
+.coding-header{background:rgba(15,23,42,.97);border-bottom:1px solid rgba(99,102,241,.35);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;backdrop-filter:blur(10px);}
+.coding-title{font-size:1rem;font-weight:700;color:#e2e8f0;}
 .coding-meta{display:flex;align-items:center;gap:16px;}
-.timer-display{font-size:1.1rem;font-weight:700;color:#4ade80;font-family:monospace;min-width:60px;text-align:center;}
-.timer-display.warning{color:#f59e0b;}
-.timer-display.critical{color:#ef4444;animation:pulse .6s infinite;}
+.timer-display{font-size:1.1rem;font-weight:700;color:#4ade80;font-family:monospace;min-width:60px;text-align:center;background:rgba(20,83,45,.25);padding:4px 10px;border-radius:6px;border:1px solid rgba(34,197,94,.2);}
+.timer-display.warning{color:#f59e0b;background:rgba(120,53,15,.25);border-color:rgba(245,158,11,.2);}
+.timer-display.critical{color:#ef4444;animation:pulse .6s infinite;background:rgba(127,29,29,.25);border-color:rgba(239,68,68,.2);}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 .coding-btns{display:flex;gap:8px;}
-.btn-run{background:#1e40af;color:#fff;border:none;padding:8px 18px;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:600;transition:background .2s;}
-.btn-run:hover{background:#1d4ed8;}
-.btn-check{background:#065f46;color:#fff;border:none;padding:8px 18px;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:600;transition:background .2s;}
-.btn-check:hover{background:#047857;}
-.btn-submit-code{background:#6366f1;color:#fff;border:none;padding:8px 18px;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:600;transition:background .2s;}
-.btn-submit-code:hover{background:#4f46e5;}
+.btn-run{background:rgba(30,64,175,.7);color:#93c5fd;border:1px solid rgba(37,99,235,.4);padding:7px 16px;border-radius:7px;cursor:pointer;font-size:.84rem;font-weight:700;transition:all .2s;font-family:inherit;}
+.btn-run:hover{background:rgba(30,64,175,.95);}
+.btn-check{background:rgba(6,95,70,.7);color:#6ee7b7;border:1px solid rgba(4,120,87,.4);padding:7px 16px;border-radius:7px;cursor:pointer;font-size:.84rem;font-weight:700;transition:all .2s;font-family:inherit;}
+.btn-check:hover{background:rgba(6,95,70,.95);}
+.btn-submit-code{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;padding:7px 16px;border-radius:7px;cursor:pointer;font-size:.84rem;font-weight:700;transition:opacity .2s;font-family:inherit;}
+.btn-submit-code:hover{opacity:.85;}
 
 .coding-body{display:flex;flex:1;overflow:hidden;}
-.problem-panel{width:320px;flex-shrink:0;background:#1e293b;border-right:1px solid #334155;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
-.problem-panel h3{font-size:.95rem;color:#6366f1;font-weight:700;}
-.problem-desc{font-size:.85rem;color:#94a3b8;line-height:1.5;}
+.problem-panel{width:320px;flex-shrink:0;background:rgba(15,23,42,.95);border-right:1px solid rgba(51,65,85,.5);padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
+.problem-panel h3{font-size:.95rem;color:#818cf8;font-weight:800;}
+.problem-desc{font-size:.85rem;color:#94a3b8;line-height:1.6;}
 .tc-list{display:flex;flex-direction:column;gap:6px;}
-.tc-entry{background:#0f172a;border:1px solid #334155;border-radius:6px;padding:8px 10px;font-size:.8rem;}
-.tc-entry .tc-label{color:#64748b;margin-bottom:2px;}
+.tc-entry{background:rgba(15,23,42,.8);border:1px solid rgba(51,65,85,.5);border-radius:8px;padding:9px 11px;font-size:.8rem;}
+.tc-entry .tc-label{color:#64748b;margin-bottom:2px;font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;}
 .tc-entry code{color:#a5b4fc;}
-.tc-entry.pass{border-color:#22c55e;}
-.tc-entry.fail{border-color:#ef4444;}
-.tc-result{font-size:.78rem;margin-top:4px;}
+.tc-entry.pass{border-color:rgba(34,197,94,.5);}
+.tc-entry.fail{border-color:rgba(239,68,68,.5);}
+.tc-result{font-size:.78rem;margin-top:5px;}
 .tc-result.pass{color:#4ade80;}
 .tc-result.fail{color:#f87171;}
 
 .editor-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.lang-bar{background:#1e293b;border-bottom:1px solid #334155;padding:8px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
-.lang-select{background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:5px 10px;border-radius:6px;font-size:.85rem;cursor:pointer;}
+.lang-bar{background:rgba(15,23,42,.95);border-bottom:1px solid rgba(51,65,85,.5);padding:8px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.lang-select{background:rgba(15,23,42,.9);border:1px solid rgba(51,65,85,.6);color:#e2e8f0;padding:5px 10px;border-radius:7px;font-size:.84rem;cursor:pointer;font-family:inherit;}
 .lang-select:focus{outline:none;border-color:#6366f1;}
 .lang-hint{font-size:.78rem;color:#64748b;}
-#code-editor{flex:1;background:#0f172a;color:#e2e8f0;border:none;outline:none;resize:none;padding:16px;font-family:'Consolas','Courier New',monospace;font-size:.9rem;line-height:1.6;tab-size:2;}
-.output-panel{height:180px;flex-shrink:0;background:#020617;border-top:1px solid #334155;display:flex;flex-direction:column;}
-.output-header{background:#1e293b;padding:6px 16px;font-size:.8rem;color:#64748b;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
-.btn-clear-output{background:transparent;border:none;color:#64748b;cursor:pointer;font-size:.8rem;}
+#code-editor{flex:1;background:#060d1a;color:#e2e8f0;border:none;outline:none;resize:none;padding:16px;font-family:'Consolas','Courier New',monospace;font-size:.9rem;line-height:1.65;tab-size:2;}
+.output-panel{height:180px;flex-shrink:0;background:#020617;border-top:1px solid rgba(51,65,85,.5);display:flex;flex-direction:column;}
+.output-header{background:rgba(15,23,42,.95);padding:6px 16px;font-size:.78rem;color:#64748b;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;text-transform:uppercase;letter-spacing:.08em;font-weight:700;}
+.btn-clear-output{background:transparent;border:none;color:#64748b;cursor:pointer;font-size:.8rem;font-family:inherit;}
 .btn-clear-output:hover{color:#e2e8f0;}
-#output-area{flex:1;overflow-y:auto;padding:10px 16px;font-family:'Consolas','Courier New',monospace;font-size:.85rem;white-space:pre-wrap;color:#94a3b8;}
+#output-area{flex:1;overflow-y:auto;padding:10px 16px;font-family:'Consolas','Courier New',monospace;font-size:.84rem;white-space:pre-wrap;color:#94a3b8;}
 #output-area .out-line{line-height:1.5;}
 #output-area .out-error{color:#f87171;}
 #output-area .out-pass{color:#4ade80;}
 #output-area .out-fail{color:#f87171;}
 
 /* ── Toast ── */
-.toast{position:fixed;bottom:80px;right:20px;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:10px 18px;border-radius:8px;font-size:.9rem;z-index:600;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;}
+.toast{position:fixed;bottom:80px;right:20px;background:rgba(15,23,42,.96);backdrop-filter:blur(16px);border:1px solid rgba(148,163,184,.15);color:#e2e8f0;padding:11px 18px;border-radius:10px;font-size:.88rem;z-index:600;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;font-weight:600;}
 .toast.show{opacity:1;transform:translateY(0);}
-.toast.warn{border-color:#f59e0b;color:#fde68a;}
-.toast.error{border-color:#ef4444;color:#fca5a5;}
-.toast.success{border-color:#22c55e;color:#4ade80;}
+.toast.warn{border-color:rgba(245,158,11,.4);color:#fde68a;}
+.toast.error{border-color:rgba(239,68,68,.4);color:#fca5a5;}
+.toast.success{border-color:rgba(34,197,94,.4);color:#4ade80;}
 
 /* ── Loader ── */
-.loader{text-align:center;color:#64748b;padding:40px;font-size:.95rem;}
+.loader{text-align:center;color:#64748b;padding:48px;font-size:.95rem;}
 
 /* ── Flashcards button ── */
-.btn-flashcards{background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;transition:opacity .2s;}
-.btn-flashcards:hover{opacity:.85;}
+.btn-flashcards{background:rgba(8,145,178,.15);color:#22d3ee;border:1px solid rgba(8,145,178,.35);padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.84rem;font-weight:700;transition:all .2s;font-family:inherit;}
+.btn-flashcards:hover{background:rgba(8,145,178,.28);border-color:#22d3ee;}
 
 /* ── Tabs ── */
-.tabs{display:flex;gap:4px;background:#0f172a;border-radius:8px;padding:4px;margin-bottom:16px;width:fit-content;}
-.tab-btn-s{padding:7px 20px;border-radius:6px;cursor:pointer;font-size:.9rem;color:#64748b;transition:all .2s;border:none;background:transparent;font-family:inherit;}
-.tab-btn-s.active{background:#6366f1;color:#fff;}
+.tabs{display:flex;gap:4px;background:rgba(15,23,42,.7);border-radius:10px;padding:4px;margin-bottom:18px;width:fit-content;border:1px solid rgba(148,163,184,.1);}
+.tab-btn-s{padding:7px 22px;border-radius:7px;cursor:pointer;font-size:.88rem;font-weight:600;color:#64748b;transition:all .2s;border:none;background:transparent;font-family:inherit;}
+.tab-btn-s.active{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;box-shadow:0 2px 8px rgba(99,102,241,.35);}
 .stab-content{display:none;}
 .stab-content.active{display:block;}
 
@@ -225,34 +236,42 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
 .topic-ex{margin-top:10px;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:11px 14px;font-family:'Consolas','Courier New',monospace;font-size:.8rem;color:#a5b4fc;line-height:1.6;white-space:pre;overflow-x:auto;}
 
 /* ── Materials (student) ── */
-.material-card{display:flex;align-items:center;gap:12px;background:#1e293b;border:1px solid #334155;border-radius:10px;padding:13px 16px;margin-bottom:8px;}
-.material-card:hover{border-color:#6366f1;}
+.material-card{display:flex;align-items:center;gap:12px;background:rgba(30,41,59,.8);backdrop-filter:blur(12px);border:1px solid rgba(148,163,184,.1);border-radius:12px;padding:13px 16px;margin-bottom:8px;transition:all .2s;}
+.material-card:hover{border-color:rgba(99,102,241,.4);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.25);}
 .mat-ico{width:38px;height:38px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
 .mat-info{flex:1;min-width:0;}
 .mat-title{font-size:.92rem;font-weight:700;color:#e2e8f0;}
 .mat-desc{font-size:.8rem;color:#64748b;margin-top:2px;}
-.mat-meta{font-size:.75rem;color:#334155;margin-top:3px;}
-.btn-view-pdf{background:#6366f1;color:#fff;border:none;padding:7px 14px;border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
-.btn-view-pdf:hover{background:#4f46e5;}
+.mat-meta{font-size:.74rem;color:#475569;margin-top:3px;}
+.btn-view-pdf{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;font-family:inherit;transition:opacity .2s;}
+.btn-view-pdf:hover{opacity:.85;}
 
 /* ── PDF Viewer overlay ── */
-#pdf-overlay{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.85);flex-direction:column;}
+#pdf-overlay{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.9);flex-direction:column;backdrop-filter:blur(6px);}
 #pdf-overlay.show{display:flex;}
-.pdf-header{background:#1e293b;border-bottom:1px solid #334155;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.pdf-header{background:rgba(15,23,42,.97);border-bottom:1px solid rgba(51,65,85,.5);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .pdf-title{font-size:1rem;font-weight:700;color:#e2e8f0;}
 .pdf-actions{display:flex;gap:8px;}
-.btn-pdf-open{background:#6366f1;color:#fff;border:none;padding:7px 14px;border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;text-decoration:none;}
-.btn-pdf-close{background:transparent;border:1px solid #475569;color:#94a3b8;padding:7px 14px;border-radius:7px;font-size:.82rem;cursor:pointer;}
+.btn-pdf-open{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;text-decoration:none;font-family:inherit;}
+.btn-pdf-close{background:rgba(71,85,105,.2);border:1px solid rgba(71,85,105,.4);color:#94a3b8;padding:7px 14px;border-radius:8px;font-size:.82rem;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn-pdf-close:hover{border-color:#94a3b8;color:#e2e8f0;}
 #pdf-frame{flex:1;border:none;background:#fff;}
 </style>
 </head>
 <body>
 
+<div class="bg-gradient"></div>
+<div class="glow-blob glow-blob-1"></div>
+<div class="glow-blob glow-blob-2"></div>
+<div class="glow-blob glow-blob-3"></div>
+
 <header>
-  <span class="logo">EchoPoly</span>
-  <div class="header-user">
-    <span id="user-email"></span>
-    <button class="btn-signout" onclick="doSignOut()">Sign Out</button>
+  <a href="dashboard_student.html" class="logo">🎓 EchoPoly</a>
+  <span class="header-center">⚡ Activities</span>
+  <div class="user-info">
+    <div class="user-avatar" id="user-avatar">S</div>
+    <span id="user-email" style="font-size:13px;color:#94a3b8;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+    <button class="logout-btn" onclick="doSignOut()">Logout</button>
   </div>
 </header>
 
@@ -272,15 +291,25 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
 
 <!-- Screen: Landing (Join Class) -->
 <div id="screen-landing" class="screen active">
+  <div style="max-width:460px;margin:0 auto 12px;">
+    <a href="dashboard_student.html" class="btn-back" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">← Back to Dashboard</a>
+  </div>
   <div class="join-card">
     <h1>Join a Class</h1>
-    <p>Enter the join code provided by your instructor to access activities.</p>
+    <p>Enter the <strong style="color:#a5b4fc;">class join code</strong> from your instructor to access coding activities.</p>
     <input id="join-code-input" class="join-input" maxlength="8" placeholder="ABC-1234" oninput="this.value=this.value.toUpperCase()"/>
     <div id="join-error" class="join-error"></div>
     <button class="btn-join" onclick="joinClass()">Join Class</button>
     <div class="joined-classes" id="joined-classes-section" style="display:none;">
       <h3>Your Classes</h3>
       <div id="joined-classes-list"></div>
+    </div>
+    <!-- Collab session hint -->
+    <div style="margin-top:22px;padding-top:18px;border-top:1px solid rgba(148,163,184,.1);text-align:center;">
+      <p style="font-size:.82rem;color:#64748b;margin-bottom:10px;">Have a <strong style="color:#a5b4fc;">collaborative session code</strong> (6 letters/numbers)?</p>
+      <a href="collab_room.html" style="display:inline-flex;align-items:center;gap:6px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;padding:7px 18px;border-radius:8px;font-size:.84rem;font-weight:700;text-decoration:none;transition:background .2s;">
+        👥 Join Collaborative Session →
+      </a>
     </div>
   </div>
 </div>
@@ -293,7 +322,7 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
       <div class="class-meta" id="class-meta">Subject • Instructor</div>
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
-      <button class="btn-flashcards" onclick="window.location.href='flashcard_student.html'">🃏 Flashcards</button>
+      <a href="dashboard_student.html" class="btn-back" style="text-decoration:none;">⌂ Dashboard</a>
       <button class="btn-back" onclick="showScreen('screen-landing')">← Back</button>
     </div>
   </div>
@@ -413,7 +442,7 @@ header{background:#1e293b;border-bottom:2px solid #6366f1;padding:12px 24px;disp
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
 import{getAuth,onAuthStateChanged,signOut}from'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
-import{getFirestore,collection,query,where,getDocs,addDoc,updateDoc,doc,onSnapshot,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+import{getFirestore,collection,query,where,getDocs,addDoc,updateDoc,doc,setDoc,onSnapshot,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 
 const firebaseConfig={
   apiKey:"AIzaSyBCcyLy_rNx-riDjmK4SUu-gZbKtDPqEYQ",
@@ -431,6 +460,8 @@ const db=getFirestore(app);
 const authReady=new Promise(res=>onAuthStateChanged(auth,user=>{
   if(user){
     document.getElementById('user-email').textContent=user.email;
+    const av=document.getElementById('user-avatar');
+    if(av) av.textContent=(user.displayName||user.email||'S').charAt(0).toUpperCase();
     window._uid=user.uid;
     window._user=user;
     res(user);
@@ -441,9 +472,17 @@ const authReady=new Promise(res=>onAuthStateChanged(auth,user=>{
 }));
 
 window.doSignOut=async()=>{
+  await goOffline();
   await signOut(auth);
   window.location.href='index.html';
 };
+
+async function goOffline(){
+  if(window._presenceMref){
+    try{ await setDoc(window._presenceMref,{isOnline:false},{merge:true}); }catch{}
+  }
+  if(window._memberHeartbeat){ clearInterval(window._memberHeartbeat); window._memberHeartbeat=null; }
+}
 
 // ── State ──
 let currentClass=null;
@@ -503,6 +542,32 @@ window.openClass=async function(jsonStr){
   showScreen('screen-class');
   loadActivities(currentClass.id);
   loadStudentTopics();
+  // Track presence
+  if(window._uid && window._user && currentClass.id){
+    const mref=doc(db,'classMembers',`${currentClass.id}_${window._uid}`);
+    window._presenceMref=mref;
+    function pingPresence(){
+      setDoc(mref,{
+        classId:currentClass.id,
+        studentId:window._uid,
+        studentName:window._user.displayName||window._user.email?.split('@')[0]||'Student',
+        studentEmail:window._user.email||'',
+        isOnline:true,
+        lastActive:serverTimestamp()
+      },{merge:true}).catch(()=>{});
+    }
+    pingPresence();
+    if(window._memberHeartbeat)clearInterval(window._memberHeartbeat);
+    window._memberHeartbeat=setInterval(pingPresence,30000);
+    // Re-ping when tab becomes visible again
+    document.removeEventListener('visibilitychange',window._presenceVis);
+    window._presenceVis=()=>{ if(document.visibilityState==='visible') pingPresence(); };
+    document.addEventListener('visibilitychange',window._presenceVis);
+    // Best-effort offline on tab/window close
+    window.removeEventListener('beforeunload',window._presenceUnload);
+    window._presenceUnload=()=>{ goOffline(); };
+    window.addEventListener('beforeunload',window._presenceUnload);
+  }
 };
 
 const COURSE_NAMES={prog1:'Programming 1',prog2:'Programming 2',webdev:'Web Development',ds:'Data Structures',algo:'Algorithms',custom:'Custom Course'};
@@ -743,6 +808,375 @@ async function loadStudentTopics(){
 'prog1_t8_hard_2':{d:'Parsing means extracting structured data from a formatted string using split, strip, and regex.',c:`# Parse CSV line:\nline = 'Alice,22,CS,Manila'\nfields = line.split(',')\nname, age, course, city = fields\nprint(f'{name} is {age} years old')\n\n# Parse key=value:\nconfig = 'host=localhost port=3306'\nfor pair in config.split():\n    k, v = pair.split('=')\n    print(k, '->', v)`},
 'prog1_t8_hard_3':{d:'Strings are immutable — every + creates a new string. Use join() or a list + join for efficiency.',c:`# Slow — creates many temporary strings:\nresult = ''\nfor i in range(1000):\n    result += str(i)   # O(n²) total\n\n# Fast — join once:\nparts = [str(i) for i in range(1000)]\nresult = ''.join(parts)   # O(n) total\nprint(result[:20])`},
 'prog1_t8_hard_4':{d:'Build and validate a string character by character when you need full control over the output.',c:`def encode_rle(s):\n    \"\"\"Run-length encoding without built-ins.\"\"\"\n    if not s: return ''\n    result, count, prev = '', 1, s[0]\n    for ch in s[1:]:\n        if ch == prev: count += 1\n        else:\n            result += (str(count) if count>1 else '') + prev\n            prev, count = ch, 1\n    return result + (str(count) if count>1 else '') + prev\n\nprint(encode_rle('aaabbc'))   # 3a2bc`},
+/* ── prog2 · t1 OOP Basics ── */
+'prog2_t1_basic_0':{d:'A class is a blueprint; an object is a specific instance created from that blueprint.',langs:mkLangs(
+`class Dog:\n    def __init__(self, name, breed):\n        self.name = name\n        self.breed = breed\n    def bark(self):\n        print(f'{self.name} says: Woof!')\n\nmy_dog = Dog('Rex', 'Labrador')\nmy_dog.bark()   # Rex says: Woof!`,
+`class Dog {\n  constructor(name, breed) {\n    this.name = name;\n    this.breed = breed;\n  }\n  bark() {\n    console.log(\`\${this.name} says: Woof!\`);\n  }\n}\nconst myDog = new Dog('Rex', 'Labrador');\nmyDog.bark();`,
+`class Dog {\n    String name, breed;\n    Dog(String name, String breed) {\n        this.name = name;\n        this.breed = breed;\n    }\n    void bark() {\n        System.out.println(name + " says: Woof!");\n    }\n}\nDog myDog = new Dog("Rex", "Labrador");\nmyDog.bark();`,
+`// C uses structs + functions (no classes)\ntypedef struct { char* name; char* breed; } Dog;\nvoid bark(Dog d) { printf("%s says: Woof!\\n", d.name); }\nDog myDog = {"Rex", "Labrador"};\nbark(myDog);`,
+`class Dog {\npublic:\n    string name, breed;\n    Dog(string n, string b): name(n), breed(b){}\n    void bark() { cout << name << " says: Woof!" << endl; }\n};\nDog myDog("Rex","Labrador");\nmyDog.bark();`)},
+'prog2_t1_basic_1':{d:'Fields store an object\'s state; the constructor initialises those fields when the object is created.',langs:mkLangs(
+`class BankAccount:\n    def __init__(self, owner, balance=0):\n        self.owner = owner\n        self.balance = balance\n\nacc = BankAccount('Alice', 500)\nprint(acc.owner, acc.balance)  # Alice 500`,
+`class BankAccount {\n  constructor(owner, balance=0) {\n    this.owner = owner;\n    this.balance = balance;\n  }\n}\nconst acc = new BankAccount('Alice', 500);\nconsole.log(acc.owner, acc.balance);`,
+`class BankAccount {\n    String owner;\n    double balance;\n    BankAccount(String owner, double balance) {\n        this.owner = owner;\n        this.balance = balance;\n    }\n}\nBankAccount acc = new BankAccount("Alice", 500);\nSystem.out.println(acc.owner + " " + acc.balance);`,
+`typedef struct { char* owner; double balance; } BankAccount;\nBankAccount acc = {"Alice", 500};\nprintf("%s %.2f\\n", acc.owner, acc.balance);`,
+`class BankAccount {\npublic:\n    string owner; double balance;\n    BankAccount(string o, double b): owner(o), balance(b){}\n};\nBankAccount acc("Alice", 500);\ncout << acc.owner << " " << acc.balance << endl;`)},
+'prog2_t1_basic_2':{d:'Encapsulation hides internal data behind private fields and exposes controlled access through public methods.',langs:mkLangs(
+`class Person:\n    def __init__(self, name):\n        self.__name = name   # private\n    def get_name(self):  return self.__name\n    def set_name(self, n):\n        if n: self.__name = n\n\np = Person('Bob')\nprint(p.get_name())   # Bob`,
+`class Person {\n  #name;  // private field\n  constructor(name) { this.#name = name; }\n  getName() { return this.#name; }\n  setName(n) { if (n) this.#name = n; }\n}\nconst p = new Person('Bob');\nconsole.log(p.getName());`,
+`class Person {\n    private String name;\n    public Person(String name) { this.name = name; }\n    public String getName() { return name; }\n    public void setName(String n) { if (!n.isEmpty()) name = n; }\n}\nPerson p = new Person("Bob");\nSystem.out.println(p.getName());`,
+`// C: convention, no true private\ntypedef struct { char name[50]; } Person;\nconst char* getName(Person* p) { return p->name; }\nPerson p; strcpy(p.name,"Bob");\nprintf("%s\\n", getName(&p));`,
+`class Person {\n    string name;\npublic:\n    Person(string n): name(n){}\n    string getName() { return name; }\n    void setName(string n){ if(!n.empty()) name=n; }\n};\nPerson p("Bob");\ncout << p.getName() << endl;`)},
+'prog2_t1_basic_3':{d:'this/self refers to the current instance, distinguishing the object\'s own fields from local parameter names.',langs:mkLangs(
+`class Circle:\n    def __init__(self, radius):\n        self.radius = radius   # self.radius = field\n    def area(self):\n        return 3.14159 * self.radius ** 2\n\nc = Circle(5)\nprint(c.area())   # 78.54`,
+`class Circle {\n  constructor(radius) {\n    this.radius = radius;\n  }\n  area() {\n    return Math.PI * this.radius ** 2;\n  }\n}\nconst c = new Circle(5);\nconsole.log(c.area().toFixed(2));`,
+`class Circle {\n    double radius;\n    Circle(double radius) { this.radius = radius; }\n    double area() { return Math.PI * radius * radius; }\n}\nCircle c = new Circle(5);\nSystem.out.printf("%.2f%n", c.area());`,
+`typedef struct { double radius; } Circle;\ndouble area(Circle* c) { return 3.14159 * c->radius * c->radius; }\nCircle c = {5};\nprintf("%.2f\\n", area(&c));`,
+`class Circle {\n    double radius;\npublic:\n    Circle(double r): radius(r){}\n    double area(){ return M_PI * radius * radius; }\n};\nCircle c(5);\ncout << fixed << setprecision(2) << c.area() << endl;`)},
+'prog2_t1_basic_4':{d:'A method is a function defined inside a class that operates on the object\'s own data.',langs:mkLangs(
+`class Counter:\n    def __init__(self):\n        self.count = 0\n    def increment(self): self.count += 1\n    def reset(self):     self.count = 0\n    def value(self):     return self.count\n\nc = Counter()\nc.increment(); c.increment()\nprint(c.value())   # 2`,
+`class Counter {\n  constructor() { this.count = 0; }\n  increment() { this.count++; }\n  reset()     { this.count = 0; }\n  value()     { return this.count; }\n}\nconst c = new Counter();\nc.increment(); c.increment();\nconsole.log(c.value()); // 2`,
+`class Counter {\n    int count = 0;\n    void increment() { count++; }\n    void reset()     { count = 0; }\n    int  value()     { return count; }\n}\nCounter c = new Counter();\nc.increment(); c.increment();\nSystem.out.println(c.value()); // 2`,
+`typedef struct { int count; } Counter;\nvoid increment(Counter* c){ c->count++; }\nvoid reset(Counter* c)     { c->count=0; }\nCounter c={0}; increment(&c); increment(&c);\nprintf("%d\\n", c.count);`,
+`class Counter{\n    int count=0;\npublic:\n    void increment(){ count++; }\n    void reset(){ count=0; }\n    int value(){ return count; }\n};\nCounter c; c.increment(); c.increment();\ncout << c.value() << endl;`)},
+/* ── prog2 · t2 Inheritance ── */
+'prog2_t2_basic_0':{d:'Inheritance lets a subclass reuse all fields and methods of its parent, adding or changing only what differs.',langs:mkLangs(
+`class Animal:\n    def __init__(self, name):\n        self.name = name\n    def speak(self):\n        print(f'{self.name} makes a sound.')\n\nclass Dog(Animal):\n    def speak(self):   # override\n        print(f'{self.name} barks!')\n\nd = Dog('Rex')\nd.speak()   # Rex barks!`,
+`class Animal {\n  constructor(name){ this.name=name; }\n  speak(){ console.log(\`\${this.name} makes a sound.\`); }\n}\nclass Dog extends Animal {\n  speak(){ console.log(\`\${this.name} barks!\`); }\n}\nnew Dog('Rex').speak();`,
+`class Animal {\n    String name;\n    Animal(String name){ this.name=name; }\n    void speak(){ System.out.println(name+" makes a sound."); }\n}\nclass Dog extends Animal {\n    Dog(String n){ super(n); }\n    void speak(){ System.out.println(name+" barks!"); }\n}\nnew Dog("Rex").speak();`,
+`// C simulates via function pointers\ntypedef struct{ char* name; } Animal;\nvoid dog_speak(Animal* a){ printf("%s barks!\\n",a->name); }\nAnimal d={"Rex"}; dog_speak(&d);`,
+`class Animal{\npublic:\n    string name;\n    Animal(string n):name(n){}\n    virtual void speak(){ cout<<name<<" makes a sound."<<endl; }\n};\nclass Dog:public Animal{\npublic:\n    Dog(string n):Animal(n){}\n    void speak() override{ cout<<name<<" barks!"<<endl; }\n};\nDog d("Rex"); d.speak();`)},
+'prog2_t2_basic_1':{d:'super() calls the parent constructor so the subclass doesn\'t have to duplicate that initialisation code.',langs:mkLangs(
+`class Vehicle:\n    def __init__(self, make, model):\n        self.make = make\n        self.model = model\n\nclass Car(Vehicle):\n    def __init__(self, make, model, doors):\n        super().__init__(make, model)  # call parent\n        self.doors = doors\n\nc = Car('Toyota','Corolla',4)\nprint(c.make, c.doors)`,
+`class Vehicle {\n  constructor(make,model){ this.make=make; this.model=model; }\n}\nclass Car extends Vehicle {\n  constructor(make,model,doors){\n    super(make,model);\n    this.doors=doors;\n  }\n}\nconst c=new Car('Toyota','Corolla',4);\nconsole.log(c.make, c.doors);`,
+`class Vehicle {\n    String make, model;\n    Vehicle(String make, String model){ this.make=make; this.model=model; }\n}\nclass Car extends Vehicle {\n    int doors;\n    Car(String make, String model, int doors){\n        super(make, model);\n        this.doors=doors;\n    }\n}\nCar c=new Car("Toyota","Corolla",4);\nSystem.out.println(c.make+" "+c.doors);`,
+`// C: store parent as first member\ntypedef struct{ char* make; char* model; } Vehicle;\ntypedef struct{ Vehicle v; int doors; } Car;\nCar c={{"Toyota","Corolla"},4};\nprintf("%s %d\\n", c.v.make, c.doors);`,
+`class Vehicle{\npublic:\n    string make,model;\n    Vehicle(string m,string mo):make(m),model(mo){}\n};\nclass Car:public Vehicle{\npublic:\n    int doors;\n    Car(string m,string mo,int d):Vehicle(m,mo),doors(d){}\n};\nCar c("Toyota","Corolla",4);\ncout<<c.make<<" "<<c.doors<<endl;`)},
+'prog2_t2_basic_2':{d:'Overriding replaces a parent method in the subclass; the subclass version is called at runtime.',langs:mkLangs(
+`class Shape:\n    def area(self):\n        return 0\n\nclass Rectangle(Shape):\n    def __init__(self,w,h): self.w=w; self.h=h\n    def area(self): return self.w * self.h\n\nclass Circle(Shape):\n    def __init__(self,r): self.r=r\n    def area(self): return 3.14159 * self.r**2\n\nfor s in [Rectangle(4,5), Circle(3)]:\n    print(s.area())`,
+`class Shape { area(){ return 0; } }\nclass Rectangle extends Shape {\n  constructor(w,h){ super(); this.w=w; this.h=h; }\n  area(){ return this.w*this.h; }\n}\nclass Circle extends Shape {\n  constructor(r){ super(); this.r=r; }\n  area(){ return Math.PI*this.r**2; }\n}\n[new Rectangle(4,5),new Circle(3)].forEach(s=>console.log(s.area()));`,
+`abstract class Shape { abstract double area(); }\nclass Rect extends Shape {\n    double w,h;\n    Rect(double w,double h){ this.w=w; this.h=h; }\n    double area(){ return w*h; }\n}\nclass Circle extends Shape {\n    double r;\n    Circle(double r){ this.r=r; }\n    double area(){ return Math.PI*r*r; }\n}\nShape[] shapes={new Rect(4,5),new Circle(3)};\nfor(Shape s:shapes) System.out.println(s.area());`,
+`// C: simulate with function pointers\ntypedef struct Shape{ double(*area)(void*); } Shape;\ndouble rect_area(void* s){ double* d=(double*)s; return d[0]*d[1]; }\ndouble dims[]={4,5}; Shape rect={rect_area};\nprintf("%.2f\\n", rect.area(dims));`,
+`class Shape{ public: virtual double area()=0; };\nclass Rect:public Shape{\n    double w,h;\npublic: Rect(double w,double h):w(w),h(h){}\n    double area(){ return w*h; }\n};\nclass Circle:public Shape{\n    double r;\npublic: Circle(double r):r(r){}\n    double area(){ return M_PI*r*r; }\n};\nvector<Shape*> v={new Rect(4,5),new Circle(3)};\nfor(auto s:v) cout<<s->area()<<endl;`)},
+'prog2_t2_basic_3':{d:'IS-A relationship: a Dog IS-A Animal, so Dog objects can be used wherever Animal objects are expected.',langs:mkLangs(
+`class Animal:\n    def __init__(self,name): self.name=name\n    def describe(self): print(f'I am {self.name}')\n\nclass Dog(Animal): pass  # inherits everything\nclass Cat(Animal): pass\n\nanimals = [Dog('Rex'), Cat('Whiskers')]\nfor a in animals:\n    a.describe()   # polymorphism`,
+`class Animal{\n  constructor(name){ this.name=name; }\n  describe(){ console.log('I am '+this.name); }\n}\nclass Dog extends Animal{}\nclass Cat extends Animal{}\n[new Dog('Rex'),new Cat('Whiskers')].forEach(a=>a.describe());`,
+`class Animal{\n    String name;\n    Animal(String n){ name=n; }\n    void describe(){ System.out.println("I am "+name); }\n}\nclass Dog extends Animal{ Dog(String n){ super(n); } }\nclass Cat extends Animal{ Cat(String n){ super(n); } }\nAnimal[] list={new Dog("Rex"),new Cat("Whiskers")};\nfor(Animal a:list) a.describe();`,
+`void describe(const char* name){ printf("I am %s\\n",name); }\ndescribe("Rex"); describe("Whiskers");`,
+`class Animal{\npublic:\n    string name; Animal(string n):name(n){}\n    virtual void describe(){ cout<<"I am "<<name<<endl; }\n};\nclass Dog:public Animal{ public: Dog(string n):Animal(n){} };\nclass Cat:public Animal{ public: Cat(string n):Animal(n){} };\nvector<Animal*> v={new Dog("Rex"),new Cat("Whiskers")};\nfor(auto a:v) a->describe();`)},
+'prog2_t2_basic_4':{d:'The @Override annotation (Java) / override keyword (C++) confirms you intend to replace a parent method.',langs:mkLangs(
+`class Printer:\n    def print_info(self): print('Generic printer')\n\nclass LaserPrinter(Printer):\n    def print_info(self):   # override in Python\n        print('Laser printer: 30ppm')\n\np = LaserPrinter()\np.print_info()`,
+`class Printer{ printInfo(){ console.log('Generic printer'); } }\nclass LaserPrinter extends Printer{\n  printInfo(){ console.log('Laser: 30ppm'); }  // override\n}\nnew LaserPrinter().printInfo();`,
+`class Printer {\n    void printInfo(){ System.out.println("Generic printer"); }\n}\nclass LaserPrinter extends Printer {\n    @Override\n    void printInfo(){ System.out.println("Laser: 30ppm"); }\n}\nnew LaserPrinter().printInfo();`,
+`typedef void(*PrintFn)();\nvoid generic(){ printf("Generic printer\\n"); }\nvoid laser()  { printf("Laser: 30ppm\\n"); }\nPrintFn p = laser; p();`,
+`class Printer{ public: virtual void printInfo(){ cout<<"Generic printer"<<endl; } };\nclass LaserPrinter:public Printer{\npublic:\n    void printInfo() override{ cout<<"Laser: 30ppm"<<endl; }\n};\nLaserPrinter lp; lp.printInfo();`)},
+/* ── prog2 · t3 Exception Handling ── */
+'prog2_t3_basic_0':{d:'An exception is a runtime event that interrupts normal flow; try-catch prevents the program from crashing.',langs:mkLangs(
+`try:\n    x = int(input('Enter number: '))\n    print(10 / x)\nexcept ZeroDivisionError:\n    print('Cannot divide by zero!')\nexcept ValueError:\n    print('Please enter a valid number.')`,
+`try {\n  const x = parseInt(prompt('Enter number: '));\n  if (x === 0) throw new Error('Cannot divide by zero!');\n  console.log(10 / x);\n} catch (e) {\n  console.log(e.message);\n}`,
+`try {\n    int x = Integer.parseInt(sc.nextLine());\n    System.out.println(10 / x);\n} catch (NumberFormatException e) {\n    System.out.println("Please enter a valid number.");\n} catch (ArithmeticException e) {\n    System.out.println("Cannot divide by zero!");\n}`,
+`// C: no exceptions; use return codes\nint x; scanf("%d",&x);\nif(x==0){ printf("Cannot divide by zero!\\n"); }\nelse printf("%d\\n", 10/x);`,
+`try {\n    int x; cin>>x;\n    if(x==0) throw runtime_error("Cannot divide by zero!");\n    cout << 10/x << endl;\n} catch(const exception& e) {\n    cout << e.what() << endl;\n}`)},
+'prog2_t3_basic_1':{d:'The catch block runs only when the matching exception is thrown; without it the program crashes.',langs:mkLangs(
+`# Without try-catch — program crashes:\n# nums = [1, 2, 3]\n# print(nums[10])  # IndexError!\n\n# With try-catch:\nnums = [1, 2, 3]\ntry:\n    print(nums[10])\nexcept IndexError as e:\n    print('Error:', e)   # list index out of range`,
+`const nums = [1,2,3];\ntry {\n  console.log(nums[10].toString()); // TypeError\n} catch(e) {\n  console.log('Error:', e.message);\n}`,
+`int[] nums = {1, 2, 3};\ntry {\n    System.out.println(nums[10]); // throws\n} catch (ArrayIndexOutOfBoundsException e) {\n    System.out.println("Error: " + e.getMessage());\n}`,
+`int nums[]={1,2,3};\n// C: manual bounds check\nint idx=10;\nif(idx<3) printf("%d\\n",nums[idx]);\nelse printf("Index out of range\\n");`,
+`vector<int> nums={1,2,3};\ntry {\n    cout << nums.at(10) << endl; // throws out_of_range\n} catch(const out_of_range& e) {\n    cout << "Error: " << e.what() << endl;\n}`)},
+'prog2_t3_basic_2':{d:'finally (or its equivalent) always runs after try-catch, whether or not an exception occurred — ideal for cleanup.',langs:mkLangs(
+`try:\n    f = open('data.txt')\n    content = f.read()\nexcept FileNotFoundError:\n    print('File not found')\nfinally:\n    print('Cleanup done')  # always runs`,
+`try {\n  const data = JSON.parse('bad json');\n} catch(e) {\n  console.log('Parse error:', e.message);\n} finally {\n  console.log('Cleanup done');  // always runs\n}`,
+`try {\n    int result = 10 / 0;\n} catch (ArithmeticException e) {\n    System.out.println("Division error");\n} finally {\n    System.out.println("Cleanup done");  // always runs\n}`,
+`// C: use goto for cleanup pattern\nprintf("Before\\n");\ngoto cleanup;\ncleanup:\n    printf("Cleanup done\\n");`,
+`try {\n    throw runtime_error("test");\n} catch(const exception& e) {\n    cout << e.what() << endl;\n}\ncout << "Cleanup done" << endl; // use RAII instead`)},
+'prog2_t3_basic_3':{d:'Common built-in exceptions: NullPointerException, IndexOutOfBoundsException, IllegalArgumentException.',langs:mkLangs(
+`# Python equivalents:\ntry:\n    s = None\n    print(s.upper())   # AttributeError (like NullPointerException)\nexcept AttributeError:\n    print('Object is None / null')\n\ntry:\n    lst = [1,2,3]\n    print(lst[9])      # IndexError\nexcept IndexError:\n    print('Index out of bounds')`,
+`try {\n  let s = null;\n  console.log(s.toUpperCase());  // TypeError\n} catch(e) { console.log('Null error:', e.message); }\ntry {\n  let a=[1,2,3]; console.log(a[9].toString());\n} catch(e) { console.log('Index error:', e.message); }`,
+`try {\n    String s = null;\n    s.toUpperCase();  // NullPointerException\n} catch (NullPointerException e) {\n    System.out.println("Object is null");\n}\ntry {\n    int[] a={1,2,3}; System.out.println(a[9]);\n} catch (ArrayIndexOutOfBoundsException e) {\n    System.out.println("Index out of bounds");\n}`,
+`char* s = NULL;\nif(s==NULL){ printf("Object is NULL\\n"); }\nint a[]={1,2,3};\nif(9<3) printf("%d\\n",a[9]);\nelse printf("Index out of bounds\\n");`,
+`try{\n    string* s=nullptr;\n    cout<<s->size()<<endl; // segfault without check\n} catch(...){ cout<<"Null pointer error"<<endl; }\nvector<int> v={1,2,3};\ntry{ cout<<v.at(9); } catch(const out_of_range& e){ cout<<e.what()<<endl; }`)},
+'prog2_t3_basic_4':{d:'Trace execution: code in try runs until an exception; execution jumps to matching catch, then finally.',langs:mkLangs(
+`print('1. Before try')\ntry:\n    print('2. In try')\n    raise ValueError('oops')  # jump!\n    print('3. Never reached')\nexcept ValueError as e:\n    print('4. In catch:', e)\nfinally:\n    print('5. In finally')\nprint('6. After')`,
+`console.log('1. Before try');\ntry {\n  console.log('2. In try');\n  throw new Error('oops');  // jump!\n  console.log('3. Never reached');\n} catch(e) {\n  console.log('4. In catch:', e.message);\n} finally {\n  console.log('5. In finally');\n}\nconsole.log('6. After');`,
+`System.out.println("1. Before try");\ntry {\n    System.out.println("2. In try");\n    throw new RuntimeException("oops");\n} catch (RuntimeException e) {\n    System.out.println("4. In catch: " + e.getMessage());\n} finally {\n    System.out.println("5. In finally");\n}\nSystem.out.println("6. After");`,
+`printf("1. Before\\n");\nprintf("2. In try\\n");\nprintf("4. In catch (simulated)\\n");\nprintf("5. Finally\\n");\nprintf("6. After\\n");`,
+`cout<<"1. Before try"<<endl;\ntry{\n    cout<<"2. In try"<<endl;\n    throw runtime_error("oops");\n} catch(const exception& e){\n    cout<<"4. In catch: "<<e.what()<<endl;\n}\ncout<<"5. After (use RAII for finally)"<<endl;`)},
+/* ── prog2 · t4 Recursion ── */
+'prog2_t4_basic_0':{d:'Recursion: a function calls itself with a smaller input until a base case stops the recursion.',c:`def countdown(n):\n    if n <= 0:       # base case\n        print('Go!')\n        return\n    print(n)\n    countdown(n - 1)  # recursive call\n\ncountdown(3)\n# 3 → 2 → 1 → Go!`},
+'prog2_t4_basic_1':{d:'factorial(n) = n × factorial(n-1); base case is factorial(0) = 1.',c:`def factorial(n):\n    if n == 0: return 1        # base case\n    return n * factorial(n-1)  # recursive case\n\nprint(factorial(5))  # 120\n# 5*4*3*2*1*1 = 120`},
+'prog2_t4_basic_2':{d:'The base case prevents infinite recursion — it\'s the condition where the function stops calling itself.',c:`def sum_to(n):\n    if n == 0: return 0         # base case: stop!\n    return n + sum_to(n - 1)   # recurse smaller\n\nprint(sum_to(4))   # 10 (4+3+2+1+0)\n# Without base case → RecursionError!`},
+'prog2_t4_basic_3':{d:'Fibonacci: fib(n) = fib(n-1) + fib(n-2), with base cases fib(0)=0 and fib(1)=1.',c:`def fib(n):\n    if n <= 1: return n         # base cases\n    return fib(n-1) + fib(n-2)  # two recursive calls\n\nfor i in range(8):\n    print(fib(i), end=' ')   # 0 1 1 2 3 5 8 13`},
+'prog2_t4_basic_4':{d:'A missing or incorrect base case causes infinite recursion and eventually a StackOverflowError.',c:`# BAD — no base case (will crash!):\n# def bad(n):\n#     return bad(n - 1)  # never stops!\n\n# GOOD — correct base case:\ndef power(base, exp):\n    if exp == 0: return 1          # base case\n    return base * power(base, exp-1)\n\nprint(power(2, 8))  # 256`},
+/* ── prog2 · t5 Sorting Algorithms ── */
+'prog2_t5_basic_0':{d:'Sorting arranges elements into a defined order so that searching, merging, and displaying are easier.',c:`nums = [64, 25, 12, 22, 11]\nnums.sort()           # Python's built-in O(n log n)\nprint(nums)           # [11, 12, 22, 25, 64]\n\ncustom = ['banana','apple','cherry']\ncustom.sort()\nprint(custom)         # alphabetical`},
+'prog2_t5_basic_1':{d:'Bubble sort repeatedly swaps adjacent out-of-order pairs; after each pass the largest unsorted element "bubbles" to the end.',c:`def bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(n - i - 1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n\nnums = [64, 25, 12, 22, 11]\nbubble_sort(nums)\nprint(nums)   # [11, 12, 22, 25, 64]`},
+'prog2_t5_basic_2':{d:'Selection sort finds the minimum of the unsorted portion and swaps it to the front, one element per pass.',c:`def selection_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        min_idx = i\n        for j in range(i+1, n):\n            if arr[j] < arr[min_idx]:\n                min_idx = j\n        arr[i], arr[min_idx] = arr[min_idx], arr[i]\n\nnums = [64, 25, 12, 22, 11]\nselection_sort(nums)\nprint(nums)`},
+'prog2_t5_basic_3':{d:'O(n²) sorts are fine for small arrays (n < 100) but become painfully slow for large inputs.',c:`import time\n\ndef bubble_sort(arr):\n    n=len(arr)\n    for i in range(n):\n        for j in range(n-i-1):\n            if arr[j]>arr[j+1]: arr[j],arr[j+1]=arr[j+1],arr[j]\n\nimport random\nbig = [random.randint(0,10000) for _ in range(5000)]\nstart = time.time()\nbubble_sort(big)\nprint(f'5000 items: {time.time()-start:.2f}s')  # slow!`},
+'prog2_t5_basic_4':{d:'Built-in sort uses Timsort (Python) or similar O(n log n) algorithm — always prefer it unless studying algorithms.',c:`# Use built-in — always prefer this in practice:\nnums = [5, 2, 8, 1, 9, 3]\nnums.sort()                    # ascending\nprint(nums)                    # [1,2,3,5,8,9]\n\nnums.sort(reverse=True)        # descending\nprint(nums)                    # [9,8,5,3,2,1]\n\nwords = ['banana','Apple','cherry']\nwords.sort(key=str.lower)      # case-insensitive\nprint(words)`},
+/* ── prog2 · t6 Data Structures ── */
+'prog2_t6_basic_0':{d:'A data structure is a way of organising data so that operations (access, insert, delete, search) are efficient.',c:`# Python gives us many built-in data structures:\nlst   = [1, 2, 3]          # dynamic array / list\ntuple_= (1, 2, 3)          # immutable sequence\ndct   = {'a': 1, 'b': 2}  # hash map\nset_  = {1, 2, 3}          # unique elements\n\n# Choose by access pattern, not habit!`},
+'prog2_t6_basic_1':{d:'Stack (LIFO): push adds to top, pop removes from top. Python list supports both with append/pop.',c:`stack = []\nstack.append('a')    # push\nstack.append('b')\nstack.append('c')\nprint(stack[-1])     # peek: c\nprint(stack.pop())   # pop:  c\nprint(stack.pop())   # pop:  b\nprint(stack)         # ['a']`},
+'prog2_t6_basic_2':{d:'Queue (FIFO): enqueue adds to the back, dequeue removes from the front. Use collections.deque for O(1) both ends.',c:`from collections import deque\n\nqueue = deque()\nqueue.append('task1')     # enqueue back\nqueue.append('task2')\nqueue.append('task3')\nprint(queue.popleft())    # dequeue front: task1\nprint(queue.popleft())    # task2\nprint(queue)              # deque(['task3'])`},
+'prog2_t6_basic_3':{d:'A singly linked list: each node holds data and a pointer to the next node; the last node points to None.',c:`class Node:\n    def __init__(self, data):\n        self.data = data\n        self.next = None\n\n# Build: 1 → 2 → 3 → None\nhead = Node(1)\nhead.next = Node(2)\nhead.next.next = Node(3)\n\ncurr = head\nwhile curr:\n    print(curr.data, end=' → ')\n    curr = curr.next`},
+'prog2_t6_basic_4':{d:'LIFO (Last-In First-Out) suits undo history, call stacks; FIFO (First-In First-Out) suits task queues, printers.',c:`# LIFO example — browser back button:\nhistory = []\nhistory.append('home')\nhistory.append('search')\nhistory.append('profile')\nprint('Back:', history.pop())   # profile\nprint('Back:', history.pop())   # search\n\n# FIFO example — print queue:\nfrom collections import deque\nqueue = deque(['doc1','doc2','doc3'])\nprint('Print:', queue.popleft())  # doc1`},
+/* ── prog2 · t7 Searching ── */
+'prog2_t7_basic_0':{d:'Searching means finding whether/where a value exists in a collection.',c:`nums = [15, 4, 7, 23, 9]\ntarget = 7\n\n# Using built-in:\nif target in nums:\n    print('Found at index', nums.index(target))\nelse:\n    print('Not found')\n\n# Manual count:\nhits = sum(1 for x in nums if x == target)\nprint('Occurrences:', hits)`},
+'prog2_t7_basic_1':{d:'Linear search checks each element one by one — works on any list but O(n) worst case.',c:`def linear_search(lst, target):\n    for i in range(len(lst)):\n        if lst[i] == target:\n            return i        # found!\n    return -1               # not found\n\nnums = [5, 3, 8, 1, 9]\nprint(linear_search(nums, 8))   # 2\nprint(linear_search(nums, 7))   # -1`},
+'prog2_t7_basic_2':{d:'Binary search halves the search space each step — O(log n) but requires a sorted array.',c:`def binary_search(arr, target):\n    lo, hi = 0, len(arr) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if arr[mid] == target: return mid\n        elif arr[mid] < target: lo = mid + 1\n        else:                   hi = mid - 1\n    return -1\n\nsorted_nums = [1, 3, 5, 7, 9, 11]\nprint(binary_search(sorted_nums, 7))   # 3`},
+'prog2_t7_basic_3':{d:'Binary search REQUIRES a sorted array — never apply it to unsorted data.',c:`# Binary search needs sorted input!\narr = [3, 1, 4, 1, 5]       # unsorted — WRONG!\nbinary_wrong = lambda: None  # would give bad results\n\narr.sort()                   # sort first!\nprint(arr)                   # [1, 1, 3, 4, 5]\n\n# Now safe to binary search:\nfrom bisect import bisect_left\nidx = bisect_left(arr, 4)\nprint(arr[idx] == 4)         # True`},
+'prog2_t7_basic_4':{d:'Linear search is O(n); binary search is O(log n). For n=1 000 000 that\'s 1M vs. ~20 comparisons.',c:`import math\nn = 1_000_000\nprint('Linear worst case:', n, 'comparisons')\nprint('Binary worst case:', math.ceil(math.log2(n)), 'comparisons')\n# Linear: 1000000\n# Binary: 20\n\n# Practical rule:\n# Small / unsorted → linear_search\n# Large / sorted   → binary_search`},
+/* ── prog2 · t8 File I/O ── */
+'prog2_t8_basic_0':{d:'Open a file with open(), read its content, then close it. Use "with" to close automatically.',c:`# Write a file first:\nwith open('hello.txt', 'w') as f:\n    f.write('Hello, World!\\n')\n    f.write('Second line\\n')\n\n# Read it back:\nwith open('hello.txt', 'r') as f:\n    content = f.read()\nprint(content)`},
+'prog2_t8_basic_1':{d:'readlines() returns a list of lines; iterate to process each line one at a time.',c:`with open('hello.txt', 'w') as f:\n    f.write('Alice,90\\nBob,85\\nCarla,92\\n')\n\nwith open('hello.txt', 'r') as f:\n    for line in f:         # iterate line by line\n        name, score = line.strip().split(',')\n        print(f'{name}: {score}')`},
+'prog2_t8_basic_2':{d:'Mode "r" reads, "w" overwrites (creates if absent), "a" appends, "r+" reads and writes.',c:`# 'w' creates or overwrites:\nwith open('log.txt','w') as f: f.write('Start\\n')\n\n# 'a' appends without overwriting:\nwith open('log.txt','a') as f: f.write('Entry 1\\n')\nwith open('log.txt','a') as f: f.write('Entry 2\\n')\n\nwith open('log.txt','r') as f: print(f.read())`},
+'prog2_t8_basic_3':{d:'Always check if a file exists before opening to avoid FileNotFoundError.',c:`import os\n\nfilename = 'data.txt'\n\nif os.path.exists(filename):\n    with open(filename) as f:\n        print(f.read())\nelse:\n    print(f'{filename} not found')\n\n# Or use try-except:\ntry:\n    with open(filename) as f: print(f.read())\nexcept FileNotFoundError:\n    print('File not found')`},
+'prog2_t8_basic_4':{d:'Handle FileNotFoundError and IOError when working with files to prevent crashes.',c:`def read_file_safe(path):\n    try:\n        with open(path, 'r') as f:\n            return f.read()\n    except FileNotFoundError:\n        return f'ERROR: {path} not found'\n    except PermissionError:\n        return f'ERROR: no read permission'\n\nprint(read_file_safe('missing.txt'))\nprint(read_file_safe('hello.txt'))`},
+/* ── webdev · t1 HTML Fundamentals ── */
+'webdev_t1_basic_0':{d:'HTML is the structure of a webpage — browsers parse HTML tags and render them as visible content.',langs:mkLangs(
+'',
+`<!DOCTYPE html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8">\n    <title>My Page</title>\n  </head>\n  <body>\n    <h1>Hello, World!</h1>\n    <p>This is a paragraph.</p>\n  </body>\n</html>`,
+`<!-- HTML is not Java — it renders in a browser.\n     Java can generate HTML strings with print:\n     System.out.println("<h1>Hello</h1>"); -->`,
+`/* HTML is not C. C can write HTML strings:\n   printf("<h1>Hello</h1>\\n"); */`,
+`// HTML is not C++. C++ can write HTML strings:\n// cout << "<h1>Hello</h1>" << endl;`)},
+'webdev_t1_basic_1':{d:'Headings h1–h6 create a content hierarchy; p creates paragraphs; a creates links.',langs:mkLangs(
+'',
+`<h1>Main Title</h1>\n<h2>Sub-heading</h2>\n<p>A paragraph of text.</p>\n<a href="https://example.com">Click here</a>\n<ul>\n  <li>Item one</li>\n  <li>Item two</li>\n</ul>`,
+`<!-- HTML elements have no Java equivalent.\n     Study HTML in the browser. -->`,
+`/* HTML elements have no C equivalent. */`,
+`// HTML elements have no C++ equivalent.`)},
+'webdev_t1_basic_2':{d:'The document skeleton: DOCTYPE tells the browser it\'s HTML5, html wraps everything, head has meta, body has content.',langs:mkLangs(
+'',
+`<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Page Title</title>\n</head>\n<body>\n  <!-- All visible content goes here -->\n  <p>Hello!</p>\n</body>\n</html>`,
+`<!-- HTML only — no Java equivalent -->`,
+`/* HTML only — no C equivalent */`,
+`// HTML only — no C++ equivalent`)},
+'webdev_t1_basic_3':{d:'Attributes provide extra information: href for links, src for images, alt for accessibility, class/id for styling.',langs:mkLangs(
+'',
+`<!-- href: link destination -->\n<a href="https://example.com" target="_blank">Open</a>\n\n<!-- src + alt: image source and description -->\n<img src="photo.jpg" alt="A mountain view">\n\n<!-- class + id for CSS/JS targeting -->\n<p class="intro" id="first-para">Hello!</p>`,
+`<!-- HTML attributes — no Java equivalent -->`,
+`/* HTML attributes — no C equivalent */`,
+`// HTML attributes — no C++ equivalent`)},
+'webdev_t1_basic_4':{d:'Build a simple webpage combining headings, a paragraph, an image, a link, and a list.',langs:mkLangs(
+'',
+`<!DOCTYPE html>\n<html>\n<head><title>My Page</title></head>\n<body>\n  <h1>Welcome</h1>\n  <p>This is my first webpage.</p>\n  <img src="logo.png" alt="Logo">\n  <h2>Topics</h2>\n  <ul>\n    <li><a href="about.html">About</a></li>\n    <li><a href="contact.html">Contact</a></li>\n  </ul>\n</body>\n</html>`,
+`<!-- Full HTML page — runs in browser, not Java -->`,
+`/* Full HTML page — runs in browser, not C */`,
+`// Full HTML page — runs in browser, not C++`)},
+/* ── webdev · t2 CSS Styling ── */
+'webdev_t2_basic_0':{d:'Link an external CSS file using a link tag in the head section.',langs:mkLangs(
+'',
+`<!-- In your HTML <head>: -->\n<link rel="stylesheet" href="styles.css">\n\n/* styles.css: */\nbody {\n  font-family: Arial, sans-serif;\n  background-color: #f0f0f0;\n  margin: 0;\n  padding: 20px;\n}`,
+`<!-- CSS links go in HTML — no Java equivalent -->`,
+`/* CSS is browser-based — no C equivalent */`,
+`// CSS is browser-based — no C++ equivalent`)},
+'webdev_t2_basic_1':{d:'CSS selectors: element (p), class (.card), ID (#header) — from least to most specific.',langs:mkLangs(
+'',
+`/* Element selector — all <p> tags */\np { color: #333; line-height: 1.6; }\n\n/* Class selector — elements with class="card" */\n.card { background: white; padding: 20px; border-radius: 8px; }\n\n/* ID selector — unique element with id="header" */\n#header { background: #6366f1; color: white; padding: 16px; }`,
+`/* CSS selectors — no Java equivalent */`,
+`/* CSS selectors — no C equivalent */`,
+`// CSS selectors — no C++ equivalent`)},
+'webdev_t2_basic_2':{d:'Common CSS properties: font-size, color, background-color, border, padding, margin.',langs:mkLangs(
+'',
+`h1 {\n  font-size: 2rem;\n  font-weight: bold;\n  color: #1e293b;\n}\n\n.btn {\n  background-color: #6366f1;\n  color: white;\n  padding: 10px 20px;\n  border: none;\n  border-radius: 6px;\n  cursor: pointer;\n}`,
+`/* CSS properties — no Java equivalent */`,
+`/* CSS properties — no C equivalent */`,
+`// CSS properties — no C++ equivalent`)},
+'webdev_t2_basic_3':{d:'The box model: content is surrounded by padding (inside), then border, then margin (outside).',langs:mkLangs(
+'',
+`.box {\n  width: 200px;          /* content width */\n  padding: 16px;         /* inside spacing */\n  border: 2px solid #333;/* border line */\n  margin: 20px;          /* outside spacing */\n\n  /* box-sizing: border-box makes width include padding+border */\n  box-sizing: border-box;\n}`,
+`/* CSS box model — no Java equivalent */`,
+`/* CSS box model — no C equivalent */`,
+`// CSS box model — no C++ equivalent`)},
+'webdev_t2_basic_4':{d:'Center a block with margin: 0 auto; it needs an explicit width to work.',langs:mkLangs(
+'',
+`.container {\n  width: 800px;        /* must set a width */\n  max-width: 100%;     /* responsive: don't overflow */\n  margin: 0 auto;      /* left+right auto = centered */\n  padding: 0 16px;\n}\n\n/* Center text inside an element: */\n.hero {\n  text-align: center;\n}`,
+`/* CSS centering — no Java equivalent */`,
+`/* CSS centering — no C equivalent */`,
+`// CSS centering — no C++ equivalent`)},
+/* ── webdev · t3 JavaScript Basics ── */
+'webdev_t3_basic_0':{d:'let declares a reassignable variable; const declares a constant; avoid var (function-scoped, confusing).',langs:mkLangs(
+`# Python equivalent:\nname = 'Alice'         # like let\nPI = 3.14159           # convention for constant\n\nname = 'Bob'           # reassign OK\n# PI = 3.0             # works in Python but convention says don't`,
+`// JavaScript:\nlet name = 'Alice';       // reassignable\nconst PI = 3.14159;       // constant — cannot reassign\n\nname = 'Bob';             // OK\n// PI = 3.0;             // TypeError: Assignment to constant`,
+`// Java:\nString name = "Alice";    // mutable variable\nfinal double PI = 3.14159; // constant\n\nname = "Bob";             // OK\n// PI = 3.0;             // compile error`,
+`// C:\nchar name[50] = "Alice";\nconst double PI = 3.14159;\nstrcpy(name, "Bob");       // OK\n// PI = 3.0;             // error`,
+`// C++:\nstring name = "Alice";\nconst double PI = 3.14159;\nname = "Bob";             // OK\n// PI = 3.0;            // error`)},
+'webdev_t3_basic_1':{d:'JavaScript operators: arithmetic (+,-,*,/,%), comparison (===,!==,<,>), logical (&&,||,!).',langs:mkLangs(
+`x = 10; y = 3\nprint(x + y, x - y, x * y)   # 13 7 30\nprint(x / y, x // y, x % y)  # 3.33 3 1\nprint(x == y, x != y)         # False True`,
+`const x=10, y=3;\nconsole.log(x+y, x-y, x*y);   // 13 7 30\nconsole.log(x/y, x%y);         // 3.33 1\nconsole.log(x===y, x!==y);     // false true\nconsole.log(x>5 && y<5);       // true`,
+`int x=10,y=3;\nSystem.out.println(x+y+" "+(x-y)+" "+x*y);\nSystem.out.println((double)x/y+" "+x%y);\nSystem.out.println((x==y)+" "+(x!=y));`,
+`int x=10,y=3;\nprintf("%d %d %d\\n",x+y,x-y,x*y);\nprintf("%.2f %d\\n",(double)x/y,x%y);\nprintf("%d %d\\n",x==y,x!=y);`,
+`int x=10,y=3;\ncout<<x+y<<" "<<x-y<<" "<<x*y<<endl;\ncout<<(double)x/y<<" "<<x%y<<endl;\ncout<<(x==y)<<" "<<(x!=y)<<endl;`)},
+'webdev_t3_basic_2':{d:'Functions encapsulate reusable logic. JavaScript has function declarations and arrow functions.',langs:mkLangs(
+`def greet(name):\n    return f'Hello, {name}!'\n\nprint(greet('Alice'))`,
+`// Function declaration:\nfunction greet(name) {\n  return \`Hello, \${name}!\`;\n}\n\n// Arrow function (shorthand):\nconst greetArrow = name => \`Hello, \${name}!\`;\n\nconsole.log(greet('Alice'));\nconsole.log(greetArrow('Bob'));`,
+`static String greet(String name) {\n    return "Hello, " + name + "!";\n}\nSystem.out.println(greet("Alice"));`,
+`const char* greet(const char* name){\n    // simplified — real C needs snprintf\n    return name;\n}\nprintf("Hello, %s!\\n", greet("Alice"));`,
+`string greet(string name){\n    return "Hello, " + name + "!";\n}\ncout << greet("Alice") << endl;`)},
+'webdev_t3_basic_3':{d:'Select a DOM element with getElementById or querySelector, then read or change its content.',langs:mkLangs(
+`# Python has no DOM — use for backend only\nhtml = '<h1 id="title">Hello</h1>'\n# Use beautifulsoup to parse:\n# from bs4 import BeautifulSoup\n# soup = BeautifulSoup(html,'html.parser')\n# print(soup.find(id='title').text)`,
+`// Select by ID:\nconst title = document.getElementById('title');\ntitle.textContent = 'New Title';  // change text\n\n// Select by CSS selector:\nconst btn = document.querySelector('.submit-btn');\nconst allCards = document.querySelectorAll('.card');`,
+`// Java (with Selenium for browser DOM):\n// WebDriver driver = new ChromeDriver();\n// WebElement el = driver.findElement(By.id("title"));\n// el.getText();`,
+`/* C has no DOM; use libxml2:\n   xmlDocPtr doc = xmlParseFile("page.html");\n   xmlNodePtr node = xmlGetID(doc, "title"); */`,
+`// C++ with Qt WebEngine:\n// page->runJavaScript("document.getElementById('title').textContent");\n// Or use Selenium C++ bindings`)},
+'webdev_t3_basic_4':{d:'addEventListener attaches a function that runs when the user triggers an event like "click" or "input".',langs:mkLangs(
+`# Python equivalent — tkinter button callback:\nimport tkinter as tk\nroot = tk.Tk()\nbtn = tk.Button(root, text='Click me',\n    command=lambda: print('Clicked!'))\nbtn.pack()\nroot.mainloop()`,
+`// HTML: <button id="myBtn">Click me</button>\n\nconst btn = document.getElementById('myBtn');\nbtn.addEventListener('click', function() {\n  alert('Button clicked!');\n});\n\n// Arrow function shorthand:\nbtn.addEventListener('click', () => {\n  console.log('Clicked!');\n});`,
+`// Java Swing equivalent:\nJButton btn = new JButton("Click me");\nbtn.addActionListener(e -> System.out.println("Clicked!"));\nframe.add(btn);`,
+`/* C has no built-in event system.\n   In GTK:\n   g_signal_connect(button,"clicked",\n       G_CALLBACK(on_click),NULL); */`,
+`// C++ Qt:\n// QPushButton* btn = new QPushButton("Click me");\n// connect(btn, &QPushButton::clicked, this, &MyClass::onClick);`)},
+/* ── webdev · t4 DOM Manipulation ── */
+'webdev_t4_basic_0':{d:'querySelector returns the first matching element; querySelectorAll returns all matches as a NodeList.',langs:mkLangs(
+'',
+`// querySelector and querySelectorAll:\nconst header = document.querySelector('h1');\nconst allBtns = document.querySelectorAll('.btn');\nconst byId = document.querySelector('#main');\n\n// Iterate NodeList:\nallBtns.forEach(btn => console.log(btn.textContent));`,
+`/* DOM manipulation — browser JavaScript only.\n   Java uses Selenium for browser automation. */`,
+`/* DOM manipulation — browser JavaScript only.\n   C uses libxml2 for XML/HTML parsing. */`,
+`// DOM manipulation — browser JavaScript only.\n// C++ uses Qt WebEngine for browser interaction.`)},
+'webdev_t4_basic_1':{d:'textContent sets or reads the text inside an element (safe); innerHTML renders HTML markup (use carefully).',langs:mkLangs(
+'',
+`const p = document.querySelector('p');\n\n// textContent — safe, treats value as plain text:\np.textContent = 'Hello <b>World</b>';  // shows literally\n\n// innerHTML — parses as HTML:\np.innerHTML = 'Hello <b>World</b>';    // shows bold World\n\n// NEVER use innerHTML with user input — XSS risk!`,
+`/* DOM textContent/innerHTML — JS only */`,
+`/* DOM textContent/innerHTML — JS only */`,
+`// DOM textContent/innerHTML — JS only`)},
+'webdev_t4_basic_2':{d:'style.property changes a single inline style; classList.add/remove/toggle manages CSS classes cleanly.',langs:mkLangs(
+'',
+`const box = document.querySelector('.box');\n\n// Inline style (avoid for maintainability):\nbox.style.backgroundColor = 'red';\nbox.style.fontSize = '18px';\n\n// Better: toggle CSS classes:\nbox.classList.add('active');\nbox.classList.remove('hidden');\nbox.classList.toggle('selected');   // on/off`,
+`/* DOM classList — JS only */`,
+`/* DOM classList — JS only */`,
+`// DOM classList — JS only`)},
+'webdev_t4_basic_3':{d:'createElement creates a new node; appendChild inserts it as the last child of a parent element.',langs:mkLangs(
+'',
+`const list = document.querySelector('#my-list');\n\n// Create a new <li> and add it to <ul id="my-list">:\nconst newItem = document.createElement('li');\nnewItem.textContent = 'New item';\nnewItem.classList.add('list-item');\nlist.appendChild(newItem);`,
+`/* createElement/appendChild — browser JS only */`,
+`/* createElement/appendChild — browser JS only */`,
+`// createElement/appendChild — browser JS only`)},
+'webdev_t4_basic_4':{d:'element.remove() deletes the element from the DOM; removeChild deletes a specific child of a parent.',langs:mkLangs(
+'',
+`// Remove an element:\nconst old = document.getElementById('old-notice');\nif (old) old.remove();\n\n// Remove a specific child:\nconst ul = document.querySelector('ul');\nconst firstItem = ul.querySelector('li');\nif (firstItem) ul.removeChild(firstItem);`,
+`/* DOM remove — browser JavaScript only */`,
+`/* DOM remove — browser JavaScript only */`,
+`// DOM remove — browser JavaScript only`)},
+/* ── webdev · t5 Responsive Design ── */
+'webdev_t5_basic_0':{d:'Responsive design makes layouts adapt to any screen size — mobile, tablet, and desktop.',langs:mkLangs(
+'',
+`/* Add the viewport meta tag in HTML <head>: */\n/* <meta name="viewport" content="width=device-width, initial-scale=1"> */\n\n/* Then use CSS media queries to adapt layout: */\n@media (max-width: 768px) {\n  body { font-size: 14px; }\n  .sidebar { display: none; }\n  .main { width: 100%; }\n}`,
+`/* Responsive design = CSS/HTML — no Java equivalent */`,
+`/* Responsive design = CSS/HTML — no C equivalent */`,
+`// Responsive design = CSS/HTML — no C++ equivalent`)},
+'webdev_t5_basic_1':{d:'The viewport meta tag tells mobile browsers to use the device width instead of a virtual desktop width.',langs:mkLangs(
+'',
+`<!-- Without this, mobile browsers render\n     at 980px then scale down (tiny text!) -->\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\n<!-- After adding it, the page respects the device width -->\n<!-- Test: DevTools → Toggle Device Toolbar (Ctrl+Shift+M) -->`,
+`<!-- Viewport meta tag — HTML only, no Java equivalent -->`,
+`/* Viewport meta tag — HTML only, no C equivalent */`,
+`// Viewport meta tag — HTML only, no C++ equivalent`)},
+'webdev_t5_basic_2':{d:'Media queries apply CSS rules only when a condition (like screen width) is true.',langs:mkLangs(
+'',
+`/* Base styles (all screens): */\n.card { width: 300px; }\n\n/* Tablet and below (max-width: 768px): */\n@media (max-width: 768px) {\n  .card { width: 100%; }\n}\n\n/* Mobile only (max-width: 480px): */\n@media (max-width: 480px) {\n  body { font-size: 14px; padding: 8px; }\n}`,
+`/* CSS media queries — no Java equivalent */`,
+`/* CSS media queries — no C equivalent */`,
+`// CSS media queries — no C++ equivalent`)},
+'webdev_t5_basic_3':{d:'Percentage widths and max-width: 100% create fluid elements that shrink and grow with the viewport.',langs:mkLangs(
+'',
+`img {\n  max-width: 100%;  /* never wider than its container */\n  height: auto;     /* maintain aspect ratio */\n}\n\n.container {\n  width: 90%;       /* 90% of viewport */\n  max-width: 1200px;/* but never more than 1200px */\n  margin: 0 auto;\n}`,
+`/* Fluid CSS widths — no Java equivalent */`,
+`/* Fluid CSS widths — no C equivalent */`,
+`// Fluid CSS widths — no C++ equivalent`)},
+'webdev_t5_basic_4':{d:'Chrome DevTools Device Mode lets you test responsive layouts by simulating different screen sizes.',langs:mkLangs(
+'',
+`/* How to test responsive design:\n   1. Open Chrome DevTools (F12)\n   2. Click "Toggle device toolbar" (Ctrl+Shift+M)\n   3. Select a device (iPhone, iPad, etc.)\n   4. Resize the viewport and check layout\n\n   Common breakpoints:\n   320px  — small mobile\n   768px  — tablet\n   1024px — small desktop\n   1440px — large desktop */`,
+`/* DevTools testing — browser tool, no Java equivalent */`,
+`/* DevTools testing — browser tool, no C equivalent */`,
+`// DevTools testing — browser tool, no C++ equivalent`)},
+/* ── webdev · t6 Fetch API ── */
+'webdev_t6_basic_0':{d:'An API endpoint is a URL that returns data (usually JSON) when you make an HTTP request to it.',langs:mkLangs(
+`# Python equivalent using requests library:\nimport requests\nres = requests.get('https://api.example.com/users')\nprint(res.status_code)   # 200\nprint(res.json())        # parsed JSON`,
+`// Browser JavaScript:\nfetch('https://jsonplaceholder.typicode.com/todos/1')\n  .then(response => response.json())\n  .then(data => console.log(data));\n\n// data → { userId:1, id:1, title:"...", completed:false }`,
+`// Java with HttpClient (Java 11+):\nHttpClient client = HttpClient.newHttpClient();\nHttpRequest req = HttpRequest.newBuilder()\n    .uri(URI.create("https://api.example.com"))\n    .build();\nHttpResponse<String> res = client.send(req, BodyHandlers.ofString());\nSystem.out.println(res.body());`,
+`// C with libcurl:\n#include <curl/curl.h>\nCURL* curl = curl_easy_init();\ncurl_easy_setopt(curl, CURLOPT_URL, "https://api.example.com");\ncurl_easy_perform(curl);\ncurl_easy_cleanup(curl);`,
+`// C++ with libcurl:\nCURL* curl = curl_easy_init();\nif(curl){\n    curl_easy_setopt(curl,CURLOPT_URL,"https://api.example.com");\n    curl_easy_perform(curl);\n    curl_easy_cleanup(curl);\n}`)},
+'webdev_t6_basic_1':{d:'fetch() returns a Promise; chain .then(r => r.json()) to parse the JSON response body.',langs:mkLangs(
+`import requests\nres = requests.get('https://jsonplaceholder.typicode.com/todos/1')\ndata = res.json()\nprint(data['title'])`,
+`fetch('https://jsonplaceholder.typicode.com/todos/1')\n  .then(response => {\n    if (!response.ok) throw new Error('HTTP ' + response.status);\n    return response.json();   // parse JSON body\n  })\n  .then(data => {\n    console.log(data.title);  // use the data\n  });`,
+`// Java — parse JSON with org.json:\nString url="https://jsonplaceholder.typicode.com/todos/1";\nHttpClient c=HttpClient.newHttpClient();\nString body=c.send(HttpRequest.newBuilder().uri(URI.create(url)).build(),\n    BodyHandlers.ofString()).body();\nJSONObject obj=new JSONObject(body);\nSystem.out.println(obj.getString("title"));`,
+`// C: manual JSON parsing or use cJSON library\n// curl + cJSON is the standard approach`,
+`// C++: use libcurl + nlohmann/json\n// json j = json::parse(response_body);\n// cout << j["title"] << endl;`)},
+'webdev_t6_basic_2':{d:'async/await makes asynchronous fetch code read like synchronous code — cleaner than chained .then().',langs:mkLangs(
+`import asyncio, aiohttp\nasync def fetch():\n    async with aiohttp.ClientSession() as s:\n        async with s.get('https://api.example.com') as r:\n            data = await r.json()\n            print(data)\nasyncio.run(fetch())`,
+`async function fetchUser(id) {\n  const response = await fetch(\`/api/users/\${id}\`);\n  if (!response.ok) throw new Error('Not found');\n  const user = await response.json();\n  console.log(user.name);\n  return user;\n}\n\nfetchUser(1).catch(err => console.error(err));`,
+`// Java async with CompletableFuture:\nHttpClient client = HttpClient.newHttpClient();\nclient.sendAsync(HttpRequest.newBuilder()\n    .uri(URI.create("https://api.example.com")).build(),\n    BodyHandlers.ofString())\n    .thenApply(HttpResponse::body)\n    .thenAccept(System.out::println);`,
+`// C: async I/O with libuv or libev`,
+`// C++: async with std::async\nauto fut=std::async(std::launch::async,[](){\n    // perform HTTP request here\n    return string("response");\n});\ncout<<fut.get()<<endl;`)},
+'webdev_t6_basic_3':{d:'Display fetched JSON data on the page by creating DOM elements and inserting them into the HTML.',langs:mkLangs(
+`# Python: render server-side (Flask/Django)\nfrom flask import Flask, render_template\napp = Flask(__name__)\n\n@app.route('/')\ndef index():\n    users = get_users_from_db()  # fetch data\n    return render_template('index.html', users=users)`,
+`async function loadUsers() {\n  const res = await fetch('/api/users');\n  const users = await res.json();\n\n  const list = document.getElementById('user-list');\n  list.innerHTML = '';  // clear\n\n  users.forEach(user => {\n    const li = document.createElement('li');\n    li.textContent = user.name;\n    list.appendChild(li);\n  });\n}`,
+`// Java — server-side rendering with Servlets\n// or Spring MVC @Controller + Thymeleaf`,
+`/* C: server-side with CGI or microhttpd */`,
+`// C++: server-side with Crow or Drogon frameworks`)},
+'webdev_t6_basic_4':{d:'Handle fetch errors by checking response.ok and using .catch() for network failures.',langs:mkLangs(
+`import requests\ntry:\n    res = requests.get('https://api.example.com')\n    res.raise_for_status()   # throws on 4xx/5xx\n    print(res.json())\nexcept requests.exceptions.HTTPError as e:\n    print('HTTP error:', e)\nexcept requests.exceptions.ConnectionError:\n    print('Network error')`,
+`async function safeFetch(url) {\n  try {\n    const res = await fetch(url);\n    if (!res.ok) {\n      throw new Error(\`HTTP error: \${res.status}\`);\n    }\n    return await res.json();\n  } catch (err) {\n    console.error('Fetch failed:', err.message);\n    return null;\n  }\n}`,
+`// Java: check HttpResponse status code\nif (response.statusCode() == 200) {\n    System.out.println(response.body());\n} else {\n    System.out.println("HTTP error: " + response.statusCode());\n}`,
+`// C: check CURL return code\nCURLcode res = curl_easy_perform(curl);\nif(res != CURLE_OK)\n    fprintf(stderr, "curl error: %s\\n", curl_easy_strerror(res));`,
+`CURLcode result = curl_easy_perform(curl);\nif(result != CURLE_OK)\n    cerr<<"curl error: "<<curl_easy_strerror(result)<<endl;`)},
+/* ── ds · t1 Arrays & Linked Lists ── */
+'ds_t1_basic_0':{d:'An array stores elements in contiguous memory; any element is reachable in O(1) via its index.',c:`# Python list behaves like a dynamic array:\narr = [10, 20, 30, 40, 50]\nprint(arr[0])    # 10 — O(1) access\nprint(arr[2])    # 30\nprint(arr[-1])   # 50 (last)\nprint(len(arr))  # 5`},
+'ds_t1_basic_1':{d:'O(1) access: the CPU computes the address as base + index × size — no searching needed.',c:`arr = [100, 200, 300, 400]\n\n# All O(1) — instant regardless of array size:\nfirst  = arr[0]\nlast   = arr[-1]\nmiddle = arr[len(arr)//2]\n\nprint(first, last, middle)   # 100 400 200\n\n# Contrast: linked list needs O(n) traversal to reach index n`},
+'ds_t1_basic_2':{d:'A singly linked list: each node holds data and a next pointer. The last node\'s next is None.',c:`class Node:\n    def __init__(self, data):\n        self.data = data\n        self.next = None\n\nclass LinkedList:\n    def __init__(self): self.head = None\n    def append(self, data):\n        n = Node(data)\n        if not self.head: self.head=n; return\n        cur=self.head\n        while cur.next: cur=cur.next\n        cur.next=n\n\nll = LinkedList()\nll.append(1); ll.append(2); ll.append(3)`},
+'ds_t1_basic_3':{d:'Traversal walks every node from head to None; it\'s O(n) — you visit each node exactly once.',c:`class Node:\n    def __init__(self,d): self.data=d; self.next=None\n\n# Build list: 1 → 2 → 3 → None\nhead=Node(1); head.next=Node(2); head.next.next=Node(3)\n\n# Traverse:\ncurr = head\nwhile curr is not None:\n    print(curr.data, end=' → ')\n    curr = curr.next\nprint('None')   # 1 → 2 → 3 → None`},
+'ds_t1_basic_4':{d:'Array: O(1) random access, fixed size. Linked list: O(n) access but O(1) insert at head.',c:`# Array: fast index access, slow mid-insert (shift)\narr = [1,2,3,4,5]\narr.insert(2, 99)    # O(n) — shifts elements\nprint(arr)           # [1,2,99,3,4,5]\n\n# Linked list: O(1) insert at head\nclass Node:\n    def __init__(self,d,n=None): self.data=d;self.next=n\n\nhead = Node(3)\nhead = Node(99, head)  # O(1) — just redirect pointers\nprint(head.data, head.next.data)   # 99 3`},
+/* ── ds · t2 Stacks & Queues ── */
+'ds_t2_basic_0':{d:'Stack (LIFO): last item pushed is first item popped — like a stack of plates.',c:`stack = []\n\n# Push:\nstack.append(1)\nstack.append(2)\nstack.append(3)\nprint('Stack:', stack)        # [1, 2, 3]\n\n# Peek (top without removing):\nprint('Top:', stack[-1])       # 3\n\n# Pop:\nprint('Pop:', stack.pop())     # 3\nprint('Pop:', stack.pop())     # 2\nprint('Stack:', stack)         # [1]`},
+'ds_t2_basic_1':{d:'push adds to the top; pop removes from the top; peek reads the top without removing it.',c:`class Stack:\n    def __init__(self):   self.data = []\n    def push(self, x):   self.data.append(x)\n    def pop(self):       return self.data.pop()\n    def peek(self):      return self.data[-1]\n    def is_empty(self):  return len(self.data)==0\n    def size(self):      return len(self.data)\n\ns = Stack()\ns.push(10); s.push(20); s.push(30)\nprint(s.peek())   # 30\nprint(s.pop())    # 30\nprint(s.size())   # 2`},
+'ds_t2_basic_2':{d:'Queue (FIFO): first item enqueued is first item dequeued — like a line of people.',c:`from collections import deque\n\nqueue = deque()\n\n# Enqueue (add to back):\nqueue.append('Alice')\nqueue.append('Bob')\nqueue.append('Carol')\nprint('Queue:', list(queue))    # ['Alice','Bob','Carol']\n\n# Dequeue (remove from front):\nprint('Serve:', queue.popleft())  # Alice\nprint('Serve:', queue.popleft())  # Bob\nprint('Queue:', list(queue))      # ['Carol']`},
+'ds_t2_basic_3':{d:'enqueue adds to the back; dequeue removes from the front; front/peek reads front without removing.',c:`from collections import deque\n\nclass Queue:\n    def __init__(self):    self.q = deque()\n    def enqueue(self, x):  self.q.append(x)\n    def dequeue(self):     return self.q.popleft()\n    def front(self):       return self.q[0]\n    def is_empty(self):    return len(self.q)==0\n\nq = Queue()\nq.enqueue('task1'); q.enqueue('task2')\nprint(q.front())     # task1\nprint(q.dequeue())   # task1\nprint(q.front())     # task2`},
+'ds_t2_basic_4':{d:'LIFO suits browser back/forward, undo operations. FIFO suits print queues, task schedulers.',c:`# LIFO — undo history:\nundo_stack = []\nundo_stack.append('type A')   # action 1\nundo_stack.append('type B')   # action 2\nundo_stack.append('delete C') # action 3\nprint('Undo:', undo_stack.pop())  # delete C\nprint('Undo:', undo_stack.pop())  # type B\n\n# FIFO — CPU task queue:\nfrom collections import deque\ntasks = deque(['task1','task2','task3'])\nwhile tasks:\n    print('Process:', tasks.popleft())`},
+/* ── ds · t3 Trees ── */
+'ds_t3_basic_0':{d:'Tree terminology: root (top), node (any element), leaf (no children), edge (connection), height (longest path).',c:`# Visualise a binary tree:\n#        10       ← root (depth 0)\n#       /  \\\n#      5   15     ← depth 1\n#     / \\\n#    3   7        ← leaves (depth 2)\n\n# Root = 10, Height = 2\n# Leaves = 3, 7, 15\n# Edges = 4 (one per parent→child)\nprint('Height:', 2, '  Leaves:', 3)`},
+'ds_t3_basic_1':{d:'Binary tree: each node has at most two children (left and right).',c:`class TreeNode:\n    def __init__(self, val):\n        self.val   = val\n        self.left  = None\n        self.right = None\n\n# Build tree:\n#    1\n#   / \\\n#  2   3\nroot = TreeNode(1)\nroot.left  = TreeNode(2)\nroot.right = TreeNode(3)\nprint(root.val, root.left.val, root.right.val)  # 1 2 3`},
+'ds_t3_basic_2':{d:'BST property: left subtree values are all less than the root; right subtree values are all greater.',c:`class BST:\n    class Node:\n        def __init__(self,v): self.v=v; self.l=self.r=None\n    def __init__(self): self.root=None\n    def insert(self,v):\n        def _ins(node,v):\n            if not node: return self.Node(v)\n            if v<node.v: node.l=_ins(node.l,v)\n            else:        node.r=_ins(node.r,v)\n            return node\n        self.root=_ins(self.root,v)\n\nbst=BST()\nfor v in [5,3,7,1,4]: bst.insert(v)\n# Tree: 5 is root, 3/7 children, 1/4 under 3`},
+'ds_t3_basic_3':{d:'In-order traversal (left → root → right) visits BST nodes in ascending sorted order.',c:`class Node:\n    def __init__(self,v,l=None,r=None): self.v=v;self.l=l;self.r=r\n\ndef inorder(node):\n    if node is None: return\n    inorder(node.l)       # left first\n    print(node.v, end=' ')# then root\n    inorder(node.r)       # then right\n\n# BST: 5,3,7,1,4\nroot=Node(5,Node(3,Node(1),Node(4)),Node(7))\ninorder(root)   # 1 3 4 5 7  ← sorted!`},
+'ds_t3_basic_4':{d:'Insert into BST: compare with current node, go left if smaller, right if larger, insert at the empty spot.',c:`class Node:\n    def __init__(self,v): self.v=v; self.l=self.r=None\n\ndef insert(root, val):\n    if root is None: return Node(val)  # empty spot\n    if val < root.v:\n        root.l = insert(root.l, val)   # go left\n    else:\n        root.r = insert(root.r, val)   # go right\n    return root\n\nroot = None\nfor v in [5,3,7,1,4,6,8]:\n    root = insert(root, v)\n# Tree is now a valid BST`},
+/* ── ds · t4 Graphs ── */
+'ds_t4_basic_0':{d:'A graph is a set of vertices (nodes) connected by edges. Social networks, maps, and the web are all graphs.',c:`# Represent a simple graph:\n# A — B\n# |   |\n# C — D\n\ngraph = {\n    'A': ['B', 'C'],\n    'B': ['A', 'D'],\n    'C': ['A', 'D'],\n    'D': ['B', 'C']\n}\nprint(graph['A'])   # neighbours of A: ['B','C']`},
+'ds_t4_basic_1':{d:'Directed edges have one direction (→); undirected edges go both ways (↔). Weighted edges have a cost.',c:`# Directed graph (one-way):\ndigraph = {'A':['B'],'B':['C'],'C':[]}\n# A→B→C  (cannot go back)\n\n# Weighted graph (with costs):\nweighted = {\n    'A': [('B',5), ('C',2)],\n    'B': [('C',1)],\n    'C': []\n}\n# A→B costs 5, A→C costs 2, B→C costs 1`},
+'ds_t4_basic_2':{d:'Adjacency list stores each vertex\'s neighbours in a list — efficient for sparse graphs.',c:`# Adjacency list (most common representation):\ngraph = {\n    0: [1, 2],\n    1: [0, 3],\n    2: [0, 3],\n    3: [1, 2]\n}\n\n# Add a new edge:\ngraph[0].append(3)\n\n# Check if edge exists:\nprint(3 in graph[0])   # True\n\n# Count edges:\nedges = sum(len(v) for v in graph.values()) // 2\nprint('Edges:', edges)`},
+'ds_t4_basic_3':{d:'BFS explores all neighbours at the current depth before going deeper — uses a queue.',c:`from collections import deque\n\ndef bfs(graph, start):\n    visited = set()\n    queue   = deque([start])\n    visited.add(start)\n    order   = []\n    while queue:\n        node = queue.popleft()\n        order.append(node)\n        for nb in graph[node]:\n            if nb not in visited:\n                visited.add(nb)\n                queue.append(nb)\n    return order\n\ngraph = {0:[1,2],1:[0,3],2:[0,3],3:[1,2]}\nprint(bfs(graph, 0))   # [0, 1, 2, 3]`},
+'ds_t4_basic_4':{d:'DFS explores as deep as possible along one path before backtracking — uses recursion or an explicit stack.',c:`def dfs(graph, node, visited=None):\n    if visited is None: visited = set()\n    visited.add(node)\n    print(node, end=' ')\n    for neighbour in graph[node]:\n        if neighbour not in visited:\n            dfs(graph, neighbour, visited)\n\ngraph = {0:[1,2],1:[0,3],2:[0,3],3:[1,2]}\ndfs(graph, 0)   # 0 1 3 2  (order may vary)`},
+/* ── ds · t5 Hashing ── */
+'ds_t5_basic_0':{d:'A hash function maps a key to an index in an array, enabling O(1) average lookup.',c:`# Python dict is a hash table:\nscores = {'Alice': 95, 'Bob': 87, 'Carol': 92}\n\nprint(scores['Alice'])   # 95  — O(1) lookup\n\n# Under the hood:\nidx = hash('Alice') % 8   # simplified\nprint('Hash index:', idx)\n# Python's hash() is non-deterministic each run`},
+'ds_t5_basic_1':{d:'Hash tables provide O(1) average insert, lookup, and delete — much faster than O(n) linear search.',c:`# O(n) linear search:\nnums = list(range(1_000_000))\ntarget = 999_999\nfound = target in nums   # scans up to 1M elements\n\n# O(1) hash lookup:\nnum_set = set(range(1_000_000))   # hash set\nfound = target in num_set          # instant!\nprint(found)   # True`},
+'ds_t5_basic_2':{d:'Use a built-in dict/HashMap to store and retrieve key-value pairs in O(1) average time.',c:`# Word frequency counter — classic hash map use:\nwords = 'the cat sat on the mat the cat'\nfreq = {}\nfor word in words.split():\n    freq[word] = freq.get(word, 0) + 1\n\nprint(freq)\n# {'the':3, 'cat':2, 'sat':1, 'on':1, 'mat':1}`},
+'ds_t5_basic_3':{d:'Collision: two keys hash to the same index. Separate chaining stores collisions as a linked list per bucket.',c:`# Simulate a tiny hash table with chaining:\nTABLE_SIZE = 5\ntable = [[] for _ in range(TABLE_SIZE)]   # buckets\n\ndef put(key, value):\n    idx = hash(key) % TABLE_SIZE\n    for entry in table[idx]:\n        if entry[0] == key: entry[1]=value; return\n    table[idx].append([key, value])\n\ndef get(key):\n    idx = hash(key) % TABLE_SIZE\n    for entry in table[idx]:\n        if entry[0] == key: return entry[1]\n    return None\n\nput('name','Alice'); put('age','20')\nprint(get('name'))   # Alice`},
+'ds_t5_basic_4':{d:'Common applications: frequency counting, deduplication, two-sum problem, and fast membership tests.',c:`# Two-sum: find pair that sums to target — O(n)\ndef two_sum(nums, target):\n    seen = {}\n    for i, n in enumerate(nums):\n        complement = target - n\n        if complement in seen:\n            return seen[complement], i\n        seen[n] = i\n    return None\n\nprint(two_sum([2,7,11,15], 9))   # (0, 1)\nprint(two_sum([3,2,4], 6))       # (1, 2)`},
+/* ── algo · t1 Complexity Analysis ── */
+'algo_t1_basic_0':{d:'Big O describes how an algorithm\'s runtime grows as input size n grows — ignoring constants and small inputs.',c:`# O(1) — constant: doesn't depend on n\ndef get_first(lst): return lst[0]\n\n# O(n) — linear: one pass through the list\ndef find_max(lst): return max(lst)\n\n# O(n²) — quadratic: nested loop\ndef has_duplicate(lst):\n    for i in range(len(lst)):\n        for j in range(i+1, len(lst)):\n            if lst[i]==lst[j]: return True\n    return False`},
+'algo_t1_basic_1':{d:'O(1) constant: array index. O(n) linear: single loop. O(n²) quadratic: nested loops over the same data.',c:`import time\n\ndef o1(n):  return n * 2                        # O(1)\ndef on(n):  return sum(range(n))               # O(n)\ndef on2(n): return sum(i*j for i in range(n) for j in range(n))  # O(n²)\n\nfor n in [100, 1000, 10000]:\n    t=time.perf_counter(); o1(n)\n    t=time.perf_counter(); on(n)\n    t=time.perf_counter(); on2(n)\n    print(f'n={n}: quadratic is slow!')`},
+'algo_t1_basic_2':{d:'Big O is an upper bound — we drop constants and lower-order terms: 3n² + 2n + 1 is O(n²).',c:`# Simplification rules:\n# 1. Drop constants:   5n → O(n)\n# 2. Keep dominant:    n² + n → O(n²)\n# 3. Drop constants in dominant: 3n² → O(n²)\n\n# Example — count operations:\ndef example(lst):\n    result = 0           # O(1)\n    for x in lst:        # O(n)\n        result += x * 2  # O(1) each\n    return result        # total: O(n)`},
+'algo_t1_basic_3':{d:'Count operations in a loop to estimate T(n): a single loop over n items is O(n).',c:`def count_ops(n):\n    ops = 0\n    for i in range(n):     # runs n times\n        ops += 1           # 1 op per iteration\n    return ops\n\nfor n in [10, 100, 1000]:\n    print(f'n={n}: {count_ops(n)} operations')  \n# n=10:   10\n# n=100:  100\n# n=1000: 1000  → clearly O(n)`},
+'algo_t1_basic_4':{d:'Lower complexity = faster for large inputs. O(log n) < O(n) < O(n log n) < O(n²) < O(2ⁿ).',c:`# Growth rate comparison (relative operations):\nfor n in [10, 100, 1000]:\n    import math\n    print(f'n={n}:')\n    print(f'  O(log n) = {math.ceil(math.log2(n)):>8}')\n    print(f'  O(n)     = {n:>8}')\n    print(f'  O(nlogn) = {int(n*math.log2(n)):>8}')\n    print(f'  O(n²)    = {n**2:>8}')`},
+/* ── algo · t2 Sorting ── */
+'algo_t2_basic_0':{d:'Sorting arranges elements into order. Python\'s built-in sort uses Timsort, an O(n log n) algorithm.',c:`nums = [38, 27, 43, 3, 9, 82, 10]\nnums.sort()                # in-place Timsort\nprint(nums)               # [3, 9, 10, 27, 38, 43, 82]\n\n# sorted() returns new list:\noriginal = [5,3,1,4,2]\nsorted_copy = sorted(original)\nprint(original)    # [5,3,1,4,2] — unchanged\nprint(sorted_copy) # [1,2,3,4,5]`},
+'algo_t2_basic_1':{d:'Bubble sort: compare adjacent pairs and swap if out of order. After each pass, the largest element is in place.',c:`def bubble_sort(arr):\n    n = len(arr)\n    for i in range(n - 1):\n        for j in range(n - i - 1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n\narr = [64, 34, 25, 12, 22, 11, 90]\nbubble_sort(arr)\nprint(arr)   # [11, 12, 22, 25, 34, 64, 90]`},
+'algo_t2_basic_2':{d:'Selection sort: scan for minimum, place it at position i. O(n²) comparisons, O(n) swaps.',c:`def selection_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        min_i = i\n        for j in range(i+1, n):\n            if arr[j] < arr[min_i]:\n                min_i = j\n        arr[i], arr[min_i] = arr[min_i], arr[i]\n\narr = [29, 10, 14, 37, 13]\nselection_sort(arr)\nprint(arr)   # [10, 13, 14, 29, 37]`},
+'algo_t2_basic_3':{d:'O(n²) sorts are practical only for small inputs (n < ~1000). Always use built-in sort for real code.',c:`# Timing comparison:\nimport time, random\n\ndef bubble_sort(a):\n    n=len(a)\n    for i in range(n):\n        for j in range(n-i-1):\n            if a[j]>a[j+1]: a[j],a[j+1]=a[j+1],a[j]\n\ndata = random.sample(range(10000),1000)\n\na=data[:]; t=time.perf_counter(); a.sort(); print(f'Built-in: {time.perf_counter()-t:.4f}s')\nb=data[:]; t=time.perf_counter(); bubble_sort(b); print(f'Bubble:   {time.perf_counter()-t:.4f}s')`},
+'algo_t2_basic_4':{d:'Use language built-ins for real sorting. Understand O(n²) sorts for interviews and algorithm courses.',c:`# Built-in sort is always preferred in practice:\npeople = [('Alice',30),('Bob',25),('Carol',35)]\n\n# Sort by age:\npeople.sort(key=lambda p: p[1])\nprint(people)   # [('Bob',25),('Alice',30),('Carol',35)]\n\n# Sort descending:\npeople.sort(key=lambda p: p[1], reverse=True)\nprint(people)   # [('Carol',35),('Alice',30),('Bob',25)]`},
+/* ── algo · t3 Dynamic Programming ── */
+'algo_t3_basic_0':{d:'DP solves problems by breaking them into overlapping subproblems and caching (memoizing) each result.',c:`# Without memoization — fib(n) is called exponentially:\ndef fib_slow(n):\n    if n<=1: return n\n    return fib_slow(n-1)+fib_slow(n-2)\n\n# With memoization — each fib(k) computed once:\nfrom functools import lru_cache\n\n@lru_cache(maxsize=None)\ndef fib(n):\n    if n<=1: return n\n    return fib(n-1)+fib(n-2)\n\nprint(fib(40))   # instant`},
+'algo_t3_basic_1':{d:'Memoization: store the result of each subproblem in a cache; return the cached value if called again.',c:`# Manual memoization with a dictionary:\ncache = {}\n\ndef fib(n):\n    if n in cache: return cache[n]   # cache hit!\n    if n <= 1: return n\n    result = fib(n-1) + fib(n-2)\n    cache[n] = result                # store result\n    return result\n\nprint(fib(50))   # 12586269025 — fast!`},
+'algo_t3_basic_2':{d:'Trace memoized Fibonacci: fib(5) calls fib(4), fib(3)... but fib(3) is only computed once.',c:`calls = 0\n\ndef fib(n, memo={}):\n    global calls; calls+=1\n    if n in memo: return memo[n]\n    if n<=1: return n\n    memo[n] = fib(n-1,memo)+fib(n-2,memo)\n    return memo[n]\n\nresult = fib(10)\nprint(f'fib(10)={result}, calls={calls}')\n# Without memo: 177 calls\n# With memo:    19 calls`},
+'algo_t3_basic_3':{d:'DP applies when: (1) optimal substructure — optimal solution uses optimal sub-solutions, and (2) overlapping subproblems.',c:`# Coin change — classic DP problem:\n# Minimum coins to make amount using [1,5,10,25]\n\ndef min_coins(amount, coins):\n    dp = [float('inf')] * (amount + 1)\n    dp[0] = 0   # 0 coins needed for amount 0\n    for a in range(1, amount+1):\n        for c in coins:\n            if c <= a:\n                dp[a] = min(dp[a], dp[a-c]+1)\n    return dp[amount]\n\nprint(min_coins(30, [1,5,10,25]))  # 2 (25+5)`},
+'algo_t3_basic_4':{d:'Solve coin change with memoization: cache the result for each amount to avoid recomputing.',c:`def coin_change(coins, amount, memo=None):\n    if memo is None: memo={}\n    if amount in memo: return memo[amount]\n    if amount == 0: return 0\n    if amount < 0:  return float('inf')\n    best = float('inf')\n    for c in coins:\n        res = coin_change(coins, amount-c, memo)\n        best = min(best, 1+res)\n    memo[amount] = best\n    return best\n\nprint(coin_change([1,5,10,25],30))  # 2`},
+/* ── algo · t4 Greedy Algorithms ── */
+'algo_t4_basic_0':{d:'Greedy: at each step, pick the locally best choice. Works when local optima lead to a global optimum.',c:`# Greedy coin change (works for standard coins):\ndef greedy_coins(amount, coins=[25,10,5,1]):\n    result = []\n    for coin in sorted(coins, reverse=True):\n        while amount >= coin:\n            result.append(coin)\n            amount -= coin\n    return result\n\nprint(greedy_coins(41))  # [25,10,5,1]\nprint(greedy_coins(30))  # [25,5]`},
+'algo_t4_basic_1':{d:'Activity selection: sort by finish time and greedily pick activities that don\'t overlap.',c:`def activity_selection(activities):\n    # Each activity is (start, finish)\n    activities.sort(key=lambda a: a[1])  # sort by finish\n    selected = [activities[0]]\n    for act in activities[1:]:\n        if act[0] >= selected[-1][1]:    # no overlap\n            selected.append(act)\n    return selected\n\nacts = [(1,4),(3,5),(0,6),(5,7),(3,8),(5,9),(6,10),(8,11)]\nprint(activity_selection(acts))  # [(1,4),(5,7),(8,11)]`},
+'algo_t4_basic_2':{d:'Greedy coin change works for standard denominations but NOT for arbitrary coin sets.',c:`# Standard coins [1,5,10,25] — greedy works:\ndef greedy(amount, coins):\n    coins.sort(reverse=True)\n    count=0\n    for c in coins:\n        count += amount//c; amount %= c\n    return count\n\nprint(greedy(30,[1,5,10,25]))  # 2 ← correct\n\n# Non-standard coins [1,3,4] — greedy FAILS for 6:\nprint(greedy(6,[1,3,4]))  # 3 (4+1+1)\n# Optimal is 2 (3+3) — greedy fails!`},
+'algo_t4_basic_3':{d:'Trace greedy step by step: at each step log the choice made to verify it\'s the local optimum.',c:`def trace_greedy_coins(amount):\n    coins = [25,10,5,1]\n    total_coins = 0\n    print(f'Making change for {amount} cents:')\n    for coin in coins:\n        count = amount // coin\n        if count > 0:\n            print(f'  Use {count}x{coin}¢ = {count*coin}¢')\n            total_coins += count\n            amount -= count * coin\n    print(f'Total coins: {total_coins}')\n\ntrace_greedy_coins(67)`},
+'algo_t4_basic_4':{d:'Greedy does not always find the global optimum — for harder problems (0/1 Knapsack), use dynamic programming.',c:`# Greedy FAILS for 0/1 Knapsack:\n# Capacity=7, items=[(value,weight)]\nitems = [(6,1),(10,5),(12,6)]  # (value,weight)\ncapacity = 7\n\n# Greedy (by value/weight ratio) picks (6,1) then (10,5)=16\nby_ratio = sorted(items, key=lambda x: x[0]/x[1], reverse=True)\nprint('Greedy result:', by_ratio[0][0]+by_ratio[1][0])  # 16\n\n# Optimal is (10,5)+(6,1)=16 — same here,\n# but for (10,5),(12,6) at cap=6: greedy picks 10, DP picks 12`},
+/* ── algo · t5 Graph Algorithms ── */
+'algo_t5_basic_0':{d:'BFS finds the shortest path (fewest edges) in an unweighted graph by exploring layer by layer.',c:`from collections import deque\n\ndef bfs_shortest(graph, start, end):\n    queue = deque([(start, [start])])\n    visited = {start}\n    while queue:\n        node, path = queue.popleft()\n        if node == end: return path\n        for nb in graph[node]:\n            if nb not in visited:\n                visited.add(nb)\n                queue.append((nb, path+[nb]))\n    return None\n\ng = {0:[1,2],1:[0,3],2:[0,3],3:[1,2,4],4:[3]}\nprint(bfs_shortest(g, 0, 4))  # [0, 1, 3, 4]`},
+'algo_t5_basic_1':{d:'DFS checks connectivity and finds cycles by marking nodes visited and recursing into unvisited neighbours.',c:`def dfs_connected(graph, start):\n    visited = set()\n    def dfs(node):\n        visited.add(node)\n        for nb in graph[node]:\n            if nb not in visited:\n                dfs(nb)\n    dfs(start)\n    return visited\n\ngraph = {0:[1,2],1:[0,3],2:[0],3:[1],4:[5],5:[4]}\nreach = dfs_connected(graph, 0)\nprint('Reachable from 0:', reach)  # {0,1,2,3}\nprint('Node 4 reachable:', 4 in reach)  # False`},
+'algo_t5_basic_2':{d:'A tree is a special graph: connected, acyclic, with exactly n-1 edges for n nodes.',c:`# A tree has no cycles and is connected:\ntree = {1:[2,3], 2:[1,4,5], 3:[1], 4:[2], 5:[2]}\n# 5 nodes, 4 edges → it's a tree\n\ndef is_tree(graph):\n    n = len(graph)\n    edges = sum(len(v) for v in graph.values()) // 2\n    if edges != n-1: return False  # wrong edge count\n    # check connectivity:\n    visited=set(); stack=[next(iter(graph))]\n    while stack:\n        v=stack.pop()\n        if v in visited: continue\n        visited.add(v); stack+=graph[v]\n    return len(visited)==n\n\nprint(is_tree(tree))  # True`},
+'algo_t5_basic_3':{d:'Reachability: BFS/DFS answers "can node A reach node B?" in O(V+E) time.',c:`def can_reach(graph, source, target):\n    visited = set()\n    stack   = [source]\n    while stack:\n        node = stack.pop()\n        if node == target: return True\n        if node in visited: continue\n        visited.add(node)\n        stack.extend(graph.get(node,[]))\n    return False\n\ng = {'A':['B','C'],'B':['D'],'C':[],'D':[],'E':['F'],'F':[]}\nprint(can_reach(g,'A','D'))  # True\nprint(can_reach(g,'A','E'))  # False (disconnected)`},
+'algo_t5_basic_4':{d:'Adjacency list representation: store each vertex\'s neighbours in a list; O(V+E) space, efficient for sparse graphs.',c:`# Build adjacency list from edge list:\nedges = [(0,1),(0,2),(1,3),(2,3),(3,4)]\nn = 5   # number of vertices\n\ngraph = {i:[] for i in range(n)}\nfor u,v in edges:\n    graph[u].append(v)\n    graph[v].append(u)   # undirected\n\nprint(graph)\n# {0:[1,2], 1:[0,3], 2:[0,3], 3:[1,2,4], 4:[3]}\n\n# Adjacency matrix would be 5×5 = 25 cells for only 5 edges`},
 };
 
   // Auto-generate language variants for entries that only have Python code
@@ -770,18 +1204,208 @@ async function loadStudentTopics(){
         .replace(/int\(([^)]+)\)/g,'parseInt($1)')
         .replace(/float\(([^)]+)\)/g,'parseFloat($1)');
     }
-    const javaHdr  = '// Java — inside main() method:\n// Types: int, double, String, boolean\n// Output: System.out.println()\n// Input:  Scanner sc = new Scanner(System.in);\n\n';
-    const cHdr     = '// C — inside main():\n// #include <stdio.h>\n// Output: printf("...\\n")\n// Input:  scanf("%d", &x)\n\n';
-    const cppHdr   = '// C++ — inside main():\n// #include <iostream>  using namespace std;\n// Output: cout << x << endl\n// Input:  cin >> x\n\n';
+
+    function stripCmt(t){
+      let inStr=false,sc='';
+      for(let i=0;i<t.length;i++){
+        const c=t[i];
+        if(inStr){ if(c===sc) inStr=false; }
+        else if(c==='"'||c==="'"){ inStr=true; sc=c; }
+        else if(c==='#') return [t.slice(0,i).trimEnd(),'  //'+t.slice(i+1)];
+      }
+      return [t,''];
+    }
+
+    function splitA(s){
+      const p=[]; let d=0,st=0,inStr=false,sc='';
+      for(let i=0;i<s.length;i++){
+        const c=s[i];
+        if(inStr){ if(c===sc) inStr=false; }
+        else if(c==='"'||c==="'"){ inStr=true; sc=c; }
+        else if('([{'.includes(c)) d++;
+        else if(')]}'.includes(c)) d--;
+        else if(c===','&&d===0){ p.push(s.slice(st,i)); st=i+1; }
+      }
+      p.push(s.slice(st));
+      return p;
+    }
+
+    function fstrL(tmpl,lang){
+      const parts=tmpl.split(/(\{[^}]+\})/);
+      if(lang==='java'){
+        const pcs=parts.map(p=>p.startsWith('{')?p.slice(1,-1):(p?'"'+p+'"':null)).filter(Boolean);
+        return pcs.join(' + ');
+      }
+      if(lang==='c'){
+        let fmt='',vars=[];
+        for(const p of parts){ if(p.startsWith('{')){ fmt+='%s'; vars.push(p.slice(1,-1)); } else fmt+=p.replace(/%/g,'%%'); }
+        return '"'+fmt+'"'+(vars.length?', '+vars.join(', '):'');
+      }
+      const pcs=parts.map(p=>p.startsWith('{')?p.slice(1,-1):(p?'"'+p+'"':null)).filter(Boolean);
+      return pcs.join(' << ');
+    }
+
+    function cx(e,lang){
+      return e
+        .replace(/\bTrue\b/g,'true').replace(/\bFalse\b/g,'false')
+        .replace(/\bNone\b/g,lang==='java'?'null':'NULL')
+        .replace(/f"([^"]+)"/g,(_,s)=>fstrL(s,lang))
+        .replace(/f'([^']+)'/g,(_,s)=>fstrL(s,lang))
+        .replace(/'([^']*)'/g,'"$1"')
+        .replace(/\blen\((\w+)\)/g,lang==='c'?'n':lang==='java'?'$1.length':'$1.size()')
+        .replace(/\.append\(/g,lang==='java'?'.add(':'.push_back(')
+        .replace(/\bstr\(([^)]+)\)/g,lang==='java'?'String.valueOf($1)':'std::to_string($1)')
+        .replace(/\bint\(([^)]+)\)/g,lang==='java'?'Integer.parseInt($1)':'atoi($1)')
+        .replace(/\bfloat\(([^)]+)\)/g,lang==='java'?'Double.parseDouble($1)':'atof($1)')
+        .replace(/\binput\([^)]*\)/g,lang==='java'?'sc.nextLine()':lang==='c'?'fgets(buf,sizeof(buf),stdin)':'cin.getline(input,100)')
+        .replace(/(\w+)\s*\*\*\s*2\b/g,lang==='java'?'Math.pow($1,2)':'pow($1,2)')
+        .replace(/(\w+)\s*\*\*\s*(\d+)/g,lang==='java'?'Math.pow($1,$2)':'pow($1,$2)')
+        .replace(/\/\//g,'/')
+        .replace(/ and /g,' && ').replace(/ or /g,' || ').replace(/\bnot /g,'!');
+    }
+
+    function inferT(val,lang){
+      const v=val.trim();
+      if(/^-?\d+$/.test(v)) return 'int';
+      if(/^-?\d*\.\d+/.test(v)) return 'double';
+      if(/^["']/.test(v)) return lang==='java'?'String':'const char*';
+      if(v==='True'||v==='False') return lang==='java'?'boolean':'int';
+      if(v.startsWith('[')) return lang==='java'?'int[]':'int[]';
+      return lang==='java'?'var':'auto';
+    }
+
+    function printS(argRaw,lang){
+      const hasEnd=/,\s*end\s*=/.test(argRaw);
+      const arg=argRaw.replace(/,\s*end\s*=\s*['"][^'"]*['"]\s*$/,'').trim();
+      let m;
+      if((m=arg.match(/^f"([^"]+)"$/))||(m=arg.match(/^f'([^']+)'$/))){
+        const tmpl=m[1]; const parts=tmpl.split(/(\{[^}]+\})/);
+        if(lang==='java'){
+          const pcs=parts.map(p=>p.startsWith('{')?p.slice(1,-1):(p?'"'+p+'"':null)).filter(Boolean);
+          return (hasEnd?'System.out.print':'System.out.println')+'('+pcs.join(' + ')+');';
+        }
+        if(lang==='c'){
+          let fmt='',vars=[];
+          for(const p of parts){ if(p.startsWith('{')){ fmt+='%s'; vars.push(p.slice(1,-1)); } else fmt+=p.replace(/\n/g,'\\n').replace(/%/g,'%%'); }
+          if(!hasEnd) fmt+='\\n';
+          return 'printf("'+fmt+'"'+(vars.length?', '+vars.join(', '):'')+');';
+        }
+        const pcs=parts.map(p=>p.startsWith('{')?p.slice(1,-1):(p?'"'+p+'"':null)).filter(Boolean);
+        return 'cout << '+pcs.join(' << ')+(hasEnd?' << " "':' << endl')+';';
+      }
+      const args=splitA(arg).map(a=>cx(a.trim(),lang));
+      if(lang==='java'){
+        const fn=hasEnd?'System.out.print':'System.out.println';
+        return fn+'('+(args.length===1?args[0]:args.join(' + " " + '))+');';
+      }
+      if(lang==='c'){
+        const nl=hasEnd?'':'\\n';
+        if(args.length===1){ const a=args[0]; return a.startsWith('"')?'printf('+a.replace(/^"(.*)"$/,'"$1'+nl+'"')+');':'printf("%d'+nl+'", '+a+');'; }
+        return 'printf("%s'+nl+'", '+args.join(', ')+');';
+      }
+      const endl=hasEnd?'" "':'endl';
+      return 'cout << '+(args.length===1?args[0]:args.join(' << " " << '))+' << '+endl+';';
+    }
+
+    function xLine(rawT,lang){
+      const [t,cmt]=stripCmt(rawT);
+      const ts=t.trimEnd();
+      if(!ts) return {code:'',opens:false};
+      if(ts.startsWith('#')) return {code:'//'+ts.slice(1)+cmt,opens:false};
+      if(ts.startsWith('"""')&&ts.endsWith('"""')) return {code:'// '+ts.slice(3,-3)+cmt,opens:false};
+      if(ts.startsWith("'''")&&ts.endsWith("'''")) return {code:'// '+ts.slice(3,-3)+cmt,opens:false};
+      if(ts.startsWith('import ')||ts.startsWith('from ')) return {code:'// '+ts+cmt,opens:false};
+      if(ts==='pass') return {code:'// (empty block)'+cmt,opens:false};
+      if(ts==='break') return {code:'break;'+cmt,opens:false};
+      if(ts==='continue') return {code:'continue;'+cmt,opens:false};
+      let m;
+
+      if((m=ts.match(/^def (\w+)\((.*?)\):$/))){
+        const[,fn,praw]=m;
+        const ps=praw?praw.split(',').map(p=>'int '+p.trim().replace(/\s*=.*/,'').replace(/\*/,'').trim()).join(', '):'';
+        return {code:(lang==='java'?'static void ':'void ')+fn+'('+ps+') {'+cmt,opens:true};
+      }
+
+      if((m=ts.match(/^if (.+):\s+(.+)$/))){
+        const[,cond,stmt]=m;
+        const xf=xLine(stmt.trim(),lang);
+        return {code:'if ('+cx(cond,lang)+') '+xf.code+cmt,opens:false};
+      }
+      if((m=ts.match(/^if (.+):$/))) return {code:'if ('+cx(m[1],lang)+') {'+cmt,opens:true};
+      if((m=ts.match(/^elif (.+):$/))) return {code:'} else if ('+cx(m[1],lang)+') {'+cmt,opens:true};
+      if(ts==='else:') return {code:'} else {'+cmt,opens:true};
+
+      if((m=ts.match(/^for (\w+) in range\((\d+)\):$/)))
+        return {code:'for (int '+m[1]+' = 0; '+m[1]+' < '+m[2]+'; '+m[1]+'++) {'+cmt,opens:true};
+      if((m=ts.match(/^for (\w+) in range\((.+?), (.+?)\):$/)))
+        return {code:'for (int '+m[1]+' = '+m[2]+'; '+m[1]+' < '+m[3]+'; '+m[1]+'++) {'+cmt,opens:true};
+      if((m=ts.match(/^for (\w+) in range\((.+?), (.+?), (.+?)\):$/))){
+        const[,v,s,e,step]=m; const sf=parseFloat(step);
+        const op=(!isNaN(sf)&&sf<0)?'>=':'<';
+        const inc=step.trim()==='-1'?v+'--':step.trim()==='1'?v+'++':v+' += '+step;
+        return {code:'for (int '+v+' = '+s+'; '+v+' '+op+' '+e+'; '+inc+') {'+cmt,opens:true};
+      }
+      if((m=ts.match(/^for (\w+) in (.+):$/))){
+        const[,v,lst]=m; const arr=cx(lst,lang);
+        if(lang==='java') return {code:'for (int '+v+' : '+arr+') {'+cmt,opens:true};
+        if(lang==='c')    return {code:'for (int _i=0; _i<sizeof('+arr+')/sizeof('+arr+'[0]); _i++) { int '+v+' = '+arr+'[_i];'+cmt,opens:true};
+        return {code:'for (auto& '+v+' : '+arr+') {'+cmt,opens:true};
+      }
+
+      if((m=ts.match(/^while (.+):$/))) return {code:'while ('+cx(m[1],lang)+') {'+cmt,opens:true};
+
+      if((m=ts.match(/^return (.+)$/))) return {code:'return '+cx(m[1],lang)+';'+cmt,opens:false};
+      if(ts==='return') return {code:'return;'+cmt,opens:false};
+
+      if((m=ts.match(/^print\((.+)\)$/))) return {code:printS(m[1],lang)+cmt,opens:false};
+      if(ts==='print()'){
+        if(lang==='java') return {code:'System.out.println();'+cmt,opens:false};
+        if(lang==='c')    return {code:'printf("\\n");'+cmt,opens:false};
+        return {code:'cout << endl;'+cmt,opens:false};
+      }
+
+      if((m=ts.match(/^([a-zA-Z_]\w*)\s*=\s*(.+)$/))&&!ts.match(/[!<>]=/)&&!ts.includes('==')&&!ts.startsWith('if ')&&!ts.startsWith('while ')){
+        const[,vn,val]=m;
+        return {code:inferT(val,lang)+' '+vn+' = '+cx(val,lang)+';'+cmt,opens:false};
+      }
+      if(ts.match(/^[a-zA-Z_]\w*\s*[+\-*\/%]=\s*.+/))
+        return {code:cx(ts,lang)+';'+cmt,opens:false};
+
+      let code=cx(ts,lang);
+      if(!code.endsWith(';')&&!code.endsWith('{')&&!code.endsWith('}')) code+=';';
+      return {code:code+cmt,opens:false};
+    }
+
+    function pyToLang(py,lang){
+      const lines=py.split('\n'); const out=[]; const iSt=[0];
+      for(const raw of lines){
+        const trimmed=raw.trimStart();
+        if(!trimmed){ out.push(''); continue; }
+        const ind=raw.length-trimmed.length;
+        const tnc=trimmed.replace(/#.*/,'').trimEnd();
+        const isElsish=tnc==='else:'||/^elif /.test(tnc);
+        while(iSt.length>1&&iSt[iSt.length-1]>ind){
+          iSt.pop();
+          const ci=iSt[iSt.length-1];
+          if(!(ci===ind&&isElsish)) out.push(' '.repeat(ci)+'}');
+        }
+        const xf=xLine(trimmed,lang);
+        out.push(' '.repeat(ind)+xf.code);
+        if(xf.opens) iSt.push(ind+4);
+      }
+      while(iSt.length>1){ iSt.pop(); out.push(' '.repeat(iSt[iSt.length-1])+'}'); }
+      return out.join('\n');
+    }
+
     Object.values(OUTCOME_DETAILS).forEach(e=>{
       if(!e.langs){
-        const py = e.c||'';
-        e.langs = {
+        const py=e.c||'';
+        e.langs={
           python:     py,
           javascript: toJS(py),
-          java:       javaHdr + py.replace(/^#/gm,'//'),
-          c:          cHdr    + py.replace(/^#/gm,'//'),
-          cpp:        cppHdr  + py.replace(/^#/gm,'//')
+          java:       pyToLang(py,'java'),
+          c:          pyToLang(py,'c'),
+          cpp:        pyToLang(py,'cpp')
         };
       }
     });
@@ -1010,7 +1634,7 @@ window.startActivity=async function(){
   if(!currentItems.length){showToast('No items in this activity','error');return;}
   currentItemIdx=0;
   itemResults=currentItems.map(()=>null);
-  antiCheat={tabSwitches:0,idleWarnings:0,flags:[]};
+  antiCheat={tabSwitches:0,idleWarnings:0,pasteCount:0,aiSuspectCount:0,flags:[]};
   activityActive=true;
   // Create session doc
   try{
@@ -1040,6 +1664,8 @@ window.startActivity=async function(){
     document.getElementById('sup-badge').classList.add('show');
     initAntiCheat();
   }
+  // Paste detection always active
+  initPasteDetect();
   // Show coding screen
   showCodingScreen();
   // Periodic session update
@@ -1121,26 +1747,32 @@ function updateLangHint(){
   document.querySelector('.btn-run').style.display='';
 }
 
-// ── Piston API (Java / Python / C / C++) ──
-const PISTON_LANG={
-  python:{language:'python',version:'3.10.0',file:'main.py'},
-  java:{language:'java',version:'15.0.2',file:'Main.java'},
-  c:{language:'c',version:'10.2.0',file:'main.c'},
-  cpp:{language:'c++',version:'10.2.0',file:'main.cpp'}
-};
+// ── Code Execution API Key ─────────────────────────────────────────────────
+// FREE setup (5 min, no credit card):
+//  1. Sign up at https://rapidapi.com
+//  2. Go to https://rapidapi.com/judge0-official/api/judge0-ce
+//  3. Subscribe to the "Basic" plan (free, 50 req/day)
+//  4. Copy your X-RapidAPI-Key and paste it below
+const RAPIDAPI_KEY='b9158a2036mshf68f113a2877b35p1bc747jsnab019f69613e';
+// ──────────────────────────────────────────────────────────────────────────
+
+const J0_LANG={python:71,java:62,c:50,cpp:54};
 async function pistonRun(code,lang,stdin){
-  const cfg=PISTON_LANG[lang];
-  if(!cfg)return{stdout:'',stderr:'Unsupported language'};
+  if(!RAPIDAPI_KEY)return{stdout:'',stderr:'Code execution needs a free API key — see setup instructions in activity_student.html (search RAPIDAPI_KEY).'};
+  const langId=J0_LANG[lang];
+  if(!langId)return{stdout:'',stderr:'Unsupported language'};
+  let src=code;
+  if(lang==='java')src=code.replace(/public\s+class\s+\w+/,'public class Main');
   try{
-    const res=await fetch('https://emkc.org/api/v2/piston/execute',{
+    const res=await fetch('https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({language:cfg.language,version:cfg.version,files:[{name:cfg.file,content:code}],stdin:stdin||''})
+      headers:{'Content-Type':'application/json','X-RapidAPI-Key':RAPIDAPI_KEY,'X-RapidAPI-Host':'judge0-ce.p.rapidapi.com'},
+      body:JSON.stringify({source_code:src,language_id:langId,stdin:stdin||''})
     });
-    const data=await res.json();
-    const compileErr=(data.compile?.stderr||'').trim();
-    const stdout=(data.run?.stdout||'').trim();
-    const runErr=(data.run?.stderr||'').trim();
+    const d=await res.json();
+    const compileErr=(d.compile_output||'').trim();
+    const stdout=(d.stdout||'').trim();
+    const runErr=(d.stderr||'').trim();
     if(compileErr)return{stdout:'',stderr:'Compilation Error:\n'+compileErr};
     if(runErr&&!stdout)return{stdout:'',stderr:'Runtime Error:\n'+runErr};
     return{stdout,stderr:runErr};
@@ -1298,7 +1930,9 @@ window.submitActivity=async function(){
   try{
     const payload={
       activityId:currentActivity.id,
+      activityTitle:currentActivity.title||'Activity',
       classId:currentClass.id,
+      className:currentClass.name||'Class',
       studentId:window._uid,
       studentEmail:window._user.email,
       score:totalScore,
@@ -1388,12 +2022,76 @@ function initAntiCheat(){
   resetIdle();
 }
 
+function initPasteDetect(){
+  const editor=document.getElementById('code-editor');
+  if(!editor)return;
+  editor.removeEventListener('paste',handlePaste);
+  editor.addEventListener('paste',handlePaste);
+}
+
+function handlePaste(e){
+  if(!activityActive)return;
+  const pasted=(e.clipboardData||window.clipboardData)?.getData('text')||'';
+  if(!pasted.trim()||pasted.length<10)return;
+
+  antiCheat.pasteCount=(antiCheat.pasteCount||0)+1;
+
+  // AI detection heuristics
+  const lines=pasted.split('\n');
+  const nonEmpty=lines.filter(l=>l.trim().length>0);
+  const commentLines=nonEmpty.filter(l=>/^\s*(#|\/\/|\/\*|\*)/.test(l)).length;
+  const commentRatio=nonEmpty.length>0?commentLines/nonEmpty.length:0;
+  const aiPhrases=[
+    /here'?s?\s+(a|an|the)?\s*(solution|approach|implementation|code|function)/i,
+    /this\s+(function|code|solution|approach|implementation|program)/i,
+    /^\s*(#|\/\/)\s*(step\s*\d|note:|output:|explanation:)/im,
+    /certainly[!,]|of course[!,]|sure[!,]|here you go/i,
+    /as\s+(an?\s+)?ai\s+(language\s+model|assistant)/i
+  ];
+  const isAI=pasted.length>150&&(commentRatio>0.35||aiPhrases.some(p=>p.test(pasted)));
+
+  if(isAI){
+    antiCheat.aiSuspectCount=(antiCheat.aiSuspectCount||0)+1;
+    antiCheat.flags.push({type:'aiPaste',ts:new Date().toISOString(),chars:pasted.length});
+  } else {
+    antiCheat.flags.push({type:'paste',ts:new Date().toISOString(),chars:pasted.length});
+  }
+
+  // Banner
+  const banner=document.getElementById('ac-banner');
+  if(banner){
+    const msg=isAI?'🤖 AI-generated code suspected! Your instructor has been notified.':'📋 Paste detected! Your instructor has been notified.';
+    // Replace text node (first child) preserving the close button
+    const closeBtn=banner.querySelector('#ac-banner-close');
+    banner.textContent=msg;
+    if(closeBtn)banner.appendChild(closeBtn);
+    banner.classList.add('show');
+    clearTimeout(window._acBannerTimer);
+    window._acBannerTimer=setTimeout(()=>banner.classList.remove('show'),6000);
+  }
+  // Show overlay
+  const overlay=document.getElementById('ac-overlay');
+  if(overlay){
+    const modal=overlay.querySelector('.ac-modal');
+    if(modal){
+      modal.querySelector('h2').textContent=isAI?'🤖 AI Code Suspected':'📋 Paste Detected';
+      modal.querySelector('p').textContent=isAI
+        ?'AI-generated code was detected in your submission. This has been flagged for your instructor\'s review.'
+        :'External code was pasted into the editor. This has been flagged for your instructor\'s review.';
+    }
+    overlay.classList.add('show');
+  }
+  updateSession();
+}
+
 function stopAntiCheat(){
   document.removeEventListener('visibilitychange',handleVisChange);
   document.removeEventListener('mousemove',resetIdle);
   document.removeEventListener('keydown',resetIdle);
   document.removeEventListener('click',resetIdle);
   clearIdleTimer();
+  const editor=document.getElementById('code-editor');
+  if(editor)editor.removeEventListener('paste',handlePaste);
 }
 
 function handleVisChange(){

@@ -511,10 +511,10 @@
     </div>
 
     <div class="dashboard-grid">
-      <div class="dashboard-card" onclick="window.location.href='projects.html'">
+      <div class="dashboard-card" onclick="window.location.href='collab_room.html'">
         <div class="card-icon">👥</div>
         <h3 class="card-title">Collaborative Coding</h3>
-        <p class="card-description">Join coding rooms, work on projects with classmates, and learn together in real-time.</p>
+        <p class="card-description">Join a teacher-managed coding session, work with your group in real-time, and submit together.</p>
       </div>
 
       <div class="dashboard-card quiz-card" onclick="openCodeModal('quiz')">
@@ -523,13 +523,7 @@
         <p class="card-description">Join a live quiz session using the code your teacher shared with you.</p>
       </div>
 
-      <div class="dashboard-card exam-card" onclick="openCodeModal('exam')">
-        <div class="card-icon">📋</div>
-        <h3 class="card-title">Take Exam</h3>
-        <p class="card-description">Enter your exam code to begin a timed, supervised exam session.</p>
-      </div>
-
-      <div class="dashboard-card flashcard-card" onclick="openFlashcards()">
+<div class="dashboard-card flashcard-card" onclick="openFlashcards()">
         <div class="card-icon">🃏</div>
         <h3 class="card-title">Flashcards</h3>
         <p class="card-description">Join a teacher's set with a code, or self-study 11 coding languages at Easy, Medium, or Hard.</p>
@@ -558,35 +552,8 @@
 
     <div class="activity-section">
       <h2 class="activity-title">Recent Activity</h2>
-      <ul class="activity-list">
-        <li class="activity-item">
-          <div class="activity-icon">📝</div>
-          <div class="activity-content">
-            <div class="activity-text">Completed "JavaScript Basics" quiz</div>
-            <div class="activity-time">2 hours ago</div>
-          </div>
-        </li>
-        <li class="activity-item">
-          <div class="activity-icon">👥</div>
-          <div class="activity-content">
-            <div class="activity-text">Joined collaborative coding session</div>
-            <div class="activity-time">1 day ago</div>
-          </div>
-        </li>
-        <li class="activity-item">
-          <div class="activity-icon">🃏</div>
-          <div class="activity-content">
-            <div class="activity-text">Studied 25 flashcards in "Data Structures"</div>
-            <div class="activity-time">2 days ago</div>
-          </div>
-        </li>
-        <li class="activity-item">
-          <div class="activity-icon">🏆</div>
-          <div class="activity-content">
-            <div class="activity-text">Earned "Code Master" achievement</div>
-            <div class="activity-time">1 week ago</div>
-          </div>
-        </li>
+      <ul class="activity-list" id="recent-activity-list">
+        <li class="activity-item" style="color:#64748b;font-size:.9rem;padding:16px 0;">Loading…</li>
       </ul>
     </div>
   </div>
@@ -618,7 +585,7 @@
   <script type="module">
     import { initializeApp }        from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBCcyLy_rNx-riDjmK4SUu-gZbKtDPqEYQ",
@@ -764,6 +731,75 @@
     window.openProgress = function() {
       alert('Progress tracking coming soon!');
     };
+
+    // ── Recent Activity ──────────────────────────────────────────────────────
+    function timeAgo(ts) {
+      if (!ts) return '';
+      const ms = typeof ts.toDate === 'function' ? ts.toDate().getTime() : new Date(ts).getTime();
+      const diff = Date.now() - ms;
+      const min = Math.floor(diff / 60000);
+      if (min < 1) return 'just now';
+      if (min < 60) return `${min} min ago`;
+      const hr = Math.floor(min / 60);
+      if (hr < 24) return `${hr} hour${hr>1?'s':''} ago`;
+      const d = Math.floor(hr / 24);
+      if (d < 7) return `${d} day${d>1?'s':''} ago`;
+      const w = Math.floor(d / 7);
+      return `${w} week${w>1?'s':''} ago`;
+    }
+
+    async function loadRecentActivity(uid) {
+      const el = document.getElementById('recent-activity-list');
+      try {
+        // Try ordered query first; falls back to client-sort if index not yet built
+        let snap;
+        try {
+          const q = query(
+            collection(db, 'submissions'),
+            where('studentId', '==', uid),
+            orderBy('submittedAt', 'desc'),
+            limit(8)
+          );
+          snap = await getDocs(q);
+        } catch {
+          const q = query(collection(db, 'submissions'), where('studentId', '==', uid));
+          const raw = await getDocs(q);
+          const sorted = raw.docs.sort((a, b) => {
+            const ta = a.data().submittedAt?.toMillis?.() ?? 0;
+            const tb = b.data().submittedAt?.toMillis?.() ?? 0;
+            return tb - ta;
+          }).slice(0, 8);
+          snap = { empty: sorted.length === 0, docs: sorted };
+        }
+
+        if (snap.empty) {
+          el.innerHTML = '<li class="activity-item" style="color:#64748b;font-size:.9rem;padding:16px 0;">No activity yet. Complete a coding activity to see it here.</li>';
+          return;
+        }
+        el.innerHTML = snap.docs.map(d => {
+          const data  = d.data();
+          const title = data.activityTitle || 'Coding Activity';
+          const cls   = data.className || '';
+          const score = data.totalPossible > 0 ? ` — ${data.score}/${data.totalPossible} pts` : '';
+          const lang  = data.language ? ` (${data.language})` : '';
+          const when  = timeAgo(data.submittedAt);
+          return `<li class="activity-item">
+            <div class="activity-icon">💻</div>
+            <div class="activity-content">
+              <div class="activity-text">Completed <strong>"${title}"</strong>${cls ? ' in ' + cls : ''}${lang}${score}</div>
+              <div class="activity-time">${when}</div>
+            </div>
+          </li>`;
+        }).join('');
+      } catch(e) {
+        el.innerHTML = '<li class="activity-item" style="color:#64748b;font-size:.9rem;padding:16px 0;">Could not load activity.</li>';
+        console.error('loadRecentActivity:', e);
+      }
+    }
+
+    onAuthStateChanged(auth, user => {
+      if (user) loadRecentActivity(user.uid);
+    });
   </script>
 </body>
 </html>

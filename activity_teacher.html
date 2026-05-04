@@ -95,13 +95,6 @@
     .topic-chevron{font-size:11px;color:#94a3b8;transition:transform .25s;margin-left:6px;flex-shrink:0;}
     .topic-chevron.open{transform:rotate(180deg);}
     .topic-body{padding:4px 16px 16px;border-top:1px solid rgba(148,163,184,.08);}
-    .diff-tabs{display:flex;gap:6px;flex-wrap:wrap;}
-    .diff-tab{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid rgba(148,163,184,.2);background:rgba(15,23,42,.5);color:#94a3b8;font-family:inherit;transition:all .18s;}
-    .diff-tab:hover{border-color:rgba(148,163,184,.38);color:#e2e8f0;}
-    .diff-tab.active-all{background:rgba(124,58,237,.2);border-color:rgba(124,58,237,.45);color:#c4b5fd;}
-    .diff-tab.active-basic{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.45);color:#86efac;}
-    .diff-tab.active-intermediate{background:rgba(251,191,36,.14);border-color:rgba(251,191,36,.45);color:#fde68a;}
-    .diff-tab.active-hard{background:rgba(239,68,68,.14);border-color:rgba(239,68,68,.45);color:#fca5a5;}
     .level-section{margin-bottom:12px;}
     .level-section:last-child{margin-bottom:0;}
     .level-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:8px;}
@@ -140,6 +133,18 @@
     .flag-chip{padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap;}
     .flag-chip.tab{background:rgba(239,68,68,.14);color:#fca5a5;border:1px solid rgba(239,68,68,.25);}
     .flag-chip.idle{background:rgba(245,158,11,.12);color:#fcd34d;border:1px solid rgba(245,158,11,.28);}
+    .flag-chip.paste{background:rgba(251,146,60,.13);color:#fdba74;border:1px solid rgba(251,146,60,.3);}
+    .flag-chip.ai{background:rgba(139,92,246,.18);color:#c4b5fd;border:1px solid rgba(139,92,246,.4);}
+    .flags-btn{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid;font-family:inherit;transition:opacity .15s;white-space:nowrap;line-height:1.6;}
+    .flags-btn.sev-ai{background:rgba(139,92,246,.18);color:#c4b5fd;border-color:rgba(139,92,246,.4);}
+    .flags-btn.sev-paste{background:rgba(251,146,60,.13);color:#fdba74;border-color:rgba(251,146,60,.3);}
+    .flags-btn.sev-tab{background:rgba(239,68,68,.14);color:#fca5a5;border-color:rgba(239,68,68,.25);}
+    .flags-btn:hover{opacity:.8;}
+    .flags-dd{position:absolute;right:0;top:calc(100% + 5px);min-width:168px;background:rgba(10,16,35,.97);backdrop-filter:blur(20px);border:1px solid rgba(148,163,184,.18);border-radius:11px;padding:8px 0;z-index:300;box-shadow:0 14px 36px rgba(0,0,0,.55);display:none;}
+    .flags-dd.open{display:block;animation:fadeUp .15s ease;}
+    .fdd-row{display:flex;align-items:center;gap:8px;padding:6px 13px;font-size:11px;font-weight:600;border-bottom:1px solid rgba(148,163,184,.06);}
+    .fdd-row:last-child{border-bottom:none;}
+    .fdd-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
     .stats-panel{background:rgba(10,16,35,.85);backdrop-filter:blur(16px);border:1px solid rgba(148,163,184,.14);border-radius:16px;padding:20px;}
     .stat-item{padding:11px 0;border-bottom:1px solid rgba(148,163,184,.08);}
     .stat-item:last-child{border-bottom:none;}
@@ -252,6 +257,9 @@
         <span style="font-size:12px;font-weight:600;color:#94a3b8;">Class Code</span>
         <span id="cls-code" style="font-size:18px;font-weight:800;letter-spacing:.18em;color:#67e8f9;font-family:monospace;"></span>
         <button class="btn btn-xs btn-outline" onclick="copyCode()">📋 Copy</button>
+      </div>
+      <div id="cls-presence" style="display:flex;gap:24px;align-items:center;background:rgba(10,16,35,.7);border:1px solid rgba(148,163,184,.1);border-radius:12px;padding:14px 20px;margin-bottom:20px;flex-wrap:wrap;">
+        <span style="font-size:12px;color:#64748b;">Loading student stats…</span>
       </div>
       <div class="tab-bar">
         <button class="tab-btn active" id="tab-btn-acts" onclick="switchTab('acts')">📋 Activities</button>
@@ -794,6 +802,16 @@
     };
 
     window.goTo = function(id) {
+      const leaving = document.querySelector('.screen.active')?.id;
+      // Leaving class view → tear down presence listener
+      if (leaving === 'screen-class' && id !== 'screen-class') {
+        if (window._presenceUnsub) { window._presenceUnsub(); window._presenceUnsub = null; }
+      }
+      // Entering class view from landing → tear down card stat listeners
+      if (id === 'screen-class') {
+        (window._cardStatUnsubs||[]).forEach(u=>u());
+        window._cardStatUnsubs = [];
+      }
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     };
@@ -831,9 +849,13 @@
           <div class="class-card-foot">
             <span class="badge badge-course">${esc(c.version||'CodeChum')}</span>
             <span style="font-size:12px;color:#94a3b8;">Code: <strong style="font-family:monospace;letter-spacing:.12em;color:#67e8f9;">${esc(c.code)}</strong></span>
+          </div>
+          <div id="cstats-${c.id}" style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(148,163,184,.07);display:flex;gap:16px;font-size:12px;color:#64748b;">
+            <span>👥 —</span><span>🟢 —</span>
           </div>`;
         grid.appendChild(el);
       });
+      docs.forEach(d => loadCardStats({id:d.id,...d.data()}));
     }
 
     window.saveClass = async function() {
@@ -862,6 +884,54 @@
       }
     };
 
+    if(!window._cardStatUnsubs) window._cardStatUnsubs = [];
+
+    function loadCardStats(cls) {
+      const el = document.getElementById(`cstats-${cls.id}`);
+      if (!el) return;
+      const q = query(collection(db,'classMembers'), where('classId','==',cls.id));
+      const unsub = onSnapshot(q, snap => {
+        const total = snap.size;
+        const online = snap.docs.filter(d=>d.data().isOnline===true).length;
+        el.innerHTML = `<span style="color:#94a3b8;">👥 <strong style="color:#e2e8f0;">${total}</strong> joined</span>`
+          + `<span style="color:${online>0?'#86efac':'#64748b'};">${online>0?`<span class="live-dot" style="width:6px;height:6px;margin-right:4px;display:inline-block;"></span>`:''}<strong>${online}</strong> online</span>`;
+      }, ()=>{ el.innerHTML=''; });
+      window._cardStatUnsubs.push(unsub);
+    }
+
+    window.loadClassPresence = function() {
+      const el = document.getElementById('cls-presence');
+      if (!el || !currentClass) return;
+      if (window._presenceUnsub) { window._presenceUnsub(); window._presenceUnsub = null; }
+      el.innerHTML = '<span style="font-size:12px;color:#64748b;"><span class="spin"></span>Connecting…</span>';
+      const q = query(collection(db,'classMembers'), where('classId','==',currentClass.id));
+      window._presenceUnsub = onSnapshot(q, snap => {
+        const total = snap.size;
+        const online = snap.docs.filter(d=>d.data().isOnline===true).length;
+        el.innerHTML = `
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.25);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">👥</div>
+            <div>
+              <div style="font-size:22px;font-weight:800;color:#f1f5f9;line-height:1;">${total}</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px;">Joined</div>
+            </div>
+          </div>
+          <div style="width:1px;height:44px;background:rgba(148,163,184,.1);flex-shrink:0;"></div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:40px;height:40px;border-radius:10px;background:${online>0?'rgba(34,197,94,.12)':'rgba(100,116,139,.12)'};border:1px solid ${online>0?'rgba(34,197,94,.25)':'rgba(100,116,139,.2)'};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${online>0?'🟢':'⚫'}</div>
+            <div>
+              <div style="font-size:22px;font-weight:800;color:${online>0?'#86efac':'#64748b'};line-height:1;">${online}</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:2px;">Online Now</div>
+            </div>
+          </div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:5px;">
+            <span class="live-dot"></span><span style="font-size:11px;color:#86efac;font-weight:600;">Live</span>
+          </div>`;
+      }, err => {
+        el.innerHTML = `<span style="font-size:12px;color:#fca5a5;">Live tracking error: ${err.message}</span>`;
+      });
+    };
+
     async function openClass(cls) {
       currentClass = cls;
       document.getElementById('cls-name').textContent = cls.name;
@@ -871,6 +941,7 @@
       switchTab('acts');
       await Promise.all([loadActivities(), loadTopics()]);
       goTo('screen-class');
+      loadClassPresence();
     }
 
     window.copyCode = function() {
@@ -1035,14 +1106,8 @@
 
       function render() {
         const unlocked = new Set(currentClass.unlockedTopics||[]);
-        const lvlBtns = ['all','basic','intermediate','hard'].map(l=>
-          `<button class="diff-tab ${activeLevel===l?'active-'+l:''}" onclick="setTopicLevel('${l}')">${l==='all'?'All':l[0].toUpperCase()+l.slice(1)}</button>`
-        ).join('');
         list.innerHTML = `
-          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;">
-            <div style="font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;">Programming Fundamentals &amp; Topics</div>
-            <div class="diff-tabs">${lvlBtns}</div>
-          </div>
+          <div style="font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:18px;">Programming Fundamentals &amp; Topics</div>
           ${ci.topics.map(t=>{
             const open = expanded.has(t.id);
             const isUnlocked = unlocked.has(t.id);
@@ -1065,7 +1130,7 @@
           }).join('')}`;
       }
 
-      window.setTopicLevel = function(lv) { activeLevel=lv; render(); }; // kept for legacy calls
+
       window.expandTopic  = function(id) { expanded.has(id)?expanded.delete(id):expanded.add(id); render(); };
       window.toggleTopic  = async function(id) {
         const set = new Set(currentClass.unlockedTopics||[]);
@@ -1380,7 +1445,7 @@
       const list=document.getElementById('sup-list');
       let sessions=allSessions;
       if(activeFilter!=='all')sessions=sessions.filter(s=>{
-        if(activeFilter==='flagged')return(s.antiCheat?.tabSwitches||0)>0||(s.antiCheat?.idleWarnings||0)>0;
+        if(activeFilter==='flagged')return(s.antiCheat?.tabSwitches||0)>0||(s.antiCheat?.idleWarnings||0)>0||(s.antiCheat?.pasteCount||0)>0||(s.antiCheat?.aiSuspectCount||0)>0;
         if(activeFilter==='idle')return s.status==='idle';
         return s.status===activeFilter;
       });
@@ -1388,7 +1453,8 @@
       sessions.sort((a,b)=>(b.score||0)-(a.score||0));
       list.innerHTML=sessions.map(s=>{
         const tabs=s.antiCheat?.tabSwitches||0,idles=s.antiCheat?.idleWarnings||0;
-        const flagged=tabs>2||idles>3;
+        const pastes=s.antiCheat?.pasteCount||0,ais=s.antiCheat?.aiSuspectCount||0;
+        const flagged=tabs>2||idles>3||pastes>0||ais>0;
         const ls=s.lastSeen?.toDate?timeSince(s.lastSeen.toDate()):'just now';
         return `
           <div class="student-row ${flagged?'flagged':s.status==='idle'?'idle-state':''}">
@@ -1398,10 +1464,22 @@
               <div class="prog-track"><div class="prog-fill ${s.status==='submitted'?'done':'go'}" style="width:${s.progress||0}%;"></div></div>
               <div class="prog-pct">${s.progress||0}%</div>
             </div>
-            <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex-shrink:0;min-width:70px;">
-              ${tabs>0?`<span class="flag-chip tab">⚠️ ${tabs} tab</span>`:''}
-              ${idles>0?`<span class="flag-chip idle">⏱ ${idles} idle</span>`:''}
-              <span style="font-size:12px;font-weight:700;color:${s.status==='submitted'?'#86efac':'#64748b'};">${s.status==='submitted'?'✅ ':''} ${s.score||0} pts</span>
+            <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+              ${(()=>{
+                const total=tabs+idles+pastes+ais;
+                if(!total)return'';
+                const sev=ais>0?'sev-ai':pastes>0?'sev-paste':'sev-tab';
+                const rows=[
+                  ais>0?`<div class="fdd-row"><div class="fdd-dot" style="background:#c4b5fd;"></div><span style="color:#c4b5fd;flex:1;">AI suspected</span><strong style="color:#c4b5fd;">${ais}×</strong></div>`:'',
+                  pastes>0?`<div class="fdd-row"><div class="fdd-dot" style="background:#fdba74;"></div><span style="color:#fdba74;flex:1;">Paste detected</span><strong style="color:#fdba74;">${pastes}×</strong></div>`:'',
+                  tabs>0?`<div class="fdd-row"><div class="fdd-dot" style="background:#fca5a5;"></div><span style="color:#fca5a5;flex:1;">Tab switch</span><strong style="color:#fca5a5;">${tabs}×</strong></div>`:'',
+                  idles>0?`<div class="fdd-row"><div class="fdd-dot" style="background:#fcd34d;"></div><span style="color:#fcd34d;flex:1;">Idle warning</span><strong style="color:#fcd34d;">${idles}×</strong></div>`:''
+                ].filter(Boolean).join('');
+                return `<div style="position:relative;">
+                  <button class="flags-btn ${sev}" onclick="toggleFlags(this,${tabs},${idles},${pastes},${ais})">⚠ ${total} flag${total===1?'':'s'} ▾</button>
+                </div>`;
+              })()}
+              <span style="font-size:12px;font-weight:700;color:${s.status==='submitted'?'#86efac':'#64748b'};white-space:nowrap;">${s.status==='submitted'?'✅ ':''} ${s.score||0} pts</span>
             </div>
           </div>`;}).join('');
     }
@@ -1409,7 +1487,7 @@
     function updateStats() {
       document.getElementById('ss-active').textContent=allSessions.filter(s=>s.status==='active'||s.status==='idle').length;
       document.getElementById('ss-submitted').textContent=allSessions.filter(s=>s.status==='submitted').length;
-      document.getElementById('ss-flagged').textContent=allSessions.filter(s=>(s.antiCheat?.tabSwitches||0)>0||(s.antiCheat?.idleWarnings||0)>0).length;
+      document.getElementById('ss-flagged').textContent=allSessions.filter(s=>(s.antiCheat?.tabSwitches||0)>0||(s.antiCheat?.idleWarnings||0)>0||(s.antiCheat?.pasteCount||0)>0||(s.antiCheat?.aiSuspectCount||0)>0).length;
       const scores=allSessions.filter(s=>s.status==='submitted').map(s=>s.score||0);
       document.getElementById('ss-avg').textContent=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)+' pts':'—';
     }
@@ -1428,6 +1506,39 @@
     }
 
     function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+    window.toggleFlags = function(btn, tabs, idles, pastes, ais) {
+      const existing = document.getElementById('flags-portal');
+      // If clicking the same button that opened it, just close
+      if (existing && existing._srcBtn === btn) { existing.remove(); return; }
+      if (existing) existing.remove();
+
+      const rows = [
+        ais>0   ? `<div class="fdd-row"><div class="fdd-dot" style="background:#c4b5fd;"></div><span style="color:#c4b5fd;flex:1;">AI suspected</span><strong style="color:#c4b5fd;">${ais}×</strong></div>` : '',
+        pastes>0? `<div class="fdd-row"><div class="fdd-dot" style="background:#fdba74;"></div><span style="color:#fdba74;flex:1;">Paste detected</span><strong style="color:#fdba74;">${pastes}×</strong></div>` : '',
+        tabs>0  ? `<div class="fdd-row"><div class="fdd-dot" style="background:#fca5a5;"></div><span style="color:#fca5a5;flex:1;">Tab switch</span><strong style="color:#fca5a5;">${tabs}×</strong></div>` : '',
+        idles>0 ? `<div class="fdd-row"><div class="fdd-dot" style="background:#fcd34d;"></div><span style="color:#fcd34d;flex:1;">Idle warning</span><strong style="color:#fcd34d;">${idles}×</strong></div>` : ''
+      ].filter(Boolean).join('');
+
+      const rect = btn.getBoundingClientRect();
+      const portal = document.createElement('div');
+      portal.id = 'flags-portal';
+      portal.className = 'flags-dd open';
+      portal._srcBtn = btn;
+      portal.style.cssText = `position:fixed;top:${rect.bottom+5}px;right:${window.innerWidth-rect.right}px;left:auto;`;
+      portal.innerHTML = rows;
+      document.body.appendChild(portal);
+
+      setTimeout(() => {
+        function outside(e) {
+          if (!portal.contains(e.target) && e.target !== btn) {
+            portal.remove();
+            document.removeEventListener('click', outside);
+          }
+        }
+        document.addEventListener('click', outside);
+      }, 0);
+    };
   </script>
 </body>
 </html>
