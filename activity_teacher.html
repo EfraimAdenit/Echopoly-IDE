@@ -118,6 +118,7 @@
     .ct-terminal .ct-out-ok{color:#e2e8f0;}
     .ct-terminal .ct-out-err{color:#f87171;}
     .ct-terminal .ct-out-info{color:#64748b;font-style:italic;}
+    .ct-terminal .ct-out-input{color:#4ade80;font-weight:600;}
     .ct-actions{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(51,65,85,.4);background:rgba(15,23,42,.8);flex-shrink:0;flex-wrap:wrap;}
     .ct-btn{padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:700;font-family:inherit;display:inline-flex;align-items:center;gap:5px;transition:all .15s;border:1px solid transparent;}
     .ct-btn-run{background:rgba(30,64,175,.7);color:#93c5fd;border-color:rgba(37,99,235,.4);}
@@ -1491,6 +1492,38 @@
       window.monaco?.editor.setModelLanguage(_ctMonaco.getModel(),ctMonacoLang(lang));
     };
 
+    // Reconstruct interactive terminal view: interleave stdin values after prompt patterns
+    function ctBuildTerminal(stdout, stdinText, errText){
+      if(errText&&!stdout) return `<span class="ct-out-err">${esc(errText)}</span>`;
+      const inputs=(stdinText||'').split('\n');
+      while(inputs.length&&inputs[inputs.length-1]==='')inputs.pop();
+      let iIdx=0, html='';
+      const chars=String(stdout||'');
+      let buf='';
+      for(let i=0;i<chars.length;i++){
+        const c=chars[i];
+        if(c==='\n'){
+          html+=`<span class="ct-out-ok">${esc(buf)}</span>\n`;
+          buf='';
+        } else if((c===':'||c==='?')&&chars[i+1]===' '&&iIdx<inputs.length){
+          // Look at the rest of the line to decide if this is a prompt boundary
+          let j=i+2,rest='';
+          while(j<chars.length&&chars[j]!=='\n'){rest+=chars[j];j++;}
+          // It's a prompt if: nothing after ": " on this line, OR the rest contains more prompts
+          const isPrompt=rest===''||rest.trim()===''||/[?:] /.test(rest);
+          if(isPrompt){
+            buf+=c+' ';
+            html+=`<span class="ct-out-ok">${esc(buf)}</span>`;
+            html+=`<span class="ct-out-input">${esc(inputs[iIdx++])}</span>\n`;
+            buf='';i++;// skip the space
+          } else {buf+=c;}
+        } else {buf+=c;}
+      }
+      if(buf)html+=`<span class="ct-out-ok">${esc(buf)}</span>`;
+      if(errText)html+=(html?'\n':'')+`<span class="ct-out-err">${esc(errText)}</span>`;
+      return html||`<span class="ct-out-info">(no output)</span>`;
+    }
+
     async function ctExecute(){
       if(_ctRunning)return null;
       if(!_ctReady||!_ctMonaco)return null;
@@ -1539,7 +1572,7 @@
         term.innerHTML='<span class="ct-out-err">'+esc(error)+'</span>';
         return{error};
       }
-      term.innerHTML='<span class="ct-out-ok">'+esc(output)+'</span>'+(error?'\n<span class="ct-out-err">'+esc(error)+'</span>':'');
+      term.innerHTML=ctBuildTerminal(output,stdin,error);
       _ctLastOutput=output;
       _ctLastStdin=stdin;
       document.getElementById('ct-add-btn').disabled=false;
